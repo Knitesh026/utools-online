@@ -7,6 +7,18 @@
 [build.environment]
   NODE_VERSION = "18.19.0"
   VITE_API_URL = "https://backend-one-lac-43.vercel.app"
+  CI = "true"
+
+# Context-specific settings for production
+[context.production]
+  command = "npm install && npm run build"
+
+# Context-specific settings for preview/staging
+[context.deploy-preview]
+  command = "npm install && npm run build"
+  
+[context.branch-deploy]
+  command = "npm install && npm run build"
 
 # Redirects for SPA routing
 [[redirects]]
