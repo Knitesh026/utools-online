@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { getApiUrl } from '@/lib/api';
 
 export default function ESignPDF() {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
@@ -97,7 +98,7 @@ export default function ESignPDF() {
       formData.append('name', signatureName);
       formData.append('date', signatureDate);
 
-      const response = await fetch('http://localhost:3001/api/sign-pdf', {
+      const response = await fetch(`${getApiUrl()}/api/sign-pdf`, {
         method: 'POST',
         body: formData,
       });

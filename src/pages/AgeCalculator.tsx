@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getApiUrl } from '@/lib/api';
 
 const AgeCalculator = () => {
   const [birthDate, setBirthDate] = useState("");
@@ -19,7 +20,7 @@ const AgeCalculator = () => {
 
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3001/api/tools/age-calculator", {
+      const response = await fetch(`${getApiUrl()}/api/tools/age-calculator`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ birthDate }),

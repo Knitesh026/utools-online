@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Copy } from "lucide-react";
+import { getApiUrl } from '@/lib/api';
 
 const TextReverser = () => {
   const [text, setText] = useState("");
@@ -20,7 +21,7 @@ const TextReverser = () => {
 
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3001/api/tools/reverse-text", {
+      const response = await fetch(`${getApiUrl()}/api/tools/reverse-text`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text }),

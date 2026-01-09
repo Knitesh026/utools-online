@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { getApiUrl } from '@/lib/api';
 
 export default function DocumentsConverter() {
   const [documentFile, setDocumentFile] = useState<File | null>(null);
@@ -50,7 +51,7 @@ export default function DocumentsConverter() {
       formData.append('file', documentFile);
       formData.append('targetFormat', targetFormat);
 
-      const response = await fetch('http://localhost:3001/api/convert-document', {
+      const response = await fetch(`${getApiUrl()}/api/convert-document`, {
         method: 'POST',
         body: formData,
       });

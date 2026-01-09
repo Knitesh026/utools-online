@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
+import { getApiUrl } from '@/lib/api';
 
 export default function Base64Converter() {
   const [input, setInput] = useState('');
@@ -20,7 +21,7 @@ export default function Base64Converter() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3001/api/tools/base64-converter', {
+      const response = await fetch(`${getApiUrl()}/api/tools/base64-converter`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: input, mode }),

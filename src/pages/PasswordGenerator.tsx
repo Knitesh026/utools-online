@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Copy } from "lucide-react";
+import { getApiUrl } from '@/lib/api';
 
 const PasswordGenerator = () => {
   const [length, setLength] = useState("16");
@@ -20,7 +21,7 @@ const PasswordGenerator = () => {
   const handleGenerate = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3001/api/tools/password-generator", {
+      const response = await fetch(`${getApiUrl()}/api/tools/password-generator`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

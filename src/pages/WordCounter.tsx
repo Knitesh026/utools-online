@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { getApiUrl } from '@/lib/api';
 
 const WordCounter = () => {
   const [text, setText] = useState("");
@@ -18,7 +19,7 @@ const WordCounter = () => {
 
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3001/api/tools/word-counter", {
+      const response = await fetch(`${getApiUrl()}/api/tools/word-counter`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text }),

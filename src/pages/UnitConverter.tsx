@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getApiUrl } from '@/lib/api';
 
 const UnitConverter = () => {
   const [value, setValue] = useState("");
@@ -34,7 +35,7 @@ const UnitConverter = () => {
 
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3001/api/tools/unit-converter", {
+      const response = await fetch(`${getApiUrl()}/api/tools/unit-converter`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

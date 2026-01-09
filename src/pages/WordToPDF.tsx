@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { getApiUrl } from '@/lib/api';
 
 export default function WordToPDF() {
   const [wordFile, setWordFile] = useState<File | null>(null);
@@ -41,7 +42,7 @@ export default function WordToPDF() {
       const formData = new FormData();
       formData.append('file', wordFile);
 
-      const response = await fetch('http://localhost:3001/api/convert-word-to-pdf', {
+      const response = await fetch(`${getApiUrl()}/api/convert-word-to-pdf`, {
         method: 'POST',
         body: formData,
       });
