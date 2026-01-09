@@ -6,40 +6,48 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { getApiUrl } from '@/lib/api';
 
 const BMICalculator = () => {
   const [weight, setWeight] = useState("");
   const [height, setHeight] = useState("");
   const [unit, setUnit] = useState("kg");
   const [result, setResult] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
 
-  const handleCalculate = async () => {
+  const handleCalculate = () => {
     if (!weight || !height) {
       alert("Please enter weight and height");
       return;
     }
 
-    setLoading(true);
     try {
-      const response = await fetch(`${getApiUrl()}/api/tools/bmi-calculator`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          weight: parseFloat(weight),
-          height: parseFloat(height),
-          unit,
-        }),
-      });
+      const w = parseFloat(weight);
+      const h = parseFloat(height);
 
-      const data = await response.json();
-      setResult(data);
+      let heightInMeters = h;
+      if (unit === "lbs") {
+        heightInMeters = h * 0.01; // Assuming h is in cm for lbs
+      } else if (unit === "kg") {
+        heightInMeters = h / 100; // Convert cm to meters
+      }
+
+      const bmi = w / (heightInMeters * heightInMeters);
+
+      let category = "";
+      if (bmi < 18.5) category = "Underweight";
+      else if (bmi < 25) category = "Normal weight";
+      else if (bmi < 30) category = "Overweight";
+      else category = "Obese";
+
+      setResult({
+        bmi: bmi.toFixed(1),
+        category,
+        weight: w,
+        height: h,
+        unit,
+      });
     } catch (error) {
-      alert("Error: Unable to connect to backend. Make sure server is running on port 3001");
+      alert("Error: Invalid input");
       console.error(error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -120,10 +128,9 @@ const BMICalculator = () => {
 
               <Button
                 onClick={handleCalculate}
-                disabled={loading}
                 className="w-full bg-primary hover:bg-primary/90"
               >
-                {loading ? "Calculating..." : "Calculate BMI"}
+                Calculate BMI
               </Button>
             </CardContent>
           </Card>

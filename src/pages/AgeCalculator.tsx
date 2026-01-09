@@ -5,34 +5,48 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getApiUrl } from '@/lib/api';
 
 const AgeCalculator = () => {
   const [birthDate, setBirthDate] = useState("");
   const [result, setResult] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
 
-  const handleCalculate = async () => {
+  const handleCalculate = () => {
     if (!birthDate) {
       alert("Please select a birth date");
       return;
     }
 
-    setLoading(true);
     try {
-      const response = await fetch(`${getApiUrl()}/api/tools/age-calculator`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ birthDate }),
+      const birth = new Date(birthDate);
+      const today = new Date();
+      
+      let years = today.getFullYear() - birth.getFullYear();
+      let months = today.getMonth() - birth.getMonth();
+      let days = today.getDate() - birth.getDate();
+      
+      if (days < 0) {
+        months--;
+        const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+        days += lastMonth.getDate();
+      }
+      
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+      
+      const totalDays = Math.floor((today.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24));
+      
+      setResult({
+        years,
+        months,
+        days,
+        totalDays,
+        birthDate: birth.toLocaleDateString(),
       });
-
-      const data = await response.json();
-      setResult(data);
     } catch (error) {
-      alert("Error: Unable to connect to backend. Make sure server is running on port 3001");
+      alert("Error: Invalid date");
       console.error(error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -64,10 +78,9 @@ const AgeCalculator = () => {
               </div>
               <Button
                 onClick={handleCalculate}
-                disabled={loading}
                 className="w-full bg-primary hover:bg-primary/90"
               >
-                {loading ? "Calculating..." : "Calculate Age"}
+                Calculate Age
               </Button>
             </CardContent>
           </Card>
@@ -78,20 +91,24 @@ const AgeCalculator = () => {
                 <CardTitle>Your Age</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   <div className="p-4 bg-muted rounded-lg">
-                    <p className="text-muted-foreground text-sm">Age</p>
-                    <p className="text-3xl font-bold text-primary">{result.age}</p>
-                    <p className="text-xs text-muted-foreground mt-1">Years</p>
+                    <p className="text-muted-foreground text-sm">Years</p>
+                    <p className="text-3xl font-bold text-primary">{result.years}</p>
                   </div>
                   <div className="p-4 bg-muted rounded-lg">
-                    <p className="text-muted-foreground text-sm">Next Birthday</p>
-                    <p className="text-lg font-bold text-primary">{result.daysUntilBirthday}</p>
-                    <p className="text-xs text-muted-foreground mt-1">Days away</p>
+                    <p className="text-muted-foreground text-sm">Months</p>
+                    <p className="text-2xl font-bold text-primary">{result.months}</p>
+                  </div>
+                  <div className="p-4 bg-muted rounded-lg">
+                    <p className="text-muted-foreground text-sm">Days</p>
+                    <p className="text-2xl font-bold text-primary">{result.days}</p>
+                  </div>
+                  <div className="p-4 bg-muted rounded-lg">
+                    <p className="text-muted-foreground text-sm">Total Days</p>
+                    <p className="text-xl font-bold text-primary">{result.totalDays}</p>
                   </div>
                 </div>
-                <div className="p-4 bg-muted rounded-lg">
-                  <p className="text-muted-foreground text-sm">Birthday Date</p>
                   <p className="text-foreground mt-1">{result.nextBirthday}</p>
                 </div>
               </CardContent>

@@ -5,36 +5,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Copy } from "lucide-react";
-import { getApiUrl } from '@/lib/api';
 
 const TextReverser = () => {
   const [text, setText] = useState("");
   const [reversed, setReversed] = useState("");
-  const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const handleReverse = async () => {
+  const handleReverse = () => {
     if (!text.trim()) {
       alert("Please enter some text");
       return;
     }
 
-    setLoading(true);
-    try {
-      const response = await fetch(`${getApiUrl()}/api/tools/reverse-text`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-      });
-
-      const data = await response.json();
-      setReversed(data.reversed);
-    } catch (error) {
-      alert("Error: Unable to connect to backend. Make sure server is running on port 3001");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+    const reversed = text.split("").reverse().join("");
+    setReversed(reversed);
   };
 
   const handleCopy = () => {
@@ -67,10 +51,9 @@ const TextReverser = () => {
               />
               <Button
                 onClick={handleReverse}
-                disabled={loading}
                 className="w-full bg-primary hover:bg-primary/90"
               >
-                {loading ? "Reversing..." : "Reverse Text"}
+                Reverse Text
               </Button>
             </CardContent>
           </Card>

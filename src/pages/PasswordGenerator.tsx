@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Copy } from "lucide-react";
-import { getApiUrl } from '@/lib/api';
 
 const PasswordGenerator = () => {
   const [length, setLength] = useState("16");
@@ -15,32 +14,36 @@ const PasswordGenerator = () => {
   const [useNumbers, setUseNumbers] = useState(true);
   const [useSymbols, setUseSymbols] = useState(true);
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const handleGenerate = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${getApiUrl()}/api/tools/password-generator`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          length: parseInt(length),
-          useUppercase,
-          useLowercase,
-          useNumbers,
-          useSymbols,
-        }),
-      });
+  const handleGenerate = () => {
+    const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lowercase = "abcdefghijklmnopqrstuvwxyz";
+    const numbers = "0123456789";
+    const symbols = "!@#$%^&*()_+-=[]{}|;:,.<>?";
 
-      const data = await response.json();
-      setPassword(data.password);
-    } catch (error) {
-      alert("Error: Unable to connect to backend. Make sure server is running on port 3001");
-      console.error(error);
-    } finally {
-      setLoading(false);
+    let chars = "";
+    if (useUppercase) chars += uppercase;
+    if (useLowercase) chars += lowercase;
+    if (useNumbers) chars += numbers;
+    if (useSymbols) chars += symbols;
+
+    if (!chars) {
+      alert("Please select at least one character type");
+      return;
     }
+
+    const len = parseInt(length);
+    if (len < 4 || len > 128) {
+      alert("Password length must be between 4 and 128");
+      return;
+    }
+
+    let generatedPassword = "";
+    for (let i = 0; i < len; i++) {
+      generatedPassword += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setPassword(generatedPassword);
   };
 
   const handleCopy = () => {
@@ -131,10 +134,9 @@ const PasswordGenerator = () => {
 
               <Button
                 onClick={handleGenerate}
-                disabled={loading}
                 className="w-full bg-primary hover:bg-primary/90"
               >
-                {loading ? "Generating..." : "Generate Password"}
+                Generate Password
               </Button>
             </CardContent>
           </Card>

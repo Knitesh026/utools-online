@@ -12,51 +12,114 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getApiUrl } from '@/lib/api';
 
 const UnitConverter = () => {
   const [value, setValue] = useState("");
   const [fromUnit, setFromUnit] = useState("m");
   const [toUnit, setToUnit] = useState("km");
   const [result, setResult] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
 
   const conversions: { [key: string]: string[] } = {
-    "Length": ["m", "km", "cm"],
-    "Mass": ["kg", "g"],
-    "Temperature": ["celsius", "fahrenheit"],
+    "Length": ["m", "km", "cm", "mm", "mi", "yd", "ft", "in"],
+    "Mass": ["kg", "g", "mg", "lb", "oz"],
+    "Temperature": ["celsius", "fahrenheit", "kelvin"],
+    "Volume": ["l", "ml", "gal", "pt", "cup"],
   };
 
-  const handleConvert = async () => {
+  const convertUnits = (inputValue: number, from: string, to: string): number => {
+    // Length conversions (base unit: meter)
+    const lengthToMeter: { [key: string]: number } = {
+      m: 1,
+      km: 1000,
+      cm: 0.01,
+      mm: 0.001,
+      mi: 1609.34,
+      yd: 0.9144,
+      ft: 0.3048,
+      in: 0.0254,
+    };
+
+    // Mass conversions (base unit: kilogram)
+    const massToKg: { [key: string]: number } = {
+      kg: 1,
+      g: 0.001,
+      mg: 0.000001,
+      lb: 0.453592,
+      oz: 0.0283495,
+    };
+
+    // Volume conversions (base unit: liter)
+    const volumeToLiter: { [key: string]: number } = {
+      l: 1,
+      ml: 0.001,
+      gal: 3.78541,
+      pt: 0.473176,
+      cup: 0.236588,
+    };
+
+    // Handle length conversions
+    if (lengthToMeter[from] && lengthToMeter[to]) {
+      const meters = inputValue * lengthToMeter[from];
+      return meters / lengthToMeter[to];
+    }
+
+    // Handle mass conversions
+    if (massToKg[from] && massToKg[to]) {
+      const kg = inputValue * massToKg[from];
+      return kg / massToKg[to];
+    }
+
+    // Handle volume conversions
+    if (volumeToLiter[from] && volumeToLiter[to]) {
+      const liters = inputValue * volumeToLiter[from];
+      return liters / volumeToLiter[to];
+    }
+
+    // Handle temperature conversions
+    if ((from === "celsius" || from === "fahrenheit" || from === "kelvin") &&
+        (to === "celsius" || to === "fahrenheit" || to === "kelvin")) {
+      // Convert to Celsius first
+      let celsius: number;
+      if (from === "celsius") {
+        celsius = inputValue;
+      } else if (from === "fahrenheit") {
+        celsius = (inputValue - 32) * 5 / 9;
+      } else { // kelvin
+        celsius = inputValue - 273.15;
+      }
+
+      // Convert from Celsius to target
+      if (to === "celsius") {
+        return celsius;
+      } else if (to === "fahrenheit") {
+        return (celsius * 9 / 5) + 32;
+      } else { // kelvin
+        return celsius + 273.15;
+      }
+    }
+
+    return 0;
+  };
+
+  const handleConvert = () => {
     if (!value) {
       alert("Please enter a value");
       return;
     }
 
-    setLoading(true);
-    try {
-      const response = await fetch(`${getApiUrl()}/api/tools/unit-converter`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          value: parseFloat(value),
-          fromUnit,
-          toUnit,
-        }),
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        setResult(data);
-      } else {
-        alert(data.error);
-      }
-    } catch (error) {
-      alert("Error: Unable to connect to backend. Make sure server is running on port 3001");
-      console.error(error);
-    } finally {
-      setLoading(false);
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) {
+      alert("Please enter a valid number");
+      return;
     }
+
+    const convertedValue = convertUnits(numValue, fromUnit, toUnit);
+    setResult({
+      value: numValue,
+      fromUnit,
+      result: Math.round(convertedValue * 100000) / 100000, // Round to 5 decimal places
+      toUnit,
+    });
   };
 
   const units = ["m", "km", "cm", "kg", "g", "celsius", "fahrenheit"];
@@ -124,10 +187,9 @@ const UnitConverter = () => {
 
               <Button
                 onClick={handleConvert}
-                disabled={loading}
                 className="w-full bg-primary hover:bg-primary/90"
               >
-                {loading ? "Converting..." : "Convert"}
+                Convert
               </Button>
             </CardContent>
           </Card>

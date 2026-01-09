@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
-import { getApiUrl } from '@/lib/api';
 
 export default function Base64Converter() {
   const [input, setInput] = useState('');
@@ -12,7 +11,7 @@ export default function Base64Converter() {
   const [mode, setMode] = useState<'encode' | 'decode'>('encode');
   const [error, setError] = useState('');
 
-  const handleConvert = async () => {
+  const handleConvert = () => {
     if (!input.trim()) {
       setError('Please enter text to convert');
       return;
@@ -21,31 +20,15 @@ export default function Base64Converter() {
     setError('');
 
     try {
-      const response = await fetch(`${getApiUrl()}/api/tools/base64-converter`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: input, mode }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Backend unavailable');
+      if (mode === 'encode') {
+        const encoded = btoa(input);
+        setOutput(encoded);
+      } else {
+        const decoded = atob(input);
+        setOutput(decoded);
       }
-
-      const data = await response.json();
-      setOutput(data.result);
-    } catch (err) {
-      // Fallback: Client-side conversion
-      try {
-        if (mode === 'encode') {
-          const encoded = btoa(input);
-          setOutput(encoded);
-        } else {
-          const decoded = atob(input);
-          setOutput(decoded);
-        }
-      } catch {
-        setError('Invalid input for the selected mode');
-      }
+    } catch {
+      setError('Invalid input for the selected mode');
     }
   };
 

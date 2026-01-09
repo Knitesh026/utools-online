@@ -4,35 +4,31 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { getApiUrl } from '@/lib/api';
 
 const WordCounter = () => {
   const [text, setText] = useState("");
   const [result, setResult] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
 
-  const handleAnalyze = async () => {
+  const handleAnalyze = () => {
     if (!text.trim()) {
       alert("Please enter some text");
       return;
     }
 
-    setLoading(true);
-    try {
-      const response = await fetch(`${getApiUrl()}/api/tools/word-counter`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-      });
+    const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+    const chars = text.length;
+    const charsNoSpaces = text.replace(/\s/g, "").length;
+    const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+    const paragraphs = text.split(/\n\n+/).filter(p => p.trim().length > 0);
 
-      const data = await response.json();
-      setResult(data);
-    } catch (error) {
-      alert("Error: Unable to connect to backend. Make sure server is running on port 3001");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+    setResult({
+      words: words.length,
+      characters: chars,
+      charactersNoSpaces: charsNoSpaces,
+      sentences: sentences.length,
+      paragraphs: paragraphs.length,
+      averageWordLength: (charsNoSpaces / words.length).toFixed(2),
+    });
   };
 
   return (
@@ -59,10 +55,9 @@ const WordCounter = () => {
               />
               <Button
                 onClick={handleAnalyze}
-                disabled={loading}
                 className="w-full bg-primary hover:bg-primary/90"
               >
-                {loading ? "Analyzing..." : "Analyze Text"}
+                Analyze Text
               </Button>
             </CardContent>
           </Card>

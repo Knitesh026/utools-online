@@ -6,31 +6,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Copy } from "lucide-react";
-import { getApiUrl } from '@/lib/api';
 
 const UUIDGenerator = () => {
   const [count, setCount] = useState("1");
   const [uuids, setUuids] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const handleGenerate = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${getApiUrl()}/api/tools/uuid-generator`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ count: parseInt(count) }),
-      });
+  const generateUUID = (): string => {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  };
 
-      const data = await response.json();
-      setUuids(data.uuids);
-    } catch (error) {
-      alert("Error: Unable to connect to backend. Make sure server is running on port 3001");
-      console.error(error);
-    } finally {
-      setLoading(false);
+  const handleGenerate = () => {
+    const num = parseInt(count);
+    if (num < 1 || num > 100) {
+      alert("Please enter a number between 1 and 100");
+      return;
     }
+    const newUuids = Array.from({ length: num }, () => generateUUID());
+    setUuids(newUuids);
   };
 
   const handleCopy = () => {
@@ -70,10 +67,9 @@ const UUIDGenerator = () => {
 
               <Button
                 onClick={handleGenerate}
-                disabled={loading}
                 className="w-full bg-primary hover:bg-primary/90"
               >
-                {loading ? "Generating..." : "Generate UUIDs"}
+                Generate UUIDs
               </Button>
             </CardContent>
           </Card>
