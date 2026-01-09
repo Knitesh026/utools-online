@@ -109,8 +109,7 @@ const AgeCalculator = () => {
                     <p className="text-xl font-bold text-primary">{result.totalDays}</p>
                   </div>
                 </div>
-                  <p className="text-foreground mt-1">{result.nextBirthday}</p>
-                </div>
+                <p className="text-foreground mt-1">{result.nextBirthday}</p>
               </CardContent>
             </Card>
           )}
