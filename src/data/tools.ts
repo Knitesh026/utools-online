@@ -28,6 +28,12 @@ export interface ToolCategory {
   name: string;
   description: string;
   tools: Tool[];
+  colorTheme: {
+    gradient: string;
+    accentColor: string;
+    iconColor: string;
+    borderColor: string;
+  };
 }
 
 export const toolCategories: ToolCategory[] = [
@@ -58,6 +64,12 @@ export const toolCategories: ToolCategory[] = [
       { title: "Image Histogram Generator", icon: TrendingUp, to: "/histogram-generator" },
       { title: "Face Blur Pro", icon: Image, to: "/face-blur" },
     ],
+    colorTheme: {
+      gradient: "from-orange-100 via-orange-50 to-red-100",
+      accentColor: "rgb(249, 115, 22)",
+      iconColor: "#f97316",
+      borderColor: "rgb(254, 214, 165)",
+    },
   },
   {
     name: "Document Tools",
@@ -73,6 +85,12 @@ export const toolCategories: ToolCategory[] = [
       { title: "Word to PDF", icon: FileText, to: "/word-to-pdf" },
       { title: "Documents Converter", icon: FileText, to: "/documents-converter" },
     ],
+    colorTheme: {
+      gradient: "from-red-100 via-red-50 to-pink-100",
+      accentColor: "rgb(239, 68, 68)",
+      iconColor: "#ef4444",
+      borderColor: "rgb(254, 205, 211)",
+    },
   },
   {
     name: "Text Tools",
@@ -81,6 +99,12 @@ export const toolCategories: ToolCategory[] = [
       { title: "Word Counter", icon: Type, to: "/word-counter" },
       { title: "Text Reverser", icon: Type, to: "/text-reverser" },
     ],
+    colorTheme: {
+      gradient: "from-purple-100 via-purple-50 to-violet-100",
+      accentColor: "rgb(147, 51, 234)",
+      iconColor: "#9333ea",
+      borderColor: "rgb(243, 232, 255)",
+    },
   },
   {
     name: "Color Tools",
@@ -91,6 +115,12 @@ export const toolCategories: ToolCategory[] = [
       { title: "HEX to RGB Converter", icon: Palette, to: "/hex-to-rgb" },
       { title: "Gradient Generator", icon: Palette, to: "/gradient-generator" },
     ],
+    colorTheme: {
+      gradient: "from-pink-100 via-pink-50 to-rose-100",
+      accentColor: "rgb(219, 39, 119)",
+      iconColor: "#db2777",
+      borderColor: "rgb(254, 205, 211)",
+    },
   },
   {
     name: "Calculator Tools",
@@ -105,6 +135,12 @@ export const toolCategories: ToolCategory[] = [
       { title: "Mortgage Calculator", icon: Calculator, to: "/mortgage-calculator" },
       { title: "PPP Calculator", icon: Calculator, to: "/ppp-calculator" },
     ],
+    colorTheme: {
+      gradient: "from-blue-100 via-blue-50 to-cyan-100",
+      accentColor: "rgb(59, 130, 246)",
+      iconColor: "#3b82f6",
+      borderColor: "rgb(219, 234, 254)",
+    },
   },
   {
     name: "Utility Tools",
@@ -117,6 +153,12 @@ export const toolCategories: ToolCategory[] = [
       { title: "Name Generator", icon: Type, to: "/name-generator" },
       { title: "Base64 Converter", icon: Copy, to: "/base64-converter" },
     ],
+    colorTheme: {
+      gradient: "from-green-100 via-green-50 to-emerald-100",
+      accentColor: "rgb(34, 197, 94)",
+      iconColor: "#22c55e",
+      borderColor: "rgb(220, 252, 231)",
+    },
   },
 ];
 

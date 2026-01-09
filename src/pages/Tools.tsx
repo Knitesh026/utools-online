@@ -63,27 +63,28 @@ const Tools = () => {
             <div className="space-y-16">
               {filteredCategories.map((category, index) => (
                 <div key={category.name}>
-                  {/* Category Header */}
-                  <button
-                    onClick={() =>
-                      setExpandedCategory(
-                        expandedCategory === category.name ? null : category.name
-                      )
-                    }
-                    className="w-full flex items-center justify-between mb-8 group hover:opacity-75 transition-opacity"
-                  >
-                    <div className="text-left">
-                      <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-2">
-                        {category.name}
-                      </h2>
-                      <p className="text-muted-foreground">{category.description}</p>
-                    </div>
-                    <ChevronDown
-                      className={`h-6 w-6 text-primary flex-shrink-0 transition-transform ${
-                        expandedCategory === category.name ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
+                  {/* Category Header with colored background */}
+                  <div className={`rounded-xl p-8 mb-8 bg-gradient-to-r ${category.colorTheme.gradient} border-l-4`} style={{ borderColor: category.colorTheme.accentColor }}>
+                    <button
+                      onClick={() =>
+                        setExpandedCategory(
+                          expandedCategory === category.name ? null : category.name
+                        )
+                      }
+                      className="w-full flex items-center justify-between group hover:opacity-75 transition-opacity"
+                    >
+                      <div className="text-left">
+                        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-2" style={{ color: category.colorTheme.accentColor }}>
+                          {category.name}
+                        </h2>
+                        <p className="text-muted-foreground">{category.description}</p>
+                      </div>
+                      <ChevronDown
+                        className={`h-6 w-6 flex-shrink-0 transition-transform`}
+                        style={{ color: category.colorTheme.accentColor }}
+                      />
+                    </button>
+                  </div>
 
                   {/* Tools Grid */}
                   {expandedCategory === category.name && (
@@ -95,6 +96,7 @@ const Tools = () => {
                             title={tool.title}
                             icon={tool.icon}
                             to={tool.to}
+                            colorTheme={category.colorTheme}
                           />
                         ))}
                       </div>

@@ -100,6 +100,7 @@ const Index = () => {
               categoryName={category.name}
               categoryDescription={category.description}
               tools={category.tools}
+              colorTheme={category.colorTheme}
             />
           </section>
         ))}
