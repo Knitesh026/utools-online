@@ -1,4 +1,4 @@
-import { Search, Wrench, ChevronDown } from "lucide-react";
+import { Search, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { toolCategories } from "@/data/tools";
@@ -11,12 +11,7 @@ const Header = () => {
       <div className="container mx-auto flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-          <div className="flex items-center gap-1">
-            <Wrench className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold text-foreground">
-              uTools<span className="text-primary"> .Online</span>
-            </span>
-          </div>
+          <img src="/logo.png" alt="uTools.online" className="h-8 w-auto" />
         </Link>
 
         {/* Navigation */}

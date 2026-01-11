@@ -45,71 +45,76 @@ const Index = () => {
         {/* Hero Section */}
         <Hero />
 
-        <div className="container mx-auto px-6 py-16">
+        <div className="container mx-auto px-6 py-8 space-y-8">
 
         {/* Main Tools Grid */}
-        <section className="mb-20">
-          <div className="mb-12">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-3">
-              Featured Tools
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl">
-              Quick access to our most powerful tools
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl">
-            {mainTools.map((tool, index) => (
-              <ToolCard
-                key={tool.title}
-                title={tool.title}
-                description={tool.description}
-                icon={tool.icon}
-                number={index + 1}
-              />
-            ))}
-          </div>
-        </section>
+        <div className="rounded-[0.5rem] p-6 bg-card shadow-md" style={{ backgroundColor: '#f6fff8' }}>
+          <section className="mb-0">
+            <div className="mb-6 pb-0 border-b-0">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground mb-2 leading-tight">
+                Featured Tools
+              </h2>
+              <p className="text-sm text-muted-foreground max-w-2xl">
+                Quick access to our most powerful tools
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl">
+              {mainTools.map((tool, index) => (
+                <ToolCard
+                  key={tool.title}
+                  title={tool.title}
+                  description={tool.description}
+                  icon={tool.icon}
+                  number={index + 1}
+                />
+              ))}
+            </div>
+          </section>
+        </div>
 
         {/* Popular Tools Section */}
-        <section className="mb-20">
-          <div className="mb-12">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-3">
-              Popular Tools
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl">
-              Most used tools by our community
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-4 md:gap-6">
-            {popularTools.map((tool) => (
-              <div key={tool.title} className="w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-1rem)] xl:w-[calc(25%-1.5rem)]">
-                <PopularToolCard
-                  title={tool.title}
-                  icon={tool.icon}
-                  to={tool.to}
-                />
-              </div>
-            ))}
-          </div>
-        </section>
+        <div className="rounded-[0.5rem] p-6 bg-card shadow-md" style={{ backgroundColor: '#edf2fb' }}>
+          <section className="mb-0">
+            <div className="mb-6 pb-0 border-b-0">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground mb-2 leading-tight">
+                Popular Tools
+              </h2>
+              <p className="text-sm text-muted-foreground max-w-2xl">
+                Most used tools by our community
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-4 md:gap-4">
+              {popularTools.map((tool) => (
+                <div key={tool.title} className="w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-1rem)] xl:w-[calc(25%-1.5rem)]">
+                  <PopularToolCard
+                    title={tool.title}
+                    icon={tool.icon}
+                    to={tool.to}
+                  />
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
 
         {/* Tool Categories Section */}
-        {toolCategories.map((category, index) => (
-          <section key={category.name} className="mb-20">
+        <div className="space-y-8">
+          {toolCategories.map((category, index) => (
             <CategoryToolsGrid
+              key={category.name}
               categoryName={category.name}
               categoryDescription={category.description}
               tools={category.tools}
               colorTheme={category.colorTheme}
             />
-          </section>
-        ))}
+          ))}
+        </div>
 
         {/* Testimonials Section */}
-        <section className="mt-20 mb-20">
-          <div className="mb-12">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-3">Testimonials</h2>
-            <p className="text-lg text-muted-foreground">
+        <section className="mt-12 mb-12">
+          <div className="mb-8">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">Testimonials</h2>
+            <p className="text-sm text-muted-foreground">
               This app saved me hours and effort! Simple tools that just work.
               <span className="text-sm ml-2">- A. Patel, Student</span>
             </p>
