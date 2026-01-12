@@ -6,15 +6,14 @@ import AdUnit from "@/components/AdUnit";
 
 const Tools = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [hasConsent, setHasConsent] = useState(false);
+  const [hasConsent, setHasConsent] = useState(() =>
+    localStorage.getItem("cookieConsent") === "accepted"
+  );
   const [expandedCategory, setExpandedCategory] = useState<string | null>(
     toolCategories[0]?.name || null
   );
 
   useEffect(() => {
-    const consent = localStorage.getItem("cookieConsent") === "accepted";
-    setHasConsent(consent);
-
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "cookieConsent") {
         setHasConsent(e.newValue === "accepted");

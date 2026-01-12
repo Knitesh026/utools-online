@@ -4,12 +4,11 @@ import { useState, useEffect } from "react";
 import AdUnit from "./AdUnit";
 
 const Footer = () => {
-  const [hasConsent, setHasConsent] = useState(false);
+  const [hasConsent, setHasConsent] = useState(() => 
+    localStorage.getItem("cookieConsent") === "accepted"
+  );
 
   useEffect(() => {
-    const consent = localStorage.getItem("cookieConsent") === "accepted";
-    setHasConsent(consent);
-
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "cookieConsent") {
         setHasConsent(e.newValue === "accepted");

@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState, useEffect } from "react";
 import AdUnit from "@/components/AdUnit";
 import CookieConsent from "@/components/CookieConsent";
 import Index from "./pages/Index";
@@ -60,14 +61,30 @@ import FaceBlur from "./pages/FaceBlur";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  const [hasConsent, setHasConsent] = useState(() => 
+    localStorage.getItem("cookieConsent") === "accepted"
+  );
+
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "cookieConsent") {
+        setHasConsent(e.newValue === "accepted");
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  return (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <CookieConsent />
       {/* Popunder Advertisement - Non-intrusive background window */}
-      <AdUnit type="popunder" hasConsent={localStorage.getItem("cookieConsent") === "accepted"} />
+      <AdUnit type="popunder" hasConsent={hasConsent} />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
@@ -141,6 +158,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;
