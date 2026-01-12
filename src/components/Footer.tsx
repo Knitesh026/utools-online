@@ -1,13 +1,35 @@
 import { Wrench, Twitter, Facebook, Youtube, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import AdUnit from "./AdUnit";
 
 const Footer = () => {
+  const [hasConsent, setHasConsent] = useState(false);
+
+  useEffect(() => {
+    const consent = localStorage.getItem("cookieConsent") === "accepted";
+    setHasConsent(consent);
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "cookieConsent") {
+        setHasConsent(e.newValue === "accepted");
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
   return (
     <>
       {/* Advertisement Banner */}
       <div className="w-full bg-gray-100 dark:bg-gray-900 py-4 flex justify-center border-t border-gray-200 dark:border-gray-800">
-        <AdUnit type="banner-728x90" />
+        {hasConsent ? (
+          <AdUnit type="banner-728x90" hasConsent={true} />
+        ) : (
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            Accept cookies to view advertisements
+          </div>
+        )}
       </div>
 
       <footer className="footer-section py-6 sm:py-10 px-4 sm:px-6 mt-10 sm:mt-16">

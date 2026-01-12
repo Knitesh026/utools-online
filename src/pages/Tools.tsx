@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, ChevronDown } from "lucide-react";
 import { toolCategories } from "@/data/tools";
 import ToolCard from "@/components/ToolCard";
@@ -6,9 +6,24 @@ import AdUnit from "@/components/AdUnit";
 
 const Tools = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [hasConsent, setHasConsent] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(
     toolCategories[0]?.name || null
   );
+
+  useEffect(() => {
+    const consent = localStorage.getItem("cookieConsent") === "accepted";
+    setHasConsent(consent);
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "cookieConsent") {
+        setHasConsent(e.newValue === "accepted");
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   // Filter tools based on search query
   const filteredCategories = toolCategories
@@ -107,7 +122,13 @@ const Tools = () => {
                   {/* Advertisement Banner - Every 2 categories */}
                   {(index + 1) % 2 === 0 && index !== filteredCategories.length - 1 && (
                     <div className="my-6 sm:my-8 flex justify-center bg-gray-100 dark:bg-gray-900 py-4 rounded-lg">
-                      <AdUnit type="banner-468x60" />
+                      {hasConsent ? (
+                        <AdUnit type="banner-468x60" hasConsent={true} />
+                      ) : (
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          Accept cookies to view advertisements
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
