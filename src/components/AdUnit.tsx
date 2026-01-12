@@ -35,38 +35,38 @@ export const AdUnit: React.FC<AdUnitProps> = ({ type, className = "", hasConsent
     // Adsterra requires a short delay for DOM to be ready
     const loadAdScript = () => {
       try {
-        // Method 1: Try the modern embed.js endpoint
+        // Method 1: Try Adsterra's standard async script with zone ID
         const script = document.createElement("script");
         script.type = "text/javascript";
         script.async = true;
-        script.src = `https://cdn.adn.thebrave.io/ads/${config.zoneId}/embed.js`;
+        script.src = "https://www.adsterra.com/code/bootstrap.js";
         script.setAttribute("data-zone-id", config.zoneId);
         
         const timeoutId = setTimeout(() => {
-          console.warn(`[AdUnit] ${type} (zone ${config.zoneId}) timeout - trying fallback`);
-          // Method 2: Fallback to alternative endpoint if first fails
+          console.warn(`[AdUnit] ${type} (zone ${config.zoneId}) bootstrap timeout - trying v2 endpoint`);
+          // Method 2: Fallback to banner-v2.js endpoint
           const fallbackScript = document.createElement("script");
           fallbackScript.type = "text/javascript";
           fallbackScript.async = true;
-          fallbackScript.src = `https://www.adsterra.com/code/banner-v2.js`;
+          fallbackScript.src = "https://www.adsterra.com/code/banner-v2.js";
           fallbackScript.setAttribute("data-zone-id", config.zoneId);
           fallbackScript.onload = () => {
-            console.log(`[AdUnit] ${type} (zone ${config.zoneId}) loaded via fallback`);
+            console.log(`[AdUnit] ${type} (zone ${config.zoneId}) loaded via banner-v2`);
           };
           fallbackScript.onerror = () => {
-            console.warn(`[AdUnit] ${type} (zone ${config.zoneId}) fallback also failed`);
+            console.warn(`[AdUnit] ${type} (zone ${config.zoneId}) fallback (banner-v2) also failed`);
           };
           document.body.appendChild(fallbackScript);
-        }, 8000); // 8 second timeout before fallback
+        }, 6000); // 6 second timeout before fallback
         
         script.onload = () => {
           clearTimeout(timeoutId);
-          console.log(`[AdUnit] ${type} (zone ${config.zoneId}) loaded successfully`);
+          console.log(`[AdUnit] ${type} (zone ${config.zoneId}) loaded via bootstrap`);
         };
         
         script.onerror = () => {
           clearTimeout(timeoutId);
-          console.warn(`[AdUnit] Primary load failed for ${type} (zone ${config.zoneId})`);
+          console.warn(`[AdUnit] Bootstrap load failed for ${type} (zone ${config.zoneId})`);
         };
         
         document.body.appendChild(script);
