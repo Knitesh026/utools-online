@@ -32,29 +32,22 @@ export const AdUnit: React.FC<AdUnitProps> = ({ type, className = "", hasConsent
       return;
     }
 
-    // Load Adsterra ad script
+    // Load Adsterra ad script for this specific zone
     const script = document.createElement("script");
     script.async = true;
-    script.src = `https://www.adsterra.com/code/banner.js`;
-    
-    // Insert before loading to ensure atob and other globals are available
-    document.head.appendChild(script);
-
+    script.src = `https://cdn.adn.thebrave.io/ads/${config.zoneId}/embed.js`;
     script.onload = () => {
-      // Initialize Adsterra ad
-      if (typeof (window as any).atob === "function") {
-        // Ad code will auto-initialize based on data attributes
-        console.log(`[AdUnit] ${type} loaded successfully`);
-      }
+      console.log(`[AdUnit] ${type} (zone ${config.zoneId}) loaded successfully`);
     };
-
     script.onerror = () => {
-      console.error(`[AdUnit] Failed to load ${type}`);
+      console.error(`[AdUnit] Failed to load ${type} (zone ${config.zoneId})`);
     };
+    
+    document.body.appendChild(script);
 
     return () => {
-      if (document.head.contains(script)) {
-        document.head.removeChild(script);
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
       }
     };
   }, [type, config, hasConsent]);
@@ -75,12 +68,7 @@ export const AdUnit: React.FC<AdUnitProps> = ({ type, className = "", hasConsent
   if (type.startsWith("banner")) {
     return (
       <div className={`flex justify-center items-center ${className}`}>
-        <div
-          data-zone-id={config.zoneId}
-          data-ad-width="auto"
-          data-ad-height="auto"
-          style={{ minHeight: type === "banner-728x90" ? "90px" : "60px" }}
-        />
+        <div id={`container-${config.zoneId}`} data-zone-id={config.zoneId} />
       </div>
     );
   }
@@ -88,23 +76,22 @@ export const AdUnit: React.FC<AdUnitProps> = ({ type, className = "", hasConsent
   if (type === "native") {
     return (
       <div className={className}>
-        <div
-          data-zone-id={config.zoneId}
-          data-ad-width="auto"
-          data-ad-height="auto"
-        />
+        <div id={`container-${config.zoneId}`} data-zone-id={config.zoneId} />
+      </div>
+    );
+  }
+
+  if (type === "smartlink") {
+    return (
+      <div className={className}>
+        <div id={`container-${config.zoneId}`} data-zone-id={config.zoneId} />
       </div>
     );
   }
 
   if (type === "social-bar" || type === "popunder") {
-    // These render invisibly via script
-    return (
-      <div
-        data-zone-id={config.zoneId}
-        style={{ display: "none" }}
-      />
-    );
+    // These render invisibly but still need container
+    return <div id={`container-${config.zoneId}`} data-zone-id={config.zoneId} style={{ display: "none" }} />;
   }
 
   return null;
