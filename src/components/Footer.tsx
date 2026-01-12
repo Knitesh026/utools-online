@@ -1,38 +1,10 @@
 import { Wrench, Twitter, Facebook, Youtube, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
-import AdUnit from "./AdUnit";
 
 const Footer = () => {
-  const [hasConsent, setHasConsent] = useState(() => 
-    localStorage.getItem("cookieConsent") === "accepted"
-  );
-
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "cookieConsent") {
-        setHasConsent(e.newValue === "accepted");
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
   return (
-    <>
-      {/* Advertisement Banner */}
-      <div className="w-full bg-gray-100 dark:bg-gray-900 py-4 flex justify-center border-t border-gray-200 dark:border-gray-800">
-        {hasConsent ? (
-          <AdUnit type="banner-728x90" hasConsent={true} />
-        ) : (
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            Accept cookies to view advertisements
-          </div>
-        )}
-      </div>
-
-      <footer className="footer-section py-6 sm:py-10 px-4 sm:px-6 mt-10 sm:mt-16">
-        <div className="container mx-auto">
+    <footer className="footer-section py-6 sm:py-10 px-4 sm:px-6 mt-10 sm:mt-16">
+      <div className="container mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
           {/* Logo and Description */}
           <div className="md:col-span-1">
@@ -107,9 +79,8 @@ const Footer = () => {
             © 2024 uTools.online. All rights reserved. Built with ❤️
           </p>
         </div>
-        </div>
-      </footer>
-    </>
+      </div>
+    </footer>
   );
 };
 
