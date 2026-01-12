@@ -1,226 +1,254 @@
 import { useState } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 const UnitConverter = () => {
-  const [value, setValue] = useState("");
-  const [fromUnit, setFromUnit] = useState("m");
-  const [toUnit, setToUnit] = useState("km");
-  const [result, setResult] = useState<any>(null);
+  const [category, setCategory] = useState("length");
+  const [inputValue, setInputValue] = useState("");
+  const [inputUnit, setInputUnit] = useState("meter");
+  const [outputUnit, setOutputUnit] = useState("kilometer");
+  const [result, setResult] = useState<string>("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const conversions: { [key: string]: string[] } = {
-    "Length": ["m", "km", "cm", "mm", "mi", "yd", "ft", "in"],
-    "Mass": ["kg", "g", "mg", "lb", "oz"],
-    "Temperature": ["celsius", "fahrenheit", "kelvin"],
-    "Volume": ["l", "ml", "gal", "pt", "cup"],
+  const conversions: Record<string, Record<string, number>> = {
+    length: {
+      meter: 1,
+      kilometer: 0.001,
+      centimeter: 100,
+      millimeter: 1000,
+      mile: 0.000621371,
+      yard: 1.09361,
+      foot: 3.28084,
+      inch: 39.3701,
+    },
+    weight: {
+      kilogram: 1,
+      gram: 1000,
+      milligram: 1000000,
+      pound: 2.20462,
+      ounce: 35.274,
+      ton: 0.001,
+    },
+    temperature: {
+      celsius: 1,
+      fahrenheit: 2,
+      kelvin: 3,
+    },
+    volume: {
+      liter: 1,
+      milliliter: 1000,
+      gallon: 0.264172,
+      pint: 2.11338,
+      cup: 4.22675,
+      tablespoon: 67.628,
+      teaspoon: 202.884,
+    },
   };
 
-  const convertUnits = (inputValue: number, from: string, to: string): number => {
-    // Length conversions (base unit: meter)
-    const lengthToMeter: { [key: string]: number } = {
-      m: 1,
-      km: 1000,
-      cm: 0.01,
-      mm: 0.001,
-      mi: 1609.34,
-      yd: 0.9144,
-      ft: 0.3048,
-      in: 0.0254,
-    };
+  const units = Object.keys(conversions[category as keyof typeof conversions] || {});
 
-    // Mass conversions (base unit: kilogram)
-    const massToKg: { [key: string]: number } = {
-      kg: 1,
-      g: 0.001,
-      mg: 0.000001,
-      lb: 0.453592,
-      oz: 0.0283495,
-    };
+  const handleCategoryChange = (newCategory: string) => {
+    setCategory(newCategory);
+    const newUnits = Object.keys(conversions[newCategory as keyof typeof conversions] || {});
+    setInputUnit(newUnits[0]);
+    setOutputUnit(newUnits[1] || newUnits[0]);
+    setResult("");
+    setError("");
+  };
 
-    // Volume conversions (base unit: liter)
-    const volumeToLiter: { [key: string]: number } = {
-      l: 1,
-      ml: 0.001,
-      gal: 3.78541,
-      pt: 0.473176,
-      cup: 0.236588,
-    };
-
-    // Handle length conversions
-    if (lengthToMeter[from] && lengthToMeter[to]) {
-      const meters = inputValue * lengthToMeter[from];
-      return meters / lengthToMeter[to];
-    }
-
-    // Handle mass conversions
-    if (massToKg[from] && massToKg[to]) {
-      const kg = inputValue * massToKg[from];
-      return kg / massToKg[to];
-    }
-
-    // Handle volume conversions
-    if (volumeToLiter[from] && volumeToLiter[to]) {
-      const liters = inputValue * volumeToLiter[from];
-      return liters / volumeToLiter[to];
-    }
-
-    // Handle temperature conversions
-    if ((from === "celsius" || from === "fahrenheit" || from === "kelvin") &&
-        (to === "celsius" || to === "fahrenheit" || to === "kelvin")) {
-      // Convert to Celsius first
-      let celsius: number;
-      if (from === "celsius") {
-        celsius = inputValue;
-      } else if (from === "fahrenheit") {
-        celsius = (inputValue - 32) * 5 / 9;
-      } else { // kelvin
-        celsius = inputValue - 273.15;
+  const convert = () => {
+    setLoading(true);
+    try {
+      if (!inputValue) {
+        setError("Please enter a value");
+        setLoading(false);
+        return;
       }
 
-      // Convert from Celsius to target
-      if (to === "celsius") {
-        return celsius;
-      } else if (to === "fahrenheit") {
-        return (celsius * 9 / 5) + 32;
-      } else { // kelvin
-        return celsius + 273.15;
+      const value = parseFloat(inputValue);
+
+      if (isNaN(value) || value < 0) {
+        setError("Please enter a valid positive number");
+        setLoading(false);
+        return;
       }
-    }
 
-    return 0;
+      if (category === "temperature") {
+        let celsius = value;
+
+        if (inputUnit === "fahrenheit") {
+          celsius = (value - 32) * (5 / 9);
+        } else if (inputUnit === "kelvin") {
+          celsius = value - 273.15;
+        }
+
+        let output = celsius;
+        if (outputUnit === "fahrenheit") {
+          output = celsius * (9 / 5) + 32;
+        } else if (outputUnit === "kelvin") {
+          output = celsius + 273.15;
+        }
+
+        setResult(output.toFixed(2));
+      } else {
+        const baseValue = value / conversions[category as keyof typeof conversions][inputUnit];
+        const convertedValue = baseValue * conversions[category as keyof typeof conversions][outputUnit];
+        setResult(convertedValue.toFixed(6).replace(/\.?0+$/, ""));
+      }
+      setError("");
+    } catch (err) {
+      setError("Conversion failed");
+    }
+    setLoading(false);
   };
 
-  const handleConvert = () => {
-    if (!value) {
-      alert("Please enter a value");
-      return;
-    }
-
-    const numValue = parseFloat(value);
-    if (isNaN(numValue)) {
-      alert("Please enter a valid number");
-      return;
-    }
-
-    const convertedValue = convertUnits(numValue, fromUnit, toUnit);
-    setResult({
-      value: numValue,
-      fromUnit,
-      result: Math.round(convertedValue * 100000) / 100000, // Round to 5 decimal places
-      toUnit,
-    });
+  const handleReset = () => {
+    setInputValue("");
+    setResult("");
+    setError("");
   };
 
-  const units = ["m", "km", "cm", "kg", "g", "celsius", "fahrenheit"];
-
-  return (
+  const inputSection = (
     <>
-      <Header />
-      <main className="min-h-screen bg-background py-8 px-4">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <div className="text-center space-y-2">
-            <h1 className="text-4xl sm:text-5xl font-bold text-foreground">Unit Converter</h1>
-            <p className="text-muted-foreground">Convert between different units</p>
+      <CardHeader>
+        <CardTitle>Input Settings</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <Label htmlFor="category" className="text-sm font-medium">
+            Category
+          </Label>
+          <select
+            value={category}
+            onChange={(e) => handleCategoryChange(e.target.value)}
+            className="w-full p-2 mt-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white rounded focus:ring-blue-500"
+          >
+            <option value="length">Length</option>
+            <option value="weight">Weight</option>
+            <option value="volume">Volume</option>
+            <option value="temperature">Temperature</option>
+          </select>
+        </div>
+
+        <div>
+          <Label htmlFor="value" className="text-sm font-medium">
+            Value
+          </Label>
+          <Input
+            id="value"
+            type="number"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Enter value"
+            className="mt-1 border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white focus:ring-blue-500"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label className="text-sm font-medium mb-2 block">From</Label>
+            <select
+              value={inputUnit}
+              onChange={(e) => setInputUnit(e.target.value)}
+              className="w-full p-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white rounded focus:ring-blue-500"
+            >
+              {units.map((unit) => (
+                <option key={unit} value={unit}>
+                  {unit.charAt(0).toUpperCase() + unit.slice(1)}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <Card className="border-border">
-            <CardHeader>
-              <CardTitle>Enter Value</CardTitle>
-              <CardDescription>Select units and enter the value to convert</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="value">Value</Label>
-                <Input
-                  id="value"
-                  type="number"
-                  placeholder="100"
-                  value={value}
-                  onChange={(e) => setValue(e.target.value)}
-                  className="mt-2"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>From</Label>
-                  <Select value={fromUnit} onValueChange={setFromUnit}>
-                    <SelectTrigger className="mt-2">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {units.map((unit) => (
-                        <SelectItem key={unit} value={unit}>
-                          {unit}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>To</Label>
-                  <Select value={toUnit} onValueChange={setToUnit}>
-                    <SelectTrigger className="mt-2">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {units.map((unit) => (
-                        <SelectItem key={unit} value={unit}>
-                          {unit}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <Button
-                onClick={handleConvert}
-                className="w-full bg-primary hover:bg-primary/90"
-              >
-                Convert
-              </Button>
-            </CardContent>
-          </Card>
-
-          {result && (
-            <Card className="border-border bg-card">
-              <CardHeader>
-                <CardTitle>Conversion Result</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 bg-muted rounded-lg">
-                    <p className="text-muted-foreground text-sm">From</p>
-                    <p className="text-2xl font-bold text-primary">
-                      {result.value} {result.fromUnit}
-                    </p>
-                  </div>
-                  <div className="p-4 bg-muted rounded-lg">
-                    <p className="text-muted-foreground text-sm">To</p>
-                    <p className="text-2xl font-bold text-primary">
-                      {result.result} {result.toUnit}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          <div>
+            <Label className="text-sm font-medium mb-2 block">To</Label>
+            <select
+              value={outputUnit}
+              onChange={(e) => setOutputUnit(e.target.value)}
+              className="w-full p-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white rounded focus:ring-blue-500"
+            >
+              {units.map((unit) => (
+                <option key={unit} value={unit}>
+                  {unit.charAt(0).toUpperCase() + unit.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-      </main>
-      <Footer />
+      </CardContent>
     </>
+  );
+
+  const outputSection = result ? (
+    <>
+      <CardHeader>
+        <CardTitle>Result</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="p-6 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border border-blue-200 dark:border-blue-800">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Converted Value</p>
+          <p className="text-4xl font-bold text-blue-700 dark:text-blue-300 mb-2">{result}</p>
+          <p className="text-lg text-gray-700 dark:text-gray-300">
+            {inputValue} {inputUnit} = {result} {outputUnit}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <div>
+            <p className="text-xs font-semibold text-gray-600 dark:text-gray-400">FROM</p>
+            <p className="text-sm font-medium text-gray-900 dark:text-white mt-1">
+              {inputValue} {inputUnit}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-600 dark:text-gray-400">TO</p>
+            <p className="text-sm font-medium text-gray-900 dark:text-white mt-1">
+              {result} {outputUnit}
+            </p>
+          </div>
+        </div>
+      </CardContent>
+    </>
+  ) : undefined;
+
+  return (
+    <ProfessionalToolLayout
+      title="Unit Converter"
+      description="Convert between different units of measurement instantly"
+      inputSection={inputSection}
+      outputSection={outputSection}
+      error={error}
+      actionButton={{
+        label: "Convert",
+        onClick: convert,
+        icon: "ArrowRight",
+        loading,
+      }}
+      resetButton={{
+        label: "Reset",
+        onClick: handleReset,
+      }}
+      features={[
+        {
+          icon: "📏",
+          title: "Multiple Categories",
+          description: "Length, weight, volume, temperature",
+        },
+        {
+          icon: "🔄",
+          title: "Accurate Conversion",
+          description: "Precise unit conversion",
+        },
+        {
+          icon: "⚡",
+          title: "Instant Results",
+          description: "Real-time calculation",
+        },
+      ]}
+    />
   );
 };
 

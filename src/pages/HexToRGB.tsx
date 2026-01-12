@@ -1,218 +1,169 @@
-import { useState } from 'react';
-import { Copy, Download, AlertCircle, Palette } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Input } from '@/components/ui/input';
+import { useState } from "react";
+import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Copy, Check } from "lucide-react";
 
-export default function HexToRGBConverter() {
-  const [hexColor, setHexColor] = useState('#FF6B5B');
-  const [rgbColor, setRgbColor] = useState('rgb(255, 107, 91)');
-  const [hslColor, setHslColor] = useState('hsl(12, 100%, 69%)');
-  const [error, setError] = useState('');
+const HexToRGB = () => {
+  const [hex, setHex] = useState("");
+  const [rgb, setRgb] = useState("");
+  const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const hexToRgb = (hex: string) => {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    if (!result) return null;
+  const isValidHex = (h: string) => /^#?([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/.test(h);
 
-    const r = parseInt(result[1], 16);
-    const g = parseInt(result[2], 16);
-    const b = parseInt(result[3], 16);
-
-    return { r, g, b };
+  const hexToRgb = (h: string) => {
+    const hexStr = h.replace("#", "");
+    if (hexStr.length === 3) {
+      return hexStr
+        .split("")
+        .map((x) => parseInt(x + x, 16))
+        .join(", ");
+    }
+    const r = parseInt(hexStr.substring(0, 2), 16);
+    const g = parseInt(hexStr.substring(2, 4), 16);
+    const b = parseInt(hexStr.substring(4, 6), 16);
+    return `${r}, ${g}, ${b}`;
   };
 
-  const rgbToHsl = (r: number, g: number, b: number) => {
-    r /= 255;
-    g /= 255;
-    b /= 255;
-
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    let h = 0,
-      s = 0;
-    const l = (max + min) / 2;
-
-    if (max !== min) {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-      switch (max) {
-        case r:
-          h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
-          break;
-        case g:
-          h = ((b - r) / d + 2) / 6;
-          break;
-        case b:
-          h = ((r - g) / d + 4) / 6;
-          break;
-      }
+  const convert = () => {
+    setLoading(true);
+    if (!hex) {
+      setError("Please enter a hex color");
+      setLoading(false);
+      return;
     }
 
-    return {
-      h: Math.round(h * 360),
-      s: Math.round(s * 100),
-      l: Math.round(l * 100),
-    };
-  };
+    if (!isValidHex(hex)) {
+      setError("Invalid hex color format. Use #RRGGBB or #RGB");
+      setLoading(false);
+      return;
+    }
 
-  const handleHexChange = (value: string) => {
-    setHexColor(value);
-    setError('');
-
-    if (/^#[0-9A-F]{6}$/i.test(value)) {
-      const rgb = hexToRgb(value);
-      if (rgb) {
-        setRgbColor(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
-        const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
-        setHslColor(`hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`);
-      }
-    } else {
-      setError('Invalid HEX color format. Use #RRGGBB');
+    try {
+      setError("");
+      setRgb(`rgb(${hexToRgb(hex)})`);
+    } catch (err) {
+      setError("Failed to convert color");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(rgb);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  const presetColors = [
-    '#FF6B5B', // Coral
-    '#FF5544', // Salmon
-    '#FF8866', // Light Coral
-    '#FFB3A7', // Peach
-    '#4F46E5', // Indigo
-    '#3B82F6', // Blue
-    '#10B981', // Emerald
-    '#F59E0B', // Amber
-  ];
+  const handleReset = () => {
+    setHex("");
+    setRgb("");
+    setError("");
+  };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold text-gray-900">HEX to RGB Converter</h1>
-          <p className="text-gray-600">Convert between HEX, RGB, and HSL color formats</p>
+  const inputSection = (
+    <>
+      <CardHeader>
+        <CardTitle>Hex Color Code</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <Label htmlFor="hex" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+            Hex Color
+          </Label>
+          <Input
+            id="hex"
+            value={hex}
+            onChange={(e) => setHex(e.target.value)}
+            placeholder="#RRGGBB or #RGB"
+            className="border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+          />
         </div>
 
-        {/* Main Converter */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Color Converter</CardTitle>
-            <CardDescription>Enter HEX color code to convert</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Color Input */}
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-2">
-                    HEX Color Code
-                  </label>
-                  <div className="flex gap-2">
-                    <Input
-                      type="text"
-                      value={hexColor}
-                      onChange={(e) => handleHexChange(e.target.value)}
-                      placeholder="#RRGGBB"
-                      className="flex-1"
-                    />
-                    <input
-                      type="color"
-                      value={hexColor}
-                      onChange={(e) => handleHexChange(e.target.value)}
-                      className="w-12 h-10 border rounded cursor-pointer"
-                    />
-                  </div>
-                </div>
-
-                {/* Color Preview */}
-                <div className="h-24 rounded-lg border-2 border-gray-200" style={{ backgroundColor: hexColor }} />
-              </div>
-
-              {/* Output Formats */}
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-2">
-                    RGB Format
-                  </label>
-                  <div className="flex gap-2">
-                    <Input
-                      type="text"
-                      value={rgbColor}
-                      readOnly
-                      className="flex-1 bg-gray-50"
-                    />
-                    <Button
-                      onClick={() => copyToClipboard(rgbColor)}
-                      variant="outline"
-                      size="sm"
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-2">
-                    HSL Format
-                  </label>
-                  <div className="flex gap-2">
-                    <Input
-                      type="text"
-                      value={hslColor}
-                      readOnly
-                      className="flex-1 bg-gray-50"
-                    />
-                    <Button
-                      onClick={() => copyToClipboard(hslColor)}
-                      variant="outline"
-                      size="sm"
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Preset Colors */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Preset Colors</CardTitle>
-            <CardDescription>Quick access to popular colors</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {presetColors.map((color) => (
-                <button
-                  key={color}
-                  onClick={() => handleHexChange(color)}
-                  className="group relative"
-                >
-                  <div
-                    className="h-20 rounded-lg border-2 border-gray-200 hover:border-gray-400 transition cursor-pointer"
-                    style={{ backgroundColor: color }}
-                  />
-                  <p className="text-xs text-gray-600 mt-1 text-center group-hover:text-gray-900">
-                    {color}
-                  </p>
-                </button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+        {hex && isValidHex(hex) && (
+          <div
+            className="h-20 rounded-lg border-4 border-gray-300 dark:border-gray-600 shadow-sm transition-colors"
+            style={{ backgroundColor: hex }}
+          />
+        )}
+      </CardContent>
+    </>
   );
-}
+
+  const outputSection = rgb ? (
+    <>
+      <CardHeader>
+        <CardTitle>RGB Result</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="p-4 bg-gray-900 dark:bg-gray-950 rounded-lg text-white font-mono break-all border border-gray-700">
+          {rgb}
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <div className="text-sm font-semibold text-blue-700 dark:text-blue-300">HEX</div>
+            <div className="text-xl font-bold text-blue-900 dark:text-blue-400 mt-1 break-all">{hex}</div>
+          </div>
+          <div className="p-4 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
+            <div className="text-sm font-semibold text-green-700 dark:text-green-300">RGB</div>
+            <div className="text-xl font-bold text-green-900 dark:text-green-400 mt-1 break-all">{rgb}</div>
+          </div>
+        </div>
+      </CardContent>
+    </>
+  ) : undefined;
+
+  return (
+    <ProfessionalToolLayout
+      title="Hex to RGB Converter"
+      description="Convert between hex and RGB color formats instantly"
+      inputSection={inputSection}
+      outputSection={outputSection}
+      error={error}
+      actionButton={{
+        label: "Convert",
+        onClick: convert,
+        icon: "Palette",
+        loading,
+        disabled: !hex,
+      }}
+      resetButton={{
+        label: "Reset",
+        onClick: handleReset,
+      }}
+      features={[
+        { icon: "🎨", title: "Color Conversion", description: "Hex to RGB conversion" },
+        { icon: "🔄", title: "Instant", description: "Real-time conversion" },
+        { icon: "📋", title: "Easy Copy", description: "One-click clipboard" },
+      ]}
+      children={rgb ? (
+        <button
+          onClick={handleCopy}
+          className={`w-full mt-4 px-8 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
+            copied
+              ? "bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600"
+              : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600"
+          } text-white`}
+        >
+          {copied ? (
+            <>
+              <Check className="w-4 h-4" />
+              Copied!
+            </>
+          ) : (
+            <>
+              <Copy className="w-4 h-4" />
+              Copy RGB
+            </>
+          )}
+        </button>
+      ) : undefined}
+    />
+  );
+};
+
+export default HexToRGB;

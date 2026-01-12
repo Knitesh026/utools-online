@@ -1,235 +1,218 @@
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import { useState } from "react";
+import ProfessionalToolLayout from "@/components/ProfessionalToolLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Calculator } from "lucide-react";
 
-export default function MortgageCalculator() {
-  const [loanAmount, setLoanAmount] = useState(3000000);
-  const [interestRate, setInterestRate] = useState(6.5);
-  const [loanTerm, setLoanTerm] = useState(20);
+const MortgageCalculator = () => {
+  const [propertyPrice, setPropertyPrice] = useState("");
+  const [downPayment, setDownPayment] = useState("");
+  const [interestRate, setInterestRate] = useState("");
+  const [loanTenure, setLoanTenure] = useState("");
+  const [result, setResult] = useState<{
+    loanAmount: number;
+    monthlyPayment: number;
+    totalPayment: number;
+    totalInterest: number;
+  } | null>(null);
+  const [error, setError] = useState("");
 
-  const monthlyRate = interestRate / 100 / 12;
-  const numberOfPayments = loanTerm * 12;
+  const handleCalculate = () => {
+    setError("");
+    setResult(null);
 
-  const monthlyPayment =
-    monthlyRate === 0
-      ? loanAmount / numberOfPayments
-      : (loanAmount *
-          (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments))) /
-        (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
-
-  const totalPayment = monthlyPayment * numberOfPayments;
-  const totalInterest = totalPayment - loanAmount;
-
-  const yearlyBreakdown = Array.from({ length: loanTerm }, (_, i) => {
-    const year = i + 1;
-    let balance = loanAmount;
-    let yearlyPrincipal = 0;
-    let yearlyInterest = 0;
-
-    for (let month = 1; month <= numberOfPayments; month++) {
-      if (Math.floor((month - 1) / 12) === i) {
-        const interestPayment = balance * monthlyRate;
-        const principalPayment = monthlyPayment - interestPayment;
-        yearlyInterest += interestPayment;
-        yearlyPrincipal += principalPayment;
-        balance -= principalPayment;
-      } else if (month <= (i + 1) * 12) {
-        const interestPayment = balance * monthlyRate;
-        const principalPayment = monthlyPayment - interestPayment;
-        yearlyInterest += interestPayment;
-        yearlyPrincipal += principalPayment;
-        balance -= principalPayment;
-      }
+    if (!propertyPrice || !downPayment || !interestRate || !loanTenure) {
+      setError("Please fill in all fields");
+      return;
     }
 
-    return {
-      year,
-      principal: yearlyPrincipal,
-      interest: yearlyInterest,
-      balance: Math.max(0, balance),
-    };
-  });
+    const price = parseFloat(propertyPrice);
+    const down = parseFloat(downPayment);
+    const rate = parseFloat(interestRate);
+    const tenure = parseFloat(loanTenure);
 
-  const reset = () => {
-    setLoanAmount(3000000);
-    setInterestRate(6.5);
-    setLoanTerm(20);
+    if (price <= 0 || down < 0 || rate < 0 || tenure <= 0) {
+      setError("Please enter valid amounts (positive numbers)");
+      return;
+    }
+
+    if (down > price) {
+      setError("Down payment cannot be more than property price");
+      return;
+    }
+
+    const loanAmt = price - down;
+    const monthlyRate = rate / 100 / 12;
+    const months = tenure * 12;
+
+    let monthlyPayment: number;
+    if (monthlyRate === 0) {
+      monthlyPayment = loanAmt / months;
+    } else {
+      monthlyPayment =
+        (loanAmt * monthlyRate * Math.pow(1 + monthlyRate, months)) /
+        (Math.pow(1 + monthlyRate, months) - 1);
+    }
+
+    const totalPayment = monthlyPayment * months;
+    const totalInterest = totalPayment - loanAmt;
+
+    setResult({
+      loanAmount: Math.round(loanAmt * 100) / 100,
+      monthlyPayment: Math.round(monthlyPayment * 100) / 100,
+      totalPayment: Math.round(totalPayment * 100) / 100,
+      totalInterest: Math.round(totalInterest * 100) / 100,
+    });
+  };
+
+  const handleReset = () => {
+    setPropertyPrice("");
+    setDownPayment("");
+    setInterestRate("");
+    setLoanTenure("");
+    setResult(null);
+    setError("");
+  };
+
+  const handleAutoDownPayment = () => {
+    if (propertyPrice) {
+      const price = parseFloat(propertyPrice);
+      const down = Math.round(price * 0.2 * 100) / 100;
+      setDownPayment(down.toString());
+    }
   };
 
   return (
-    <>
-      <Header />
-      <main className="min-h-screen bg-gradient-to-br from-rose-50 to-pink-50 p-4 md:p-8">
-        <div className="max-w-5xl mx-auto space-y-6">
-          <div className="text-center space-y-2">
-            <h1 className="text-4xl font-bold text-gray-900">Mortgage Calculator</h1>
-            <p className="text-gray-600">Calculate home loan EMI and amortization schedule</p>
-          </div>
+    <ProfessionalToolLayout
+      title="Mortgage Calculator"
+      description="Calculate home loan monthly payments"
+      inputSection={
+        <>
+          <CardHeader>
+            <CardTitle>Loan Details</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="price" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                Property Price (₹)
+              </Label>
+              <Input
+                id="price"
+                type="number"
+                placeholder="e.g., 5000000"
+                value={propertyPrice}
+                onChange={(e) => setPropertyPrice(e.target.value)}
+                min="0"
+                className="border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+              />
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Loan Amount</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
+            <div>
+              <Label htmlFor="down" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                Down Payment (₹)
+              </Label>
+              <div className="flex gap-2">
                 <Input
+                  id="down"
                   type="number"
-                  value={loanAmount}
-                  onChange={(e) => setLoanAmount(Number(e.target.value))}
-                  className="text-lg"
+                  placeholder="e.g., 1000000"
+                  value={downPayment}
+                  onChange={(e) => setDownPayment(e.target.value)}
+                  min="0"
+                  className="flex-1 border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
                 />
-                <input
-                  type="range"
-                  min="100000"
-                  max="50000000"
-                  step="100000"
-                  value={loanAmount}
-                  onChange={(e) => setLoanAmount(Number(e.target.value))}
-                  className="w-full"
-                />
-                <p className="text-xs text-gray-500">₹{(loanAmount / 100000).toFixed(1)} L</p>
-              </CardContent>
-            </Card>
+                <button
+                  onClick={handleAutoDownPayment}
+                  className="px-3 py-2 text-sm font-medium bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-400 rounded hover:bg-blue-200 dark:hover:bg-blue-800"
+                >
+                  Auto 20%
+                </button>
+              </div>
+            </div>
 
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Interest Rate (%)</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Input
-                  type="number"
-                  value={interestRate}
-                  onChange={(e) => setInterestRate(Number(e.target.value))}
-                  step="0.1"
-                  className="text-lg"
-                />
-                <input
-                  type="range"
-                  min="2"
-                  max="15"
-                  step="0.1"
-                  value={interestRate}
-                  onChange={(e) => setInterestRate(Number(e.target.value))}
-                  className="w-full"
-                />
-              </CardContent>
-            </Card>
+            <div>
+              <Label htmlFor="rate" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                Annual Interest Rate (%)
+              </Label>
+              <Input
+                id="rate"
+                type="number"
+                placeholder="e.g., 7.5"
+                value={interestRate}
+                onChange={(e) => setInterestRate(e.target.value)}
+                min="0"
+                step="0.1"
+                className="border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+              />
+            </div>
 
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Loan Term (Years)</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Input
-                  type="number"
-                  value={loanTerm}
-                  onChange={(e) => setLoanTerm(Number(e.target.value))}
-                  className="text-lg"
-                />
-                <input
-                  type="range"
-                  min="1"
-                  max="40"
-                  step="1"
-                  value={loanTerm}
-                  onChange={(e) => setLoanTerm(Number(e.target.value))}
-                  className="w-full"
-                />
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-              <CardHeader>
-                <CardTitle className="text-lg">Monthly Payment (EMI)</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-4xl font-bold text-blue-700">
-                  ₹{monthlyPayment.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-              <CardHeader>
-                <CardTitle className="text-lg">Total Interest Payable</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-4xl font-bold text-purple-700">
-                  ₹{totalInterest.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card>
+            <div>
+              <Label htmlFor="tenure" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                Loan Tenure (Years)
+              </Label>
+              <Input
+                id="tenure"
+                type="number"
+                placeholder="e.g., 20"
+                value={loanTenure}
+                onChange={(e) => setLoanTenure(e.target.value)}
+                min="0.1"
+                step="0.1"
+                className="border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+              />
+            </div>
+          </CardContent>
+        </>
+      }
+      outputSection={
+        result ? (
+          <>
             <CardHeader>
-              <CardTitle>Loan Summary</CardTitle>
+              <CardTitle className="text-green-900 dark:text-green-400">Mortgage Breakdown</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-600">Loan Amount</p>
-                  <p className="text-lg font-semibold">₹{loanAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
+            <CardContent className="space-y-3">
+              <div className="bg-green-50 dark:bg-green-950 p-4 rounded-lg border border-green-200 dark:border-green-800">
+                <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Monthly Payment</p>
+                <p className="text-3xl font-bold text-green-700 dark:text-green-400">₹{result.monthlyPayment.toLocaleString("en-IN", { maximumFractionDigits: 2 })}</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div className="bg-blue-50 dark:bg-blue-950 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Loan Amount</p>
+                  <p className="text-lg font-bold text-gray-900 dark:text-white">₹{result.loanAmount.toLocaleString("en-IN", { maximumFractionDigits: 2 })}</p>
                 </div>
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-600">Monthly EMI</p>
-                  <p className="text-lg font-semibold">₹{monthlyPayment.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
-                </div>
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-600">Total Payment</p>
-                  <p className="text-lg font-semibold">₹{totalPayment.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
-                </div>
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-600">Duration</p>
-                  <p className="text-lg font-semibold">{loanTerm} years</p>
+                <div className="bg-orange-50 dark:bg-orange-950 p-3 rounded-lg border border-orange-200 dark:border-orange-800">
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Total Interest</p>
+                  <p className="text-lg font-bold text-orange-700 dark:text-orange-400">₹{result.totalInterest.toLocaleString("en-IN", { maximumFractionDigits: 2 })}</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Year-wise Amortization</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-2 px-2">Year</th>
-                      <th className="text-right py-2 px-2">Principal</th>
-                      <th className="text-right py-2 px-2">Interest</th>
-                      <th className="text-right py-2 px-2">Total Payment</th>
-                      <th className="text-right py-2 px-2">Balance</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {yearlyBreakdown.map((row) => (
-                      <tr key={row.year} className="border-b hover:bg-gray-50">
-                        <td className="py-2 px-2">Year {row.year}</td>
-                        <td className="text-right py-2 px-2">₹{row.principal.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
-                        <td className="text-right py-2 px-2">₹{row.interest.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
-                        <td className="text-right py-2 px-2">₹{(row.principal + row.interest).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
-                        <td className="text-right py-2 px-2 font-semibold">₹{row.balance.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Total Payment (with interest)</p>
+                <p className="text-lg font-bold text-gray-900 dark:text-white">₹{result.totalPayment.toLocaleString("en-IN", { maximumFractionDigits: 2 })}</p>
               </div>
             </CardContent>
-          </Card>
-
-          <Button onClick={reset} variant="outline" className="w-full">
-            Reset
-          </Button>
-        </div>
-      </main>
-      <Footer />
-    </>
+          </>
+        ) : undefined
+      }
+      actionButton={{
+        label: "Calculate",
+        onClick: handleCalculate,
+        icon: "🧮",
+      }}
+      resetButton={{
+        label: "Reset",
+        onClick: handleReset,
+      }}
+      features={[
+        { icon: "🏠", title: "Home Planning", description: "Plan your property purchase" },
+        { icon: "💰", title: "Budget Details", description: "Know your costs and payments" },
+        { icon: "⚡", title: "Instant Results", description: "Calculate in seconds" },
+      ]}
+      error={error}
+    />
   );
-}
+};
+
+export default MortgageCalculator;

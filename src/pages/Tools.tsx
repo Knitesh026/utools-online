@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Search, ChevronDown } from "lucide-react";
 import { toolCategories } from "@/data/tools";
 import ToolCard from "@/components/ToolCard";
+import AdUnit from "@/components/AdUnit";
 
 const Tools = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -100,6 +101,13 @@ const Tools = () => {
                           />
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Advertisement Banner - Every 2 categories */}
+                  {(index + 1) % 2 === 0 && index !== filteredCategories.length - 1 && (
+                    <div className="my-6 sm:my-8 flex justify-center bg-gray-100 dark:bg-gray-900 py-4 rounded-lg">
+                      <AdUnit type="banner-468x60" />
                     </div>
                   )}
                 </div>

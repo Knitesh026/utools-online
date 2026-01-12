@@ -1,210 +1,143 @@
-import { useState } from 'react';
-import { AlertCircle, Calculator } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Input } from '@/components/ui/input';
+import { useState } from "react";
+import ProfessionalToolLayout from "@/components/ProfessionalToolLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export default function GSTCalculator() {
-  const [amount, setAmount] = useState(10000);
-  const [gstRate, setGstRate] = useState(18);
-  const [gstAmount, setGstAmount] = useState(0);
-  const [totalAmount, setTotalAmount] = useState(0);
-  const [mode, setMode] = useState<'exclusive' | 'inclusive'>('exclusive');
-  const [error, setError] = useState('');
+const GSTCalculator = () => {
+  const [amount, setAmount] = useState("");
+  const [gstRate, setGstRate] = useState("18");
+  const [result, setResult] = useState<{
+    baseAmount: number;
+    gstAmount: number;
+    totalAmount: number;
+    gstPercentage: number;
+  } | null>(null);
+  const [error, setError] = useState("");
 
-  const calculateGST = () => {
-    if (!amount || amount <= 0) {
-      setError('Please enter a valid amount');
+  const handleCalculate = () => {
+    setError("");
+    setResult(null);
+
+    if (!amount) {
+      setError("Please enter an amount");
       return;
     }
 
-    setError('');
+    const baseAmt = parseFloat(amount);
+    const rate = parseFloat(gstRate);
 
-    if (mode === 'exclusive') {
-      // Price is exclusive of GST
-      const gst = (amount * gstRate) / 100;
-      const total = amount + gst;
-      setGstAmount(gst);
-      setTotalAmount(total);
-    } else {
-      // Price is inclusive of GST
-      const baseAmount = amount / (1 + gstRate / 100);
-      const gst = amount - baseAmount;
-      setGstAmount(gst);
-      setTotalAmount(amount);
+    if (baseAmt <= 0 || rate < 0) {
+      setError("Please enter valid amounts (positive numbers)");
+      return;
     }
+
+    const gstAmt = (baseAmt * rate) / 100;
+    const totalAmt = baseAmt + gstAmt;
+
+    setResult({
+      baseAmount: Math.round(baseAmt * 100) / 100,
+      gstAmount: Math.round(gstAmt * 100) / 100,
+      totalAmount: Math.round(totalAmt * 100) / 100,
+      gstPercentage: rate,
+    });
   };
 
-  const reset = () => {
-    setAmount(10000);
-    setGstRate(18);
-    setGstAmount(0);
-    setTotalAmount(0);
-    setError('');
+  const handleReset = () => {
+    setAmount("");
+    setGstRate("18");
+    setResult(null);
+    setError("");
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold text-gray-900">GST Calculator</h1>
-          <p className="text-gray-600">Calculate Goods and Services Tax easily</p>
-        </div>
-
-        {/* Calculator Card */}
-        <Card>
+    <ProfessionalToolLayout
+      title="GST Calculator"
+      description="Calculate GST tax and total amount"
+      inputSection={
+        <>
           <CardHeader>
-            <CardTitle>GST Calculation</CardTitle>
-            <CardDescription>Calculate GST with inclusive or exclusive pricing</CardDescription>
+            <CardTitle>GST Details</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Mode Selection */}
-            <div className="flex gap-4">
-              {[
-                { value: 'exclusive', label: 'Exclusive (Add GST)' },
-                { value: 'inclusive', label: 'Inclusive (Extract GST)' },
-              ].map((opt) => (
-                <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="mode"
-                    value={opt.value}
-                    checked={mode === opt.value}
-                    onChange={() => setMode(opt.value as 'exclusive' | 'inclusive')}
-                    className="w-4 h-4"
-                  />
-                  <span className="text-sm font-medium text-gray-700">{opt.label}</span>
-                </label>
-              ))}
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="amount" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                Base Amount (₹)
+              </Label>
+              <Input
+                id="amount"
+                type="number"
+                placeholder="e.g., 1000"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                min="0"
+                step="0.01"
+                className="border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+              />
             </div>
 
-            {/* Inputs */}
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-gray-700 block mb-2">
-                  {mode === 'exclusive' ? 'Amount (Before GST)' : 'Amount (With GST)'}
-                </label>
-                <Input
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(Number(e.target.value))}
-                  placeholder="10000"
-                  className="w-full"
-                />
+            <div>
+              <Label htmlFor="gst-rate" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                GST Rate (%)
+              </Label>
+              <Select value={gstRate} onValueChange={setGstRate}>
+                <SelectTrigger id="gst-rate" className="border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5% - Essential goods</SelectItem>
+                  <SelectItem value="12">12% - Standard goods</SelectItem>
+                  <SelectItem value="18">18% - Premium goods</SelectItem>
+                  <SelectItem value="28">28% - Luxury items</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </>
+      }
+      outputSection={
+        result ? (
+          <>
+            <CardHeader>
+              <CardTitle className="text-green-900 dark:text-green-400">GST Breakdown</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Base Amount</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">₹{result.baseAmount.toLocaleString("en-IN", { maximumFractionDigits: 2 })}</p>
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-gray-700 block mb-2">
-                  GST Rate (%)
-                </label>
-                <div className="grid grid-cols-4 gap-2 mb-2">
-                  {[5, 12, 18, 28].map((rate) => (
-                    <Button
-                      key={rate}
-                      onClick={() => setGstRate(rate)}
-                      variant={gstRate === rate ? 'default' : 'outline'}
-                      size="sm"
-                      className={gstRate === rate ? 'bg-orange-500 hover:bg-orange-600' : ''}
-                    >
-                      {rate}%
-                    </Button>
-                  ))}
-                </div>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={gstRate}
-                  onChange={(e) => setGstRate(Number(e.target.value))}
-                  placeholder="18"
-                  className="w-full"
-                />
+              <div className="bg-orange-50 dark:bg-orange-950 p-3 rounded-lg border border-orange-200 dark:border-orange-800">
+                <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">GST Amount ({result.gstPercentage}%)</p>
+                <p className="text-lg font-semibold text-orange-700 dark:text-orange-400">₹{result.gstAmount.toLocaleString("en-IN", { maximumFractionDigits: 2 })}</p>
               </div>
-            </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-2 justify-center">
-              <Button
-                onClick={calculateGST}
-                className="bg-orange-500 hover:bg-orange-600 gap-2 flex-1"
-              >
-                <Calculator className="h-4 w-4" />
-                Calculate
-              </Button>
-              <Button onClick={reset} variant="outline" className="flex-1">
-                Reset
-              </Button>
-            </div>
-
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Results */}
-        {gstAmount > 0 && (
-          <div className="grid md:grid-cols-3 gap-4">
-            <Card className="border-2 border-orange-500">
-              <CardContent className="pt-6">
-                <div className="text-center">
-                  <p className="text-sm text-gray-600 mb-2">Base Amount</p>
-                  <p className="text-3xl font-bold text-orange-600">
-                    ₹{(mode === 'exclusive' ? amount : totalAmount - gstAmount).toLocaleString('en-IN', {
-                      maximumFractionDigits: 2,
-                    })}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-2 border-red-500">
-              <CardContent className="pt-6">
-                <div className="text-center">
-                  <p className="text-sm text-gray-600 mb-2">GST Amount</p>
-                  <p className="text-3xl font-bold text-red-600">
-                    ₹{gstAmount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-2 border-green-500">
-              <CardContent className="pt-6">
-                <div className="text-center">
-                  <p className="text-sm text-gray-600 mb-2">
-                    {mode === 'exclusive' ? 'Total (With GST)' : 'Total'}
-                  </p>
-                  <p className="text-3xl font-bold text-green-600">
-                    ₹{(mode === 'exclusive' ? totalAmount : totalAmount).toLocaleString('en-IN', {
-                      maximumFractionDigits: 2,
-                    })}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle>GST Rates in India</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm text-gray-700">
-            <p className="font-medium">Common GST Rates:</p>
-            <ul className="space-y-1">
-              <li>• 5% - Essential items like food, oil, etc.</li>
-              <li>• 12% - Processed food, textiles, etc.</li>
-              <li>• 18% - Electronics, cosmetics, etc.</li>
-              <li>• 28% - Luxury items, sin goods, etc.</li>
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+              <div className="bg-green-100 dark:bg-green-950 p-4 rounded-lg border-2 border-green-300 dark:border-green-800">
+                <p className="text-xs text-green-700 dark:text-green-400 mb-1 font-medium">TOTAL AMOUNT (Incl. GST)</p>
+                <p className="text-2xl font-bold text-green-700 dark:text-green-400">₹{result.totalAmount.toLocaleString("en-IN", { maximumFractionDigits: 2 })}</p>
+              </div>
+            </CardContent>
+          </>
+        ) : undefined
+      }
+      actionButton={{
+        label: "Calculate",
+        onClick: handleCalculate,
+        icon: "🧮",
+      }}
+      resetButton={{
+        label: "Reset",
+        onClick: handleReset,
+      }}
+      features={[
+        { icon: "🧾", title: "Invoice Ready", description: "Quick tax calculation" },
+        { icon: "📋", title: "Multiple Rates", description: "5%, 12%, 18%, 28%" },
+        { icon: "⚡", title: "Instant Results", description: "See breakdown instantly" },
+      ]}
+      error={error}
+    />
   );
-}
+};
+
+export default GSTCalculator;

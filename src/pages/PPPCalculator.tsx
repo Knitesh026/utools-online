@@ -1,210 +1,212 @@
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import { useState } from "react";
+import ProfessionalToolLayout from "@/components/ProfessionalToolLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export default function PPPCalculator() {
-  const [investmentAmount, setInvestmentAmount] = useState(10000);
-  const [returnPercentage, setReturnPercentage] = useState(15);
-  const [months, setMonths] = useState(12);
+const PPPCalculator = () => {
+  const [amount, setAmount] = useState("");
+  const [fromCurrency, setFromCurrency] = useState("USD");
+  const [toCurrency, setToCurrency] = useState("INR");
+  const [exchangeRate, setExchangeRate] = useState("");
+  const [inflationRate, setInflationRate] = useState("");
+  const [result, setResult] = useState<{
+    originalAmount: number;
+    exchangeAmount: number;
+    pppAdjustedAmount: number;
+    inflationAdjustment: number;
+  } | null>(null);
+  const [error, setError] = useState("");
 
-  const monthlyReturn = (investmentAmount * returnPercentage) / 100 / 12;
-  const totalReturn = (investmentAmount * returnPercentage) / 100;
-  const totalAmount = investmentAmount + totalReturn;
-  const monthlyAmount = investmentAmount + monthlyReturn * months;
+  const currencies = ["USD", "EUR", "GBP", "JPY", "INR", "AUD", "CAD", "CHF", "CNY", "SEK"];
 
-  const monthlyBreakdown = Array.from({ length: Math.min(months, 12) }, (_, i) => {
-    const month = i + 1;
-    const cumReturn = monthlyReturn * month;
-    return {
-      month,
-      return: cumReturn,
-      total: investmentAmount + cumReturn,
-    };
-  });
+  const handleCalculate = () => {
+    setError("");
+    setResult(null);
 
-  const reset = () => {
-    setInvestmentAmount(10000);
-    setReturnPercentage(15);
-    setMonths(12);
+    if (!amount || !exchangeRate) {
+      setError("Please fill in amount and exchange rate");
+      return;
+    }
+
+    const amt = parseFloat(amount);
+    const rate = parseFloat(exchangeRate);
+    const inflation = parseFloat(inflationRate || "0");
+
+    if (amt <= 0 || rate <= 0) {
+      setError("Please enter valid amounts (positive numbers)");
+      return;
+    }
+
+    const exchangeAmount = amt * rate;
+    const inflationMultiplier = 1 + inflation / 100;
+    const pppAdjusted = exchangeAmount * inflationMultiplier;
+
+    setResult({
+      originalAmount: Math.round(amt * 100) / 100,
+      exchangeAmount: Math.round(exchangeAmount * 100) / 100,
+      pppAdjustedAmount: Math.round(pppAdjusted * 100) / 100,
+      inflationAdjustment: inflation,
+    });
+  };
+
+  const handleReset = () => {
+    setAmount("");
+    setFromCurrency("USD");
+    setToCurrency("INR");
+    setExchangeRate("");
+    setInflationRate("");
+    setResult(null);
+    setError("");
   };
 
   return (
-    <>
-      <Header />
-      <main className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 p-4 md:p-8">
-        <div className="max-w-5xl mx-auto space-y-6">
-          <div className="text-center space-y-2">
-            <h1 className="text-4xl font-bold text-gray-900">PPP Calculator</h1>
-            <p className="text-gray-600">Calculate Returns on Principal Protected Positive Yield Plans</p>
-          </div>
+    <ProfessionalToolLayout
+      title="PPP Calculator"
+      description="Purchasing Power Parity currency conversion"
+      inputSection={
+        <>
+          <CardHeader>
+            <CardTitle>Conversion Details</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="amount" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                Amount
+              </Label>
+              <Input
+                id="amount"
+                type="number"
+                placeholder="e.g., 1000"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                min="0"
+                className="border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+              />
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Investment Amount</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Input
-                  type="number"
-                  value={investmentAmount}
-                  onChange={(e) => setInvestmentAmount(Number(e.target.value))}
-                  className="text-lg"
-                />
-                <input
-                  type="range"
-                  min="1000"
-                  max="10000000"
-                  step="1000"
-                  value={investmentAmount}
-                  onChange={(e) => setInvestmentAmount(Number(e.target.value))}
-                  className="w-full"
-                />
-                <p className="text-xs text-gray-500">₹{(investmentAmount / 100000).toFixed(2)} L</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Expected Return Rate (%)</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Input
-                  type="number"
-                  value={returnPercentage}
-                  onChange={(e) => setReturnPercentage(Number(e.target.value))}
-                  step="0.5"
-                  className="text-lg"
-                />
-                <input
-                  type="range"
-                  min="5"
-                  max="50"
-                  step="0.5"
-                  value={returnPercentage}
-                  onChange={(e) => setReturnPercentage(Number(e.target.value))}
-                  className="w-full"
-                />
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Investment Period (Months)</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Input
-                  type="number"
-                  value={months}
-                  onChange={(e) => setMonths(Number(e.target.value))}
-                  className="text-lg"
-                />
-                <input
-                  type="range"
-                  min="1"
-                  max="120"
-                  step="1"
-                  value={months}
-                  onChange={(e) => setMonths(Number(e.target.value))}
-                  className="w-full"
-                />
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-              <CardHeader>
-                <CardTitle className="text-lg">Investment</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold text-blue-700">₹{investmentAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-              <CardHeader>
-                <CardTitle className="text-lg">Expected Returns</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold text-green-700">₹{totalReturn.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-              <CardHeader>
-                <CardTitle className="text-lg">Total Amount</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold text-purple-700">₹{totalAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Summary</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-600">Principal Amount</p>
-                  <p className="text-lg font-semibold">₹{investmentAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
-                </div>
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-600">Monthly Return</p>
-                  <p className="text-lg font-semibold">₹{monthlyReturn.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
-                </div>
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-600">Total Return</p>
-                  <p className="text-lg font-semibold text-green-600">₹{totalReturn.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
-                </div>
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-600">Period</p>
-                  <p className="text-lg font-semibold">{months} months</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Month-wise Breakdown (First 12 months)</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-2 px-2">Month</th>
-                      <th className="text-right py-2 px-2">Cumulative Returns</th>
-                      <th className="text-right py-2 px-2">Total Amount</th>
-                      <th className="text-right py-2 px-2">Return %</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {monthlyBreakdown.map((row) => (
-                      <tr key={row.month} className="border-b hover:bg-gray-50">
-                        <td className="py-2 px-2">Month {row.month}</td>
-                        <td className="text-right py-2 px-2">₹{row.return.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
-                        <td className="text-right py-2 px-2 font-semibold">₹{row.total.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
-                        <td className="text-right py-2 px-2">{((row.return / investmentAmount) * 100).toFixed(2)}%</td>
-                      </tr>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label htmlFor="from" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                  From Currency
+                </Label>
+                <Select value={fromCurrency} onValueChange={setFromCurrency}>
+                  <SelectTrigger id="from" className="border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {currencies.map((curr) => (
+                      <SelectItem key={curr} value={curr}>
+                        {curr}
+                      </SelectItem>
                     ))}
-                  </tbody>
-                </table>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="to" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                  To Currency
+                </Label>
+                <Select value={toCurrency} onValueChange={setToCurrency}>
+                  <SelectTrigger id="to" className="border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {currencies.map((curr) => (
+                      <SelectItem key={curr} value={curr}>
+                        {curr}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="rate" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                Exchange Rate (1 {fromCurrency} = ? {toCurrency})
+              </Label>
+              <Input
+                id="rate"
+                type="number"
+                placeholder="e.g., 83.5"
+                value={exchangeRate}
+                onChange={(e) => setExchangeRate(e.target.value)}
+                min="0"
+                step="0.01"
+                className="border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="inflation" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                Inflation Rate (%) - Optional
+              </Label>
+              <Input
+                id="inflation"
+                type="number"
+                placeholder="e.g., 5.5"
+                value={inflationRate}
+                onChange={(e) => setInflationRate(e.target.value)}
+                min="0"
+                step="0.1"
+                className="border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+              />
+            </div>
+          </CardContent>
+        </>
+      }
+      outputSection={
+        result ? (
+          <>
+            <CardHeader>
+              <CardTitle className="text-green-900 dark:text-green-400">PPP Conversion</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="bg-blue-50 dark:bg-blue-950 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
+                <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Original Amount</p>
+                <p className="text-lg font-bold text-gray-900 dark:text-white">{result.originalAmount.toLocaleString("en-IN", { maximumFractionDigits: 2 })} {fromCurrency}</p>
+              </div>
+
+              <div className="bg-green-50 dark:bg-green-950 p-4 rounded-lg border border-green-200 dark:border-green-800">
+                <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Exchange Rate Conversion</p>
+                <p className="text-2xl font-bold text-green-700 dark:text-green-400">{result.exchangeAmount.toLocaleString("en-IN", { maximumFractionDigits: 2 })} {toCurrency}</p>
+              </div>
+
+              {result.inflationAdjustment > 0 && (
+                <div className="bg-orange-50 dark:bg-orange-950 p-3 rounded-lg border border-orange-200 dark:border-orange-800">
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">PPP Adjusted (+ {result.inflationAdjustment}% inflation)</p>
+                  <p className="text-lg font-bold text-orange-700 dark:text-orange-400">{result.pppAdjustedAmount.toLocaleString("en-IN", { maximumFractionDigits: 2 })} {toCurrency}</p>
+                </div>
+              )}
+
+              <div className="bg-purple-100 dark:bg-purple-950 p-3 rounded-lg border border-purple-200 dark:border-purple-800">
+                <p className="text-xs text-purple-700 dark:text-purple-400 font-medium">
+                  {fromCurrency} {result.originalAmount} = {toCurrency} {result.inflationAdjustment > 0 ? result.pppAdjustedAmount : result.exchangeAmount}
+                </p>
               </div>
             </CardContent>
-          </Card>
-
-          <Button onClick={reset} variant="outline" className="w-full">
-            Reset
-          </Button>
-        </div>
-      </main>
-      <Footer />
-    </>
+          </>
+        ) : undefined
+      }
+      actionButton={{
+        label: "Calculate",
+        onClick: handleCalculate,
+        icon: "💱",
+      }}
+      resetButton={{
+        label: "Reset",
+        onClick: handleReset,
+      }}
+      features={[
+        { icon: "💱", title: "Currency Conversion", description: "Multi-currency support" },
+        { icon: "📊", title: "PPP Adjustment", description: "Cost of living factor" },
+        { icon: "⚡", title: "Instant Results", description: "Real-time calculation" },
+      ]}
+      error={error}
+    />
   );
-}
+};
+
+export default PPPCalculator;

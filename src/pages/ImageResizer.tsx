@@ -1,285 +1,289 @@
-import { useState } from 'react';
-import { Upload, Download, AlertCircle, Trash2, Settings } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Slider } from '@/components/ui/slider';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import { useState, useRef } from "react";
+import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Download, Upload } from "lucide-react";
 
-export default function ImageResizer() {
-  const [image, setImage] = useState<{file: File, preview: string} | null>(null);
-  const [width, setWidth] = useState(1920);
-  const [height, setHeight] = useState(1080);
+const ImageResizer = () => {
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string>("");
+  const [resized, setResized] = useState<string>("");
+  const [width, setWidth] = useState("800");
+  const [height, setHeight] = useState("600");
   const [maintainAspect, setMaintainAspect] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [resized, setResized] = useState<Blob | null>(null);
+  const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
 
-    if (!file.type.startsWith('image/')) {
-      setError('Please upload an image file');
+    if (!selectedFile.type.startsWith("image/")) {
+      setError("Please select an image file");
       return;
     }
 
+    if (selectedFile.size > 50 * 1024 * 1024) {
+      setError("File size must be less than 50MB");
+      return;
+    }
+
+    setError("");
+    setFile(selectedFile);
+    setResized("");
+
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = (e) => {
       const img = new Image();
-      img.src = event.target?.result as string;
       img.onload = () => {
-        setWidth(img.width);
-        setHeight(img.height);
-        setImage({
-          file,
-          preview: event.target?.result as string,
-        });
-        setError('');
-        setResized(null);
+        setPreview(e.target?.result as string);
+        setWidth(img.width.toString());
+        setHeight(img.height.toString());
       };
+      img.src = e.target?.result as string;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(selectedFile);
   };
 
-  const handleWidthChange = (newWidth: number) => {
-    setWidth(newWidth);
-    if (maintainAspect && image) {
+  const handleHeightChange = (newHeight: string) => {
+    setHeight(newHeight);
+    if (maintainAspect && file && preview) {
       const img = new Image();
-      img.src = image.preview;
       img.onload = () => {
-        const newHeight = Math.round((newWidth / img.width) * img.height);
-        setHeight(newHeight);
+        const aspectRatio = img.width / img.height;
+        const newWidth = Math.round(parseFloat(newHeight) * aspectRatio);
+        setWidth(newWidth.toString());
       };
+      img.src = preview;
     }
   };
 
-  const handleHeightChange = (newHeight: number) => {
-    setHeight(newHeight);
-    if (maintainAspect && image) {
+  const handleWidthChange = (newWidth: string) => {
+    setWidth(newWidth);
+    if (maintainAspect && file && preview) {
       const img = new Image();
-      img.src = image.preview;
       img.onload = () => {
-        const newWidth = Math.round((newHeight / img.height) * img.width);
-        setWidth(newWidth);
+        const aspectRatio = img.width / img.height;
+        const newHeight = Math.round(parseFloat(newWidth) / aspectRatio);
+        setHeight(newHeight.toString());
       };
+      img.src = preview;
     }
   };
 
   const resizeImage = async () => {
-    if (!image) {
-      setError('Please upload an image');
-      return;
-    }
+    if (!file || !preview) return;
 
-    setLoading(true);
-    setError('');
-
+    setProcessing(true);
     try {
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-
+      const canvas = document.createElement("canvas");
       const img = new Image();
-      img.src = image.preview;
-      await new Promise((resolve) => {
-        img.onload = () => {
-          ctx?.drawImage(img, 0, 0, width, height);
-          resolve(null);
-        };
-      });
 
-      canvas.toBlob(
-        (blob) => {
-          setResized(blob);
-          setLoading(false);
-        },
-        image.file.type,
-        0.95
-      );
+      img.onload = () => {
+        const w = parseFloat(width);
+        const h = parseFloat(height);
+
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, w, h);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                setResized(e.target?.result as string);
+                setProcessing(false);
+              };
+              reader.readAsDataURL(blob);
+            }
+          },
+          "image/png"
+        );
+      };
+
+      img.src = preview;
     } catch (err) {
-      setError('Failed to resize image');
-      setLoading(false);
+      setError("Failed to resize image");
+      setProcessing(false);
     }
   };
 
-  const downloadImage = () => {
-    if (!resized || !image) return;
+  const handleDownload = () => {
+    if (!resized) return;
 
-    const url = URL.createObjectURL(resized);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `resized-${image.file.name}`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const link = document.createElement("a");
+    link.href = resized;
+    link.download = `resized-${file?.name || "image.png"}`;
+    link.click();
   };
 
-  const presetSizes = [
-    { name: 'Twitter', w: 1200, h: 675 },
-    { name: 'Instagram', w: 1080, h: 1080 },
-    { name: 'Facebook', w: 1200, h: 628 },
-    { name: 'YouTube', w: 1280, h: 720 },
-    { name: 'HD', w: 1920, h: 1080 },
-    { name: '4K', w: 3840, h: 2160 },
-  ];
+  const handleReset = () => {
+    setFile(null);
+    setPreview("");
+    setResized("");
+    setWidth("800");
+    setHeight("600");
+    setMaintainAspect(true);
+    setError("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
-  return (
+  const inputSection = (
     <>
-      <Header />
-      <main className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-4 md:p-8">
-        <div className="max-w-4xl mx-auto space-y-6">
-          <div className="text-center space-y-2">
-            <h1 className="text-4xl font-bold text-gray-900">Image Resizer</h1>
-            <p className="text-gray-600">Resize images to custom dimensions</p>
-          </div>
-
-          {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Upload Image</CardTitle>
-              <CardDescription>Select an image to resize</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="border-2 border-dashed border-purple-300 rounded-lg p-8 text-center hover:border-purple-500 transition cursor-pointer">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                  id="imageUpload"
-                />
-                <label htmlFor="imageUpload" className="cursor-pointer block">
-                  <Upload className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                  <p className="font-medium text-gray-700">Click to upload image</p>
-                  <p className="text-xs text-gray-500">or drag and drop</p>
-                </label>
-              </div>
-            </CardContent>
-          </Card>
-
-          {image && (
-            <>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Preview</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="border rounded-lg p-4 bg-gray-50 flex justify-center">
-                    <img
-                      src={image.preview}
-                      alt="preview"
-                      className="max-h-64 object-contain"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Settings className="w-5 h-5" />
-                    Resize Settings
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium">Width: {width}px</label>
-                      <Slider
-                        value={[width]}
-                        onValueChange={(value) => handleWidthChange(value[0])}
-                        min={50}
-                        max={4000}
-                        step={10}
-                        className="mt-2"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-sm font-medium">Height: {height}px</label>
-                      <Slider
-                        value={[height]}
-                        onValueChange={(value) => handleHeightChange(value[0])}
-                        min={50}
-                        max={4000}
-                        step={10}
-                        className="mt-2"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="maintainAspect"
-                        checked={maintainAspect}
-                        onChange={(e) => setMaintainAspect(e.target.checked)}
-                        className="w-4 h-4"
-                      />
-                      <label htmlFor="maintainAspect" className="text-sm font-medium cursor-pointer">
-                        Maintain Aspect Ratio
-                      </label>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium">Preset Sizes:</p>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {presetSizes.map((size) => (
-                        <Button
-                          key={size.name}
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setWidth(size.w);
-                            setHeight(size.h);
-                          }}
-                          className="text-xs"
-                        >
-                          {size.name} ({size.w}x{size.h})
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <Button
-                    onClick={resizeImage}
-                    disabled={loading}
-                    className="w-full bg-purple-600 hover:bg-purple-700"
-                  >
-                    {loading ? 'Resizing...' : 'Resize Image'}
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {resized && (
-                <Card className="bg-green-50 border-green-200">
-                  <CardHeader>
-                    <CardTitle className="text-green-800">Image Resized Successfully</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Button
-                      onClick={downloadImage}
-                      className="w-full bg-green-600 hover:bg-green-700"
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Download Resized Image
-                    </Button>
-                  </CardContent>
-                </Card>
-              )}
-            </>
-          )}
+      <CardHeader>
+        <CardTitle>Upload Image</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div
+          className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <Upload className="w-8 h-8 mx-auto text-gray-400 dark:text-gray-500 mb-2" />
+          <p className="text-sm text-gray-600 dark:text-gray-400">Click to upload or drag and drop</p>
+          <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">PNG, JPG, WebP up to 50MB</p>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
         </div>
-      </main>
-      <Footer />
+
+        {preview && (
+          <div className="space-y-4">
+            <div className="aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center border border-gray-200 dark:border-gray-700">
+              <img
+                src={preview}
+                alt="preview"
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Width (px)</Label>
+                <Input
+                  type="number"
+                  value={width}
+                  onChange={(e) => handleWidthChange(e.target.value)}
+                  min="1"
+                  className="border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Height (px)</Label>
+                <Input
+                  type="number"
+                  value={height}
+                  onChange={(e) => handleHeightChange(e.target.value)}
+                  min="1"
+                  className="border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <label className="flex items-center cursor-pointer p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+              <input
+                type="checkbox"
+                checked={maintainAspect}
+                onChange={(e) => setMaintainAspect(e.target.checked)}
+                className="mr-2 w-4 h-4"
+              />
+              <span className="text-sm text-gray-700 dark:text-gray-300">Maintain aspect ratio</span>
+            </label>
+          </div>
+        )}
+
+        {!preview && (
+          <div className="text-center py-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400">No image selected</p>
+          </div>
+        )}
+      </CardContent>
     </>
   );
-}
+
+  const outputSection = resized ? (
+    <>
+      <CardHeader>
+        <CardTitle>Result</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center border border-gray-200 dark:border-gray-700">
+          <img
+            src={resized}
+            alt="resized"
+            className="max-w-full max-h-full object-contain"
+          />
+        </div>
+
+        <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <p className="text-xs font-semibold text-blue-700 dark:text-blue-300">NEW DIMENSIONS</p>
+          <p className="text-3xl font-bold text-blue-900 dark:text-blue-200 mt-2">
+            {width}×{height}
+          </p>
+        </div>
+      </CardContent>
+    </>
+  ) : undefined;
+
+  return (
+    <ProfessionalToolLayout
+      title="Image Resizer"
+      description="Resize images to custom dimensions with ease"
+      inputSection={inputSection}
+      outputSection={outputSection}
+      error={error}
+      actionButton={{
+        label: "Resize",
+        onClick: resizeImage,
+        icon: "Maximize2",
+        loading: processing,
+        disabled: !preview || processing,
+      }}
+      resetButton={{
+        label: "Reset",
+        onClick: handleReset,
+      }}
+      features={[
+        {
+          icon: "📏",
+          title: "Custom Size",
+          description: "Set any width and height",
+        },
+        {
+          icon: "🔒",
+          title: "Aspect Ratio",
+          description: "Maintain proportions",
+        },
+        {
+          icon: "⚡",
+          title: "Instant Resize",
+          description: "Real-time preview",
+        },
+      ]}
+      children={
+        resized && (
+          <Button
+            onClick={handleDownload}
+            className="w-full mt-4 bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600 text-white"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Download Resized Image
+          </Button>
+        )
+      }
+    />
+  );
+};
+
+export default ImageResizer;

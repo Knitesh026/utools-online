@@ -1,259 +1,305 @@
-import { useState, useRef } from 'react';
-import { Upload, Download, AlertCircle, Settings } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Slider } from '@/components/ui/slider';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import { useState, useRef } from "react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider";
+import { Download, Upload, RefreshCw, AlertCircle } from "lucide-react";
 
-export default function FaceBlur() {
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [originalImage, setOriginalImage] = useState<string>('');
-  const [processedImage, setProcessedImage] = useState<string>('');
-  const [blurAmount, setBlurAmount] = useState(15);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
+const FaceBlur = () => {
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string>("");
+  const [blurred, setBlurred] = useState<string>("");
+  const [intensity, setIntensity] = useState(15);
+  const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
 
-    if (!file.type.startsWith('image/')) {
-      setError('Please upload an image file');
+    if (!selectedFile.type.startsWith("image/")) {
+      setError("Please select an image file");
       return;
     }
 
-    setImageFile(file);
-    setError('');
+    if (selectedFile.size > 50 * 1024 * 1024) {
+      setError("File size must be less than 50MB");
+      return;
+    }
+
+    setError("");
+    setFile(selectedFile);
+    setBlurred("");
 
     const reader = new FileReader();
     reader.onload = (e) => {
-      setOriginalImage(e.target?.result as string);
-      setProcessedImage('');
+      setPreview(e.target?.result as string);
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(selectedFile);
   };
 
-  const blurFaces = async () => {
-    if (!originalImage) {
-      setError('Please upload an image');
-      return;
-    }
+  const blurImage = async () => {
+    if (!preview) return;
 
-    setLoading(true);
-    setError('');
-
+    setProcessing(true);
     try {
-      // Simple pixelation-based face blur (simulating face detection)
-      // In production, you'd use a library like ml5.js or face-api.js
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) {
+        setError("Failed to process image");
+        setProcessing(false);
+        return;
+      }
+
       const img = new Image();
       img.onload = () => {
-        if (!canvasRef.current) return;
-
-        const canvas = canvasRef.current;
         canvas.width = img.width;
         canvas.height = img.height;
 
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
+        // Draw original image
         ctx.drawImage(img, 0, 0);
 
-        // Apply blur effect to simulate face blurring
-        // This is a simplified version - in production use face detection library
-        const pixelSize = blurAmount;
+        // Apply blur filter (simple pixelation-based blur)
+        // This is a placeholder approach - actual face detection would require ML library
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        const step = Math.ceil(intensity / 5);
 
-        for (let y = 0; y < canvas.height; y += pixelSize) {
-          for (let x = 0; x < canvas.width; x += pixelSize) {
-            // Sample center pixel
-            const imageData = ctx.getImageData(x, y, pixelSize, pixelSize);
-            const data = imageData.data;
+        // Apply simple blur effect across entire image
+        // In production, you'd use face-api.js or ml5.js for actual face detection
+        for (let i = 0; i < data.length; i += 4 * step) {
+          if (i + 4 * step < data.length) {
+            const avg_r = (data[i] + data[i + 4] + data[i + 8] + data[i + 12]) / 4;
+            const avg_g = (data[i + 1] + data[i + 5] + data[i + 9] + data[i + 13]) / 4;
+            const avg_b = (data[i + 2] + data[i + 6] + data[i + 10] + data[i + 14]) / 4;
 
-            let r = 0, g = 0, b = 0;
-            for (let i = 0; i < data.length; i += 4) {
-              r += data[i];
-              g += data[i + 1];
-              b += data[i + 2];
+            for (let j = 0; j < step && i + j * 4 < data.length; j++) {
+              data[i + j * 4] = avg_r;
+              data[i + j * 4 + 1] = avg_g;
+              data[i + j * 4 + 2] = avg_b;
             }
-
-            const pixelCount = data.length / 4;
-            r = Math.floor(r / pixelCount);
-            g = Math.floor(g / pixelCount);
-            b = Math.floor(b / pixelCount);
-
-            // Fill with average color (creates pixelation effect)
-            ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-            ctx.fillRect(x, y, pixelSize, pixelSize);
           }
         }
 
-        setProcessedImage(canvas.toDataURL('image/png'));
+        ctx.putImageData(imageData, 0, 0);
+
+        // Apply additional blur filter
+        ctx.filter = `blur(${intensity}px)`;
+        const tempCanvas = document.createElement("canvas");
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = canvas.height;
+        const tempCtx = tempCanvas.getContext("2d");
+        if (tempCtx) {
+          tempCtx.drawImage(canvas, 0, 0);
+        }
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                setBlurred(e.target?.result as string);
+                setProcessing(false);
+              };
+              reader.readAsDataURL(blob);
+            }
+          },
+          "image/png"
+        );
       };
-      img.src = originalImage;
+
+      img.src = preview;
     } catch (err) {
-      setError('Failed to blur faces');
-      console.error(err);
-    } finally {
-      setLoading(false);
+      setError("Failed to blur image");
+      setProcessing(false);
     }
   };
 
-  const downloadImage = () => {
-    const link = document.createElement('a');
-    link.href = processedImage;
-    link.download = `face-blurred-${imageFile?.name || 'image.png'}`;
+  const handleDownload = () => {
+    if (!blurred) return;
+
+    const link = document.createElement("a");
+    link.href = blurred;
+    link.download = `blurred-${file?.name || "image.png"}`;
     link.click();
+  };
+
+  const handleReset = () => {
+    setFile(null);
+    setPreview("");
+    setBlurred("");
+    setIntensity(15);
+    setError("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 p-4 md:p-8">
-        <div className="max-w-5xl mx-auto space-y-6">
+      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8 md:py-12 px-4">
+        <div className="max-w-4xl mx-auto space-y-8">
+          {/* Header */}
           <div className="text-center space-y-2">
-            <h1 className="text-4xl font-bold text-gray-900">Face Blur</h1>
-            <p className="text-gray-600">Blur faces in photos for privacy protection</p>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900">Face Blur</h1>
+            <p className="text-gray-600">Blur faces in photos for privacy</p>
           </div>
 
-          {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+          {/* Features */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="border-gray-200">
+              <CardContent className="pt-6">
+                <div className="text-2xl mb-2">🔒</div>
+                <h4 className="font-semibold text-gray-900 mb-1">Privacy Protection</h4>
+                <p className="text-sm text-gray-600">Protect identities</p>
+              </CardContent>
+            </Card>
+            <Card className="border-gray-200">
+              <CardContent className="pt-6">
+                <div className="text-2xl mb-2">🎚️</div>
+                <h4 className="font-semibold text-gray-900 mb-1">Adjustable Intensity</h4>
+                <p className="text-sm text-gray-600">Control blur strength</p>
+              </CardContent>
+            </Card>
+            <Card className="border-gray-200">
+              <CardContent className="pt-6">
+                <div className="text-2xl mb-2">⚡</div>
+                <h4 className="font-semibold text-gray-900 mb-1">Quick Processing</h4>
+                <p className="text-sm text-gray-600">Instant results</p>
+              </CardContent>
+            </Card>
+          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Upload Image</CardTitle>
-              <CardDescription>Select an image to blur faces</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="border-2 border-dashed border-blue-300 rounded-lg p-8 text-center hover:border-blue-500 transition cursor-pointer">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                  id="imageUpload"
-                />
-                <label htmlFor="imageUpload" className="cursor-pointer block">
-                  <Upload className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                  <p className="font-medium text-gray-700">Click to upload image</p>
-                  <p className="text-xs text-gray-500">JPG, PNG, GIF, WebP</p>
-                </label>
-              </div>
-
-              {imageFile && (
-                <div className="p-3 bg-blue-50 rounded-lg">
-                  <p className="text-sm font-medium text-gray-700">{imageFile.name}</p>
-                  <p className="text-xs text-gray-500">
-                    {(imageFile.size / 1024).toFixed(2)} KB
+          {/* Info Alert */}
+          <Card className="border-amber-200 bg-amber-50">
+            <CardContent className="pt-6">
+              <div className="flex gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-amber-900 mb-1">Note</p>
+                  <p className="text-sm text-amber-800">
+                    This tool applies a general blur effect. For precise face detection, consider using specialized face detection libraries.
                   </p>
                 </div>
-              )}
+              </div>
             </CardContent>
           </Card>
 
-          {originalImage && (
-            <>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Settings className="w-5 h-5" />
-                    Blur Settings
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div>
-                    <div className="flex justify-between items-center mb-3">
-                      <label className="text-sm font-medium">Blur Intensity</label>
-                      <span className="text-sm text-gray-600">{blurAmount}px</span>
+          {/* Main Content */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Input Section */}
+            <Card className="border-gray-200 shadow-sm">
+              <CardHeader>
+                <CardTitle>Upload Image</CardTitle>
+                <CardDescription>Select an image to blur</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div
+                  className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 transition"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+                  <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
+                  <p className="text-xs text-gray-500 mt-1">PNG, JPG, WebP up to 50MB</p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                </div>
+
+                {preview && (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-700">Blur Intensity</span>
+                        <span className="text-sm font-bold text-blue-600">{intensity}px</span>
+                      </label>
+                      <Slider
+                        value={[intensity]}
+                        onValueChange={(val) => setIntensity(val[0])}
+                        min={5}
+                        max={50}
+                        step={1}
+                      />
                     </div>
-                    <Slider
-                      value={[blurAmount]}
-                      onValueChange={(value) => setBlurAmount(value[0])}
-                      min={5}
-                      max={30}
-                      step={1}
-                      className="w-full"
-                    />
-                    <p className="text-xs text-gray-500 mt-2">
-                      Higher values create more blur
-                    </p>
+
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={blurImage}
+                        disabled={processing}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        {processing ? "Processing..." : "Blur Image"}
+                      </Button>
+                      <Button
+                        onClick={handleReset}
+                        variant="outline"
+                        className="flex-1"
+                      >
+                        <RefreshCw className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
+                )}
 
-                  <Button
-                    onClick={blurFaces}
-                    disabled={loading}
-                    className="w-full bg-blue-600 hover:bg-blue-700"
-                  >
-                    {loading ? 'Processing...' : 'Blur Faces'}
-                  </Button>
-                </CardContent>
-              </Card>
-            </>
-          )}
-
-          {originalImage && processedImage && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Original Image</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="rounded-lg overflow-hidden bg-gray-100">
-                    <img
-                      src={originalImage}
-                      alt="Original"
-                      className="w-full h-auto"
-                      ref={imageRef}
-                    />
+                {!preview && (
+                  <div className="text-center py-4">
+                    <p className="text-sm text-gray-500">No image selected</p>
                   </div>
-                </CardContent>
-              </Card>
+                )}
+              </CardContent>
+            </Card>
 
-              <Card>
+            {/* Output Section */}
+            {(preview || blurred) && (
+              <Card className="border-gray-200 shadow-sm">
                 <CardHeader>
-                  <CardTitle className="text-lg">Blurred Image</CardTitle>
+                  <CardTitle>Preview</CardTitle>
+                  <CardDescription>Blurred image preview</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="rounded-lg overflow-hidden bg-gray-100">
-                    <img src={processedImage} alt="Blurred" className="w-full h-auto" />
+                  <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                    <img
+                      src={blurred || preview}
+                      alt="preview"
+                      className="max-w-full max-h-full object-contain"
+                    />
                   </div>
-                  <Button
-                    onClick={downloadImage}
-                    className="w-full bg-green-600 hover:bg-green-700"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Download Blurred Image
-                  </Button>
+
+                  {blurred && (
+                    <Button
+                      onClick={handleDownload}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Download Blurred Image
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
-            </div>
+            )}
+          </div>
+
+          {/* Error Display */}
+          {error && (
+            <Card className="border-red-200 bg-red-50">
+              <CardContent className="pt-6">
+                <p className="text-sm text-red-700">{error}</p>
+              </CardContent>
+            </Card>
           )}
-
-          <canvas ref={canvasRef} className="hidden" />
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Features</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-gray-600 space-y-2">
-              <p>✓ Adjustable blur intensity for privacy protection</p>
-              <p>✓ Fast client-side image processing</p>
-              <p>✓ Preserves image quality</p>
-              <p>✓ Download blurred image as PNG</p>
-              <p className="text-xs text-gray-500 mt-4">
-                Note: This tool uses pixelation-based blurring. For professional-grade face detection, use dedicated services like AWS Rekognition or Google Vision API.
-              </p>
-            </CardContent>
-          </Card>
         </div>
       </main>
       <Footer />
     </>
   );
-}
+};
+
+export default FaceBlur;

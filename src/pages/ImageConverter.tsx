@@ -1,198 +1,240 @@
-import { useState } from 'react';
-import { Upload, Download, AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import { useState, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Download, Upload, RefreshCw } from "lucide-react";
+import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 
-export default function ImageConverter() {
-  const [image, setImage] = useState<{file: File, preview: string} | null>(null);
-  const [format, setFormat] = useState<'png' | 'jpg' | 'webp' | 'gif' | 'bmp'>('png');
-  const [quality, setQuality] = useState(90);
-  const [error, setError] = useState('');
+const ImageConverter = () => {
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string>("");
+  const [converted, setConverted] = useState<string>("");
+  const [outputFormat, setOutputFormat] = useState("jpeg");
+  const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const formatOptions = [
+    { value: "jpeg", label: "JPEG (JPG)" },
+    { value: "png", label: "PNG" },
+    { value: "webp", label: "WebP" },
+    { value: "bmp", label: "BMP" },
+    { value: "gif", label: "GIF" },
+  ];
 
-    if (!file.type.startsWith('image/')) {
-      setError('Please upload an image file');
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
+
+    if (!selectedFile.type.startsWith("image/")) {
+      setError("Please select a valid image file");
       return;
     }
 
+    if (selectedFile.size > 50 * 1024 * 1024) {
+      setError("File size must be less than 50MB");
+      return;
+    }
+
+    setError("");
+    setFile(selectedFile);
+    setConverted("");
+
     const reader = new FileReader();
-    reader.onload = (event) => {
-      setImage({
-        file,
-        preview: event.target?.result as string,
-      });
-      setError('');
+    reader.onload = (e) => {
+      setPreview(e.target?.result as string);
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(selectedFile);
   };
 
   const convertImage = async () => {
-    if (!image) {
-      setError('Please upload an image');
-      return;
-    }
+    if (!file || !preview) return;
+
+    setProcessing(true);
+    setError("");
 
     try {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) throw new Error('Could not get canvas context');
-
+      const canvas = document.createElement("canvas");
       const img = new Image();
-      img.src = image.preview;
 
-      await new Promise((resolve) => {
-        img.onload = () => {
-          canvas.width = img.width;
-          canvas.height = img.height;
-          ctx.drawImage(img, 0, 0);
-          resolve(null);
-        };
-      });
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
 
-      const mimeType = {
-        png: 'image/png',
-        jpg: 'image/jpeg',
-        webp: 'image/webp',
-        gif: 'image/gif',
-        bmp: 'image/bmp',
-      }[format];
+        if (!ctx) {
+          setError("Failed to process image");
+          setProcessing(false);
+          return;
+        }
 
-      canvas.toBlob((blob) => {
-        if (!blob) return;
+        ctx.drawImage(img, 0, 0);
 
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `converted-image.${format}`;
-        a.click();
-        URL.revokeObjectURL(url);
-      }, mimeType, format === 'jpg' ? quality / 100 : undefined);
+        // Convert to requested format
+        const mimeType = `image/${outputFormat === "jpeg" ? "jpeg" : outputFormat}`;
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const url = URL.createObjectURL(blob);
+              setConverted(url);
+            }
+            setProcessing(false);
+          },
+          mimeType,
+          0.95
+        );
+      };
+
+      img.onerror = () => {
+        setError("Failed to load image");
+        setProcessing(false);
+      };
+
+      img.src = preview;
     } catch (err) {
-      setError('Failed to convert image');
+      setError("Conversion failed. Please try again.");
+      setProcessing(false);
+      console.error(err);
     }
   };
 
-  const formats = [
-    { id: 'png', name: 'PNG', description: 'Lossless compression' },
-    { id: 'jpg', name: 'JPG/JPEG', description: 'Lossy compression' },
-    { id: 'webp', name: 'WebP', description: 'Modern format' },
-    { id: 'gif', name: 'GIF', description: 'Animated support' },
-    { id: 'bmp', name: 'BMP', description: 'Uncompressed' },
-  ];
+  const handleDownload = () => {
+    if (!converted) return;
+    const link = document.createElement("a");
+    link.href = converted;
+    const extension = outputFormat === "jpeg" ? "jpg" : outputFormat;
+    link.download = `converted-image.${extension}`;
+    link.click();
+  };
 
-  return (
+  const handleReset = () => {
+    setFile(null);
+    setPreview("");
+    setConverted("");
+    setError("");
+    setOutputFormat("jpeg");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const inputSection = (
     <>
-      <Header />
-      <main className="min-h-screen bg-gradient-to-br from-violet-50 to-purple-50 p-4 md:p-8">
-        <div className="max-w-4xl mx-auto space-y-6">
-          <div className="text-center space-y-2">
-            <h1 className="text-4xl font-bold text-gray-900">Image Converter</h1>
-            <p className="text-gray-600">Convert images between different formats</p>
-          </div>
-
-          {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Upload Image</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="border-2 border-dashed border-violet-300 rounded-lg p-8 text-center hover:border-violet-500 transition cursor-pointer">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                  id="imageUpload"
-                />
-                <label htmlFor="imageUpload" className="cursor-pointer block">
-                  <Upload className="w-8 h-8 text-violet-600 mx-auto mb-2" />
-                  <p className="font-medium text-gray-700">Click to upload image</p>
-                  <p className="text-xs text-gray-500">or drag and drop</p>
-                </label>
-              </div>
-            </CardContent>
-          </Card>
-
-          {image && (
-            <>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Preview</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="border rounded-lg p-4 bg-gray-50">
-                    <img
-                      src={image.preview}
-                      alt="preview"
-                      className="max-h-64 mx-auto object-contain"
-                    />
-                    <p className="text-center text-sm text-gray-600 mt-4">{image.file.name}</p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Convert To</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-                    {formats.map((fmt) => (
-                      <button
-                        key={fmt.id}
-                        onClick={() => setFormat(fmt.id as any)}
-                        className={`p-3 rounded-lg border-2 transition ${
-                          format === fmt.id
-                            ? 'border-violet-600 bg-violet-50'
-                            : 'border-gray-200 hover:border-violet-300'
-                        }`}
-                      >
-                        <p className="font-semibold text-sm">{fmt.name}</p>
-                        <p className="text-xs text-gray-500">{fmt.description}</p>
-                      </button>
-                    ))}
-                  </div>
-
-                  {format === 'jpg' && (
-                    <div>
-                      <label className="text-sm font-medium">Quality: {quality}%</label>
-                      <input
-                        type="range"
-                        min="10"
-                        max="100"
-                        value={quality}
-                        onChange={(e) => setQuality(Number(e.target.value))}
-                        className="w-full mt-2"
-                      />
-                    </div>
-                  )}
-
-                  <Button
-                    onClick={convertImage}
-                    className="w-full bg-violet-600 hover:bg-violet-700"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Convert to {format.toUpperCase()}
-                  </Button>
-                </CardContent>
-              </Card>
-            </>
-          )}
+      <CardHeader>
+        <CardTitle>Upload Image</CardTitle>
+        <CardDescription>Select an image to convert</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div
+          className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 transition"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+          <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
+          <p className="text-xs text-gray-500 mt-1">PNG, JPG, WebP up to 50MB</p>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
         </div>
-      </main>
-      <Footer />
+
+        {preview && (
+          <div className="space-y-4">
+            <div className="bg-gray-100 rounded-lg p-3 aspect-video flex items-center justify-center">
+              <img
+                src={preview}
+                alt="preview"
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Output Format</label>
+              <Select value={outputFormat} onValueChange={setOutputFormat}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {formatOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex gap-2">
+              <Button
+                onClick={convertImage}
+                disabled={processing}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {processing ? "Converting..." : "Convert"}
+              </Button>
+              <Button
+                onClick={handleReset}
+                variant="outline"
+                className="flex-1"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {!preview && (
+          <div className="text-center py-4">
+            <p className="text-sm text-gray-500">No image selected</p>
+          </div>
+        )}
+      </CardContent>
     </>
   );
-}
+
+  const outputSection = converted ? (
+    <>
+      <CardHeader>
+        <CardTitle>Converted Image</CardTitle>
+        <CardDescription>{outputFormat.toUpperCase()} format</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="bg-gray-100 rounded-lg p-3 aspect-video flex items-center justify-center">
+          <img
+            src={converted}
+            alt="converted"
+            className="max-w-full max-h-full object-contain"
+          />
+        </div>
+
+        <Button
+          onClick={handleDownload}
+          className="w-full bg-green-600 hover:bg-green-700 text-white"
+        >
+          <Download className="w-4 h-4 mr-2" />
+          Download Converted Image
+        </Button>
+      </CardContent>
+    </>
+  ) : undefined;
+
+  return (
+    <ProfessionalToolLayout
+      title="Image Converter"
+      description="Convert images between different formats with ease"
+      inputSection={inputSection}
+      outputSection={outputSection}
+      error={error}
+      features={[
+        { icon: "🔄", title: "Multiple Formats", description: "PNG, JPEG, WebP, BMP, GIF" },
+        { icon: "⚡", title: "Fast Processing", description: "Instant conversion" },
+        { icon: "🔒", title: "Privacy Secure", description: "Client-side processing" },
+      ]}
+    />
+  );
+};
+
+export default ImageConverter;

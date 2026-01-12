@@ -1,175 +1,236 @@
-import { useState } from 'react';
-import { Upload, Download, AlertCircle, Zap } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useState, useRef } from "react";
+import ProfessionalToolLayout from "@/components/ProfessionalToolLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Download, Upload } from "lucide-react";
 
-export default function ImageUpscaler() {
-  const [image, setImage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+const ImageUpscaler = () => {
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string>("");
+  const [upscaled, setUpscaled] = useState<string>("");
   const [scale, setScale] = useState(2);
+  const [originalSize, setOriginalSize] = useState({ width: 0, height: 0 });
+  const [upscaledSize, setUpscaledSize] = useState({ width: 0, height: 0 });
+  const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setImage(event.target?.result as string);
-        setError('');
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
 
-  const upscaleImage = async () => {
-    if (!image) {
-      setError('Please select an image first');
+    if (!selectedFile.type.startsWith("image/")) {
+      setError("Please select an image file");
       return;
     }
 
-    setLoading(true);
-    setError('');
+    if (selectedFile.size > 50 * 1024 * 1024) {
+      setError("File size must be less than 50MB");
+      return;
+    }
 
-    try {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+    setError("");
+    setFile(selectedFile);
+    setUpscaled("");
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setPreview(e.target?.result as string);
+
       const img = new Image();
-
       img.onload = () => {
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
-        
-        ctx!.imageSmoothingEnabled = true;
-        ctx!.imageSmoothingQuality = 'high';
-        ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
-        
-        const upscaledImage = canvas.toDataURL('image/png', 0.95);
-        setImage(upscaledImage);
-        setLoading(false);
+        setOriginalSize({ width: img.width, height: img.height });
+        setUpscaledSize({ width: img.width * scale, height: img.height * scale });
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(selectedFile);
+  };
+
+  const upscaleImage = async () => {
+    if (!preview) return;
+
+    setProcessing(true);
+    try {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) {
+        setError("Failed to process image");
+        setProcessing(false);
+        return;
+      }
+
+      const img = new Image();
+      img.onload = () => {
+        const newWidth = img.width * scale;
+        const newHeight = img.height * scale;
+
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+
+        // Use high-quality image smoothing
+        ctx.imageSmoothingQuality = "high";
+        ctx.imageSmoothingEnabled = true;
+        ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+        setUpscaledSize({ width: newWidth, height: newHeight });
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                setUpscaled(e.target?.result as string);
+                setProcessing(false);
+              };
+              reader.readAsDataURL(blob);
+            }
+          },
+          "image/png"
+        );
       };
 
-      img.src = image;
+      img.src = preview;
     } catch (err) {
-      setError('Failed to upscale image');
-      setLoading(false);
+      setError("Failed to upscale image");
+      setProcessing(false);
     }
   };
 
-  const downloadImage = () => {
-    if (!image) return;
-    const link = document.createElement('a');
-    link.href = image;
-    link.download = `upscaled-${scale}x.png`;
+  const handleDownload = () => {
+    if (!upscaled) return;
+
+    const link = document.createElement("a");
+    link.href = upscaled;
+    link.download = `upscaled-${scale}x-${file?.name || "image.png"}`;
     link.click();
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold text-gray-900">Image Upscaler</h1>
-          <p className="text-gray-600">Enlarge your images with AI-enhanced upscaling</p>
-        </div>
+  const handleReset = () => {
+    setFile(null);
+    setPreview("");
+    setUpscaled("");
+    setScale(2);
+    setOriginalSize({ width: 0, height: 0 });
+    setUpscaledSize({ width: 0, height: 0 });
+    setError("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };  return (
+    <ProfessionalToolLayout
+      title="Image Upscaler"
+      description="Enlarge images while preserving quality"
+      inputSection={
+        <>
+          <CardHeader>
+            <CardTitle>Upload Image</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div
+              className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900 transition"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Upload className="w-8 h-8 mx-auto text-gray-400 dark:text-gray-500 mb-2" />
+              <p className="text-sm text-gray-600 dark:text-gray-400">Click to upload or drag and drop</p>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">PNG, JPG, WebP up to 50MB</p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+            </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Upload Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Upload Image</CardTitle>
-              <CardDescription>Select image to upscale</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="border-2 border-dashed border-purple-300 rounded-lg p-8 text-center hover:border-purple-500 transition">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                  id="image-upload"
-                />
-                <label htmlFor="image-upload" className="cursor-pointer block">
-                  <Upload className="mx-auto h-12 w-12 text-purple-500 mb-2" />
-                  <p className="text-sm text-gray-600">Click to upload</p>
-                  <p className="text-xs text-gray-400">PNG, JPG, GIF up to 50MB</p>
-                </label>
-              </div>
-            </CardContent>
-          </Card>
+            {preview && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-blue-50 dark:bg-blue-950 p-3 rounded-lg">
+                    <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Original Size</p>
+                    <p className="text-sm font-bold text-blue-600 dark:text-blue-400 mt-1">
+                      {originalSize.width} x {originalSize.height}
+                    </p>
+                  </div>
+                  <div className="bg-blue-50 dark:bg-blue-950 p-3 rounded-lg">
+                    <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Result Size</p>
+                    <p className="text-sm font-bold text-blue-600 dark:text-blue-400 mt-1">
+                      {upscaledSize.width} x {upscaledSize.height}
+                    </p>
+                  </div>
+                </div>
 
-          {/* Upscale Controls */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Upscale Settings</CardTitle>
-              <CardDescription>Choose upscaling factor</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray-700 block mb-2">
-                  Scale Factor: {scale}x
-                </label>
-                <div className="space-y-2">
-                  {[1, 2, 3, 4].map((s) => (
-                    <label key={s} className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="scale"
-                        value={s}
-                        checked={scale === s}
-                        onChange={() => setScale(s)}
-                        className="w-4 h-4"
-                      />
-                      <span className="text-sm text-gray-700">{s}x Upscale</span>
-                    </label>
-                  ))}
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Upscale Factor</label>
+                  <Select value={String(scale)} onValueChange={(val) => setScale(Number(val) as 2 | 3 | 4)}>
+                    <SelectTrigger className="dark:bg-gray-900 dark:border-gray-700">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="2">2x Upscale</SelectItem>
+                      <SelectItem value="3">3x Upscale</SelectItem>
+                      <SelectItem value="4">4x Upscale</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
+            )}
 
-              <Button
-                onClick={upscaleImage}
-                disabled={!image || loading}
-                className="w-full bg-purple-500 hover:bg-purple-600 gap-2"
-              >
-                <Zap className="h-4 w-4" />
-                {loading ? 'Upscaling...' : 'Upscale Image'}
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-
-        {error && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        {/* Preview */}
-        {image && (
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Preview</CardTitle>
-                <CardDescription>Upscaled image result</CardDescription>
+            {!preview && (
+              <div className="text-center py-4">
+                <p className="text-sm text-gray-500 dark:text-gray-400">No image selected</p>
               </div>
-              <Button
-                onClick={downloadImage}
-                variant="outline"
-                size="sm"
-                className="gap-2"
-              >
-                <Download className="h-4 w-4" />
-                Download
-              </Button>
+            )}
+          </CardContent>
+        </>
+      }
+      outputSection={
+        (preview || upscaled) ? (
+          <>
+            <CardHeader>
+              <CardTitle>Preview</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="max-h-96 overflow-auto rounded-lg border border-gray-200">
-                <img src={image} alt="Upscaled preview" className="w-full" />
+            <CardContent className="space-y-4">
+              <div className="aspect-video bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
+                <img
+                  src={upscaled || preview}
+                  alt="preview"
+                  className="max-w-full max-h-full object-contain"
+                />
               </div>
             </CardContent>
-          </Card>
-        )}
-      </div>
-    </div>
+          </>
+        ) : undefined
+      }
+      actionButton={{
+        label: "Upscale Image",
+        onClick: upscaleImage,
+        icon: "🔍",
+        loading: processing,
+      }}
+      resetButton={{
+        label: "Reset",
+        onClick: handleReset,
+      }}
+      features={[
+        { icon: "🔍", title: "Enlarge Images", description: "2x, 3x, 4x scaling" },
+        { icon: "✨", title: "Quality Preservation", description: "Advanced smoothing" },
+        { icon: "📏", title: "Size Display", description: "Original & result info" },
+      ]}
+      error={error}
+      children={
+        upscaled ? (
+          <button
+            onClick={handleDownload}
+            className="w-full mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600 text-white rounded-lg font-medium flex items-center justify-center gap-2"
+          >
+            <Download className="w-4 h-4" /> Download Upscaled Image
+          </button>
+        ) : undefined
+      }
+    />
   );
-}
+};
+
+export default ImageUpscaler;

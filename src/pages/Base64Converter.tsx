@@ -1,162 +1,190 @@
-import { useState } from 'react';
-import { Copy, AlertCircle, Zap } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Input } from '@/components/ui/input';
+import { useState } from "react";
+import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Copy, Check } from "lucide-react";
 
-export default function Base64Converter() {
-  const [input, setInput] = useState('');
-  const [output, setOutput] = useState('');
-  const [mode, setMode] = useState<'encode' | 'decode'>('encode');
-  const [error, setError] = useState('');
+const Base64Converter = () => {
+  const [input, setInput] = useState("");
+  const [output, setOutput] = useState("");
+  const [mode, setMode] = useState("encode");
+  const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleConvert = () => {
-    if (!input.trim()) {
-      setError('Please enter text to convert');
-      return;
-    }
-
-    setError('');
-
+  const encode = (str: string) => {
     try {
-      if (mode === 'encode') {
-        const encoded = btoa(input);
-        setOutput(encoded);
-      } else {
-        const decoded = atob(input);
-        setOutput(decoded);
-      }
-    } catch {
-      setError('Invalid input for the selected mode');
+      return btoa(unescape(encodeURIComponent(str)));
+    } catch (e) {
+      throw new Error("Failed to encode");
     }
   };
 
-  const copyToClipboard = () => {
+  const decode = (str: string) => {
+    try {
+      return decodeURIComponent(escape(atob(str)));
+    } catch (e) {
+      throw new Error("Invalid base64 string");
+    }
+  };
+
+  const convert = () => {
+    setLoading(true);
+    try {
+      if (!input) {
+        setError("Please enter text");
+        setLoading(false);
+        return;
+      }
+
+      const result = mode === "encode" ? encode(input) : decode(input);
+      setOutput(result);
+      setError("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Conversion failed");
+    }
+    setLoading(false);
+  };
+
+  const handleCopy = () => {
     navigator.clipboard.writeText(output);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  const swapMode = () => {
-    setMode(mode === 'encode' ? 'decode' : 'encode');
-    setInput(output);
-    setOutput(input);
+  const handleReset = () => {
+    setInput("");
+    setOutput("");
+    setError("");
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold text-gray-900">Base64 Converter</h1>
-          <p className="text-gray-600">Encode and decode Base64 text instantly</p>
+  const inputSection = (
+    <>
+      <CardHeader>
+        <CardTitle>Input Settings</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-3">
+          <label className="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer">
+            <input
+              type="radio"
+              checked={mode === "encode"}
+              onChange={() => setMode("encode")}
+              className="w-4 h-4"
+            />
+            <span className="text-sm text-gray-700 dark:text-gray-300">Encode (Text → Base64)</span>
+          </label>
+          <label className="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer">
+            <input
+              type="radio"
+              checked={mode === "decode"}
+              onChange={() => setMode("decode")}
+              className="w-4 h-4"
+            />
+            <span className="text-sm text-gray-700 dark:text-gray-300">Decode (Base64 → Text)</span>
+          </label>
         </div>
 
-        {/* Main Converter */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Base64 {mode === 'encode' ? 'Encoder' : 'Decoder'}</CardTitle>
-            <CardDescription>
-              {mode === 'encode' ? 'Convert text to Base64' : 'Convert Base64 to text'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Mode Selector */}
-            <div className="flex gap-2 justify-center">
-              {['encode', 'decode'].map((m) => (
-                <Button
-                  key={m}
-                  onClick={() => setMode(m as 'encode' | 'decode')}
-                  variant={mode === m ? 'default' : 'outline'}
-                  className={mode === m ? 'bg-indigo-500 hover:bg-indigo-600' : ''}
-                >
-                  {m === 'encode' ? 'Encode to Base64' : 'Decode from Base64'}
-                </Button>
-              ))}
-            </div>
-
-            {/* Input and Output */}
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Input */}
-              <div>
-                <label className="text-sm font-medium text-gray-700 block mb-2">
-                  Input Text
-                </label>
-                <textarea
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder={mode === 'encode' ? 'Enter text to encode...' : 'Enter Base64 to decode...'}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm min-h-48"
-                />
-              </div>
-
-              {/* Output */}
-              <div>
-                <label className="text-sm font-medium text-gray-700 block mb-2">
-                  Output
-                </label>
-                <textarea
-                  value={output}
-                  readOnly
-                  placeholder="Converted output will appear here..."
-                  className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 font-mono text-sm min-h-48"
-                />
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col md:flex-row gap-2 justify-center">
-              <Button
-                onClick={handleConvert}
-                className="bg-indigo-500 hover:bg-indigo-600 gap-2"
-              >
-                <Zap className="h-4 w-4" />
-                Convert
-              </Button>
-              <Button
-                onClick={swapMode}
-                variant="outline"
-                className="gap-2"
-              >
-                ⇅ Swap
-              </Button>
-              {output && (
-                <Button
-                  onClick={copyToClipboard}
-                  variant="outline"
-                  className="gap-2"
-                >
-                  <Copy className="h-4 w-4" />
-                  Copy
-                </Button>
-              )}
-            </div>
-
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Info Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>About Base64</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm text-gray-700">
-            <p>
-              Base64 is a binary-to-text encoding scheme used to represent binary data in ASCII format. It's commonly used for:
-            </p>
-            <ul className="list-disc list-inside space-y-1">
-              <li>Transmitting binary data over text-based protocols</li>
-              <li>Embedding images in HTML/CSS</li>
-              <li>Securing credentials and tokens</li>
-              <li>Data interchange between systems</li>
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            {mode === "encode" ? "Text to Encode" : "Base64 to Decode"}
+          </label>
+          <Textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={mode === "encode" ? "Enter text to encode..." : "Enter Base64 to decode..."}
+            className="min-h-32 border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white focus:ring-blue-500"
+          />
+        </div>
+      </CardContent>
+    </>
   );
-}
+
+  const outputSection = output ? (
+    <>
+      <CardHeader>
+        <CardTitle>Result</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border border-blue-200 dark:border-blue-800 rounded-lg min-h-32 break-all text-sm text-gray-700 dark:text-gray-300 max-h-40 overflow-y-auto font-mono">
+          {output}
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="p-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded">
+            <p className="text-xs font-semibold text-gray-600 dark:text-gray-400">CHARACTER COUNT</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{output.length}</p>
+          </div>
+          <div className="p-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded">
+            <p className="text-xs font-semibold text-gray-600 dark:text-gray-400">SIZE BYTES</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{new Blob([output]).size}</p>
+          </div>
+        </div>
+      </CardContent>
+    </>
+  ) : undefined;
+
+  return (
+    <ProfessionalToolLayout
+      title="Base64 Converter"
+      description="Encode and decode text using Base64 encoding"
+      inputSection={inputSection}
+      outputSection={outputSection}
+      error={error}
+      actionButton={{
+        label: mode === "encode" ? "Encode" : "Decode",
+        onClick: convert,
+        icon: "ArrowRight",
+        loading,
+      }}
+      resetButton={{
+        label: "Reset",
+        onClick: handleReset,
+      }}
+      features={[
+        {
+          icon: "🔐",
+          title: "Encoding",
+          description: "Convert text to Base64",
+        },
+        {
+          icon: "🔓",
+          title: "Decoding",
+          description: "Convert Base64 to text",
+        },
+        {
+          icon: "✨",
+          title: "Instant",
+          description: "Real-time conversion",
+        },
+      ]}
+      children={
+        output && (
+          <Button
+            onClick={handleCopy}
+            className={`w-full mt-4 ${
+              copied
+                ? "bg-green-600 hover:bg-green-700 dark:bg-green-700"
+                : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600"
+            } text-white`}
+          >
+            {copied ? (
+              <>
+                <Check className="w-4 h-4 mr-2" />
+                Copied!
+              </>
+            ) : (
+              <>
+                <Copy className="w-4 h-4 mr-2" />
+                Copy Output
+              </>
+            )}
+          </Button>
+        )
+      }
+    />
+  );
+};
+
+export default Base64Converter;

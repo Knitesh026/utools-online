@@ -1,22 +1,22 @@
 import { useState } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const AgeCalculator = () => {
   const [birthDate, setBirthDate] = useState("");
   const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState("");
 
   const handleCalculate = () => {
     if (!birthDate) {
-      alert("Please select a birth date");
+      setError("Please select a birth date");
       return;
     }
 
     try {
+      setError("");
       const birth = new Date(birthDate);
       const today = new Date();
       
@@ -45,78 +45,99 @@ const AgeCalculator = () => {
         birthDate: birth.toLocaleDateString(),
       });
     } catch (error) {
-      alert("Error: Invalid date");
+      setError("Error: Invalid date. Please try again.");
       console.error(error);
     }
   };
 
-  return (
+  const handleReset = () => {
+    setBirthDate("");
+    setResult(null);
+    setError("");
+  };
+
+  const inputSection = (
     <>
-      <Header />
-      <main className="min-h-screen bg-background py-8 px-4">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <div className="text-center space-y-2">
-            <h1 className="text-4xl sm:text-5xl font-bold text-foreground">Age Calculator</h1>
-            <p className="text-muted-foreground">Calculate your exact age</p>
-          </div>
-
-          <Card className="border-border">
-            <CardHeader>
-              <CardTitle>Select Birth Date</CardTitle>
-              <CardDescription>Choose your date of birth</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="birthDate">Birth Date</Label>
-                <Input
-                  id="birthDate"
-                  type="date"
-                  value={birthDate}
-                  onChange={(e) => setBirthDate(e.target.value)}
-                  className="mt-2"
-                />
-              </div>
-              <Button
-                onClick={handleCalculate}
-                className="w-full bg-primary hover:bg-primary/90"
-              >
-                Calculate Age
-              </Button>
-            </CardContent>
-          </Card>
-
-          {result && (
-            <Card className="border-border bg-card">
-              <CardHeader>
-                <CardTitle>Your Age</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 gap-4">
-                  <div className="p-4 bg-muted rounded-lg">
-                    <p className="text-muted-foreground text-sm">Years</p>
-                    <p className="text-3xl font-bold text-primary">{result.years}</p>
-                  </div>
-                  <div className="p-4 bg-muted rounded-lg">
-                    <p className="text-muted-foreground text-sm">Months</p>
-                    <p className="text-2xl font-bold text-primary">{result.months}</p>
-                  </div>
-                  <div className="p-4 bg-muted rounded-lg">
-                    <p className="text-muted-foreground text-sm">Days</p>
-                    <p className="text-2xl font-bold text-primary">{result.days}</p>
-                  </div>
-                  <div className="p-4 bg-muted rounded-lg">
-                    <p className="text-muted-foreground text-sm">Total Days</p>
-                    <p className="text-xl font-bold text-primary">{result.totalDays}</p>
-                  </div>
-                </div>
-                <p className="text-foreground mt-1">{result.nextBirthday}</p>
-              </CardContent>
-            </Card>
-          )}
+      <CardHeader>
+        <CardTitle>Select Birth Date</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <Label htmlFor="birthDate">Birth Date</Label>
+          <Input
+            id="birthDate"
+            type="date"
+            value={birthDate}
+            onChange={(e) => setBirthDate(e.target.value)}
+            className="mt-2"
+          />
         </div>
-      </main>
-      <Footer />
+      </CardContent>
     </>
+  );
+
+  const outputSection = result ? (
+    <>
+      <CardHeader>
+        <CardTitle>Your Age</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+            <p className="text-blue-600 dark:text-blue-400 text-sm font-medium">Years</p>
+            <p className="text-3xl font-bold text-blue-700 dark:text-blue-300 mt-2">{result.years}</p>
+          </div>
+          <div className="p-4 bg-purple-50 dark:bg-purple-950 rounded-lg border border-purple-200 dark:border-purple-800">
+            <p className="text-purple-600 dark:text-purple-400 text-sm font-medium">Months</p>
+            <p className="text-3xl font-bold text-purple-700 dark:text-purple-300 mt-2">{result.months}</p>
+          </div>
+          <div className="p-4 bg-pink-50 dark:bg-pink-950 rounded-lg border border-pink-200 dark:border-pink-800">
+            <p className="text-pink-600 dark:text-pink-400 text-sm font-medium">Days</p>
+            <p className="text-3xl font-bold text-pink-700 dark:text-pink-300 mt-2">{result.days}</p>
+          </div>
+          <div className="p-4 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
+            <p className="text-green-600 dark:text-green-400 text-sm font-medium">Total Days</p>
+            <p className="text-3xl font-bold text-green-700 dark:text-green-300 mt-2">{result.totalDays}</p>
+          </div>
+        </div>
+      </CardContent>
+    </>
+  ) : undefined;
+
+  return (
+    <ProfessionalToolLayout
+      title="Age Calculator"
+      description="Calculate your exact age in years, months, days, and total days lived"
+      inputSection={inputSection}
+      outputSection={outputSection}
+      error={error}
+      actionButton={{
+        label: "Calculate Age",
+        onClick: handleCalculate,
+        icon: "Calculator"
+      }}
+      resetButton={{
+        label: "Reset",
+        onClick: handleReset
+      }}
+      features={[
+        {
+          icon: "📅",
+          title: "Precise Calculation",
+          description: "Get your age down to the exact day"
+        },
+        {
+          icon: "🎂",
+          title: "All Units",
+          description: "See years, months, days, and total days"
+        },
+        {
+          icon: "⚡",
+          title: "Instant Results",
+          description: "Calculate immediately with no delays"
+        }
+      ]}
+    />
   );
 };
 

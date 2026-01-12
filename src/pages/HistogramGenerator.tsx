@@ -1,271 +1,427 @@
-import { useState } from 'react';
-import { Upload, AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import { useState, useRef } from "react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Upload, RefreshCw } from "lucide-react";
 
-export default function HistogramGenerator() {
-  const [imageSrc, setImageSrc] = useState('');
-  const [error, setError] = useState('');
-  const [histogram, setHistogram] = useState<{ r: number[]; g: number[]; b: number[] } | null>(null);
-  const [stats, setStats] = useState<any>(null);
+const HistogramGenerator = () => {
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string>("");
+  const [histogramCanvas, setHistogramCanvas] = useState<string>("");
+  const [stats, setStats] = useState({
+    brightness: 0,
+    contrast: 0,
+    avgR: 0,
+    avgG: 0,
+    avgB: 0,
+  });
+  const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
 
-    if (!file.type.startsWith('image/')) {
-      setError('Please upload an image file');
+    if (!selectedFile.type.startsWith("image/")) {
+      setError("Please select an image file");
       return;
     }
+
+    if (selectedFile.size > 50 * 1024 * 1024) {
+      setError("File size must be less than 50MB");
+      return;
+    }
+
+    setError("");
+    setFile(selectedFile);
+    setHistogramCanvas("");
 
     const reader = new FileReader();
-    reader.onload = (event) => {
-      setImageSrc(event.target?.result as string);
-      setError('');
+    reader.onload = (e) => {
+      setPreview(e.target?.result as string);
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(selectedFile);
   };
 
-  const analyzeImage = () => {
-    if (!imageSrc) {
-      setError('Please upload an image');
-      return;
+  const generateHistogram = async () => {
+    if (!preview) return;
+
+    setProcessing(true);
+    try {
+      const canvas = document.createElement("canvas");
+      const img = new Image();
+
+      img.onload = () => {
+        const w = img.width;
+        const h = img.height;
+
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+
+        if (!ctx) {
+          setError("Failed to process image");
+          setProcessing(false);
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0);
+        const imageData = ctx.getImageData(0, 0, w, h);
+        const data = imageData.data;
+
+        // Calculate histogram
+        const histogram = {
+          r: Array(256).fill(0),
+          g: Array(256).fill(0),
+          b: Array(256).fill(0),
+          brightness: Array(256).fill(0),
+        };
+
+        let sumR = 0, sumG = 0, sumB = 0;
+        const pixelCount = data.length / 4;
+
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+
+          histogram.r[r]++;
+          histogram.g[g]++;
+          histogram.b[b]++;
+
+          const brightness = Math.round((r + g + b) / 3);
+          histogram.brightness[brightness]++;
+
+          sumR += r;
+          sumG += g;
+          sumB += b;
+        }
+
+        // Calculate statistics
+        const avgR = Math.round(sumR / pixelCount);
+        const avgG = Math.round(sumG / pixelCount);
+        const avgB = Math.round(sumB / pixelCount);
+        const avgBrightness = Math.round((avgR + avgG + avgB) / 3);
+
+        // Calculate contrast (standard deviation)
+        let sumVarR = 0, sumVarG = 0, sumVarB = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          sumVarR += Math.pow(data[i] - avgR, 2);
+          sumVarG += Math.pow(data[i + 1] - avgG, 2);
+          sumVarB += Math.pow(data[i + 2] - avgB, 2);
+        }
+
+        const contrast = Math.round(Math.sqrt((sumVarR + sumVarG + sumVarB) / (pixelCount * 3)));
+
+        setStats({
+          brightness: avgBrightness,
+          contrast,
+          avgR,
+          avgG,
+          avgB,
+        });
+
+        // Draw histogram
+        const histCanvas = document.createElement("canvas");
+        histCanvas.width = 600;
+        histCanvas.height = 300;
+        const histCtx = histCanvas.getContext("2d");
+
+        if (!histCtx) {
+          setError("Failed to draw histogram");
+          setProcessing(false);
+          return;
+        }
+
+        // Background
+        histCtx.fillStyle = "#f3f4f6";
+        histCtx.fillRect(0, 0, histCanvas.width, histCanvas.height);
+
+        // Grid lines
+        histCtx.strokeStyle = "#e5e7eb";
+        histCtx.lineWidth = 1;
+        for (let i = 0; i <= 4; i++) {
+          const x = (histCanvas.width / 4) * i;
+          histCtx.beginPath();
+          histCtx.moveTo(x, 0);
+          histCtx.lineTo(x, histCanvas.height);
+          histCtx.stroke();
+
+          const y = (histCanvas.height / 4) * i;
+          histCtx.beginPath();
+          histCtx.moveTo(0, y);
+          histCtx.lineTo(histCanvas.width, y);
+          histCtx.stroke();
+        }
+
+        // Find max value for scaling
+        const maxVal = Math.max(
+          ...histogram.r,
+          ...histogram.g,
+          ...histogram.b,
+          ...histogram.brightness
+        );
+
+        // Draw brightness histogram
+        const barWidth = histCanvas.width / 256;
+        const scale = histCanvas.height / maxVal;
+
+        histCtx.fillStyle = "rgba(100, 100, 100, 0.5)";
+        for (let i = 0; i < 256; i++) {
+          const height = histogram.brightness[i] * scale;
+          histCtx.fillRect(
+            i * barWidth,
+            histCanvas.height - height,
+            barWidth,
+            height
+          );
+        }
+
+        // Draw individual RGB histograms (as lines)
+        histCtx.lineWidth = 2;
+
+        // Red
+        histCtx.strokeStyle = "rgba(255, 0, 0, 0.6)";
+        histCtx.beginPath();
+        for (let i = 0; i < 256; i++) {
+          const height = histogram.r[i] * scale;
+          const y = histCanvas.height - height;
+          if (i === 0) {
+            histCtx.moveTo(i * barWidth, y);
+          } else {
+            histCtx.lineTo(i * barWidth, y);
+          }
+        }
+        histCtx.stroke();
+
+        // Green
+        histCtx.strokeStyle = "rgba(0, 200, 0, 0.6)";
+        histCtx.beginPath();
+        for (let i = 0; i < 256; i++) {
+          const height = histogram.g[i] * scale;
+          const y = histCanvas.height - height;
+          if (i === 0) {
+            histCtx.moveTo(i * barWidth, y);
+          } else {
+            histCtx.lineTo(i * barWidth, y);
+          }
+        }
+        histCtx.stroke();
+
+        // Blue
+        histCtx.strokeStyle = "rgba(0, 100, 255, 0.6)";
+        histCtx.beginPath();
+        for (let i = 0; i < 256; i++) {
+          const height = histogram.b[i] * scale;
+          const y = histCanvas.height - height;
+          if (i === 0) {
+            histCtx.moveTo(i * barWidth, y);
+          } else {
+            histCtx.lineTo(i * barWidth, y);
+          }
+        }
+        histCtx.stroke();
+
+        // Add labels
+        histCtx.fillStyle = "#374151";
+        histCtx.font = "12px sans-serif";
+        histCtx.fillText("0", 5, histCanvas.height - 5);
+        histCtx.fillText("255", histCanvas.width - 30, histCanvas.height - 5);
+
+        histCanvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                setHistogramCanvas(e.target?.result as string);
+                setProcessing(false);
+              };
+              reader.readAsDataURL(blob);
+            }
+          },
+          "image/png"
+        );
+      };
+
+      img.src = preview;
+    } catch (err) {
+      setError("Failed to generate histogram");
+      setProcessing(false);
     }
+  };
 
-    const img = new window.Image();
-    img.src = imageSrc;
-
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-
-      if (!ctx) {
-        setError('Could not process image');
-        return;
-      }
-
-      ctx.drawImage(img, 0, 0);
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imageData.data;
-
-      // Initialize histogram arrays
-      const r = new Array(256).fill(0);
-      const g = new Array(256).fill(0);
-      const b = new Array(256).fill(0);
-
-      // Calculate histogram
-      for (let i = 0; i < data.length; i += 4) {
-        r[data[i]]++;
-        g[data[i + 1]]++;
-        b[data[i + 2]]++;
-      }
-
-      // Normalize histogram values
-      const max = Math.max(...r, ...g, ...b);
-      const normalizedR = r.map((v) => (v / max) * 100);
-      const normalizedG = g.map((v) => (v / max) * 100);
-      const normalizedB = b.map((v) => (v / max) * 100);
-
-      setHistogram({
-        r: normalizedR,
-        g: normalizedG,
-        b: normalizedB,
-      });
-
-      // Calculate statistics
-      const avgR = r.reduce((a, b, i) => a + i * b, 0) / r.reduce((a, b) => a + b);
-      const avgG = g.reduce((a, b, i) => a + i * b, 0) / g.reduce((a, b) => a + b);
-      const avgB = b.reduce((a, b, i) => a + i * b, 0) / b.reduce((a, b) => a + b);
-
-      setStats({
-        avgR: Math.round(avgR),
-        avgG: Math.round(avgG),
-        avgB: Math.round(avgB),
-        totalPixels: (data.length / 4).toLocaleString(),
-      });
-    };
+  const handleReset = () => {
+    setFile(null);
+    setPreview("");
+    setHistogramCanvas("");
+    setStats({ brightness: 0, contrast: 0, avgR: 0, avgG: 0, avgB: 0 });
+    setError("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 p-4 md:p-8">
-        <div className="max-w-4xl mx-auto space-y-6">
+      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8 md:py-12 px-4">
+        <div className="max-w-4xl mx-auto space-y-8">
+          {/* Header */}
           <div className="text-center space-y-2">
-            <h1 className="text-4xl font-bold text-gray-900">Histogram Generator</h1>
-            <p className="text-gray-600">Analyze color distribution in images</p>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900">Histogram Generator</h1>
+            <p className="text-gray-600">Analyze image color distribution</p>
           </div>
 
-          {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+          {/* Features */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="border-gray-200">
+              <CardContent className="pt-6">
+                <div className="text-2xl mb-2">📊</div>
+                <h4 className="font-semibold text-gray-900 mb-1">Visual Analysis</h4>
+                <p className="text-sm text-gray-600">See color distribution</p>
+              </CardContent>
+            </Card>
+            <Card className="border-gray-200">
+              <CardContent className="pt-6">
+                <div className="text-2xl mb-2">🎨</div>
+                <h4 className="font-semibold text-gray-900 mb-1">RGB Channels</h4>
+                <p className="text-sm text-gray-600">Individual channel graphs</p>
+              </CardContent>
+            </Card>
+            <Card className="border-gray-200">
+              <CardContent className="pt-6">
+                <div className="text-2xl mb-2">📈</div>
+                <h4 className="font-semibold text-gray-900 mb-1">Statistics</h4>
+                <p className="text-sm text-gray-600">Brightness & contrast</p>
+              </CardContent>
+            </Card>
+          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Upload Image</CardTitle>
-              <CardDescription>Select an image to analyze</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="border-2 border-dashed border-orange-300 rounded-lg p-8 text-center hover:border-orange-500 transition cursor-pointer">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                  id="imageUpload"
-                />
-                <label htmlFor="imageUpload" className="cursor-pointer block">
-                  <Upload className="w-8 h-8 text-orange-600 mx-auto mb-2" />
-                  <p className="font-medium text-gray-700">Click to upload image</p>
-                  <p className="text-xs text-gray-500">or drag and drop</p>
-                </label>
-              </div>
-
-              {imageSrc && (
-                <>
-                  <img
-                    src={imageSrc}
-                    alt="Preview"
-                    className="w-full max-h-48 object-contain rounded-lg"
+          {/* Main Content */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Input Section */}
+            <Card className="border-gray-200 shadow-sm">
+              <CardHeader>
+                <CardTitle>Upload Image</CardTitle>
+                <CardDescription>Select an image to analyze</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div
+                  className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 transition"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+                  <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
+                  <p className="text-xs text-gray-500 mt-1">PNG, JPG, WebP up to 50MB</p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    className="hidden"
                   />
-                  <Button
-                    onClick={analyzeImage}
-                    className="w-full bg-orange-600 hover:bg-orange-700"
-                  >
-                    Analyze Histogram
-                  </Button>
-                </>
-              )}
-            </CardContent>
-          </Card>
+                </div>
 
-          {histogram && (
-            <>
-              <Card>
+                {preview && (
+                  <div className="space-y-3">
+                    <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                      <img
+                        src={preview}
+                        alt="preview"
+                        className="max-w-full max-h-full object-contain"
+                      />
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={generateHistogram}
+                        disabled={processing}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        {processing ? "Processing..." : "Generate Histogram"}
+                      </Button>
+                      <Button
+                        onClick={handleReset}
+                        variant="outline"
+                        className="flex-1"
+                      >
+                        <RefreshCw className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {!preview && (
+                  <div className="text-center py-4">
+                    <p className="text-sm text-gray-500">No image selected</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Output Section */}
+            {(histogramCanvas || preview) && (
+              <Card className="border-gray-200 shadow-sm">
                 <CardHeader>
-                  <CardTitle>Color Distribution</CardTitle>
+                  <CardTitle>Analysis Results</CardTitle>
+                  <CardDescription>Color distribution histogram</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Red Histogram */}
-                  <div>
-                    <h3 className="text-sm font-medium text-red-600 mb-2">Red Channel</h3>
-                    <div className="flex items-end gap-0.5 h-32 bg-gray-100 p-2 rounded">
-                      {histogram.r.map((val, idx) => (
-                        <div
-                          key={idx}
-                          style={{
-                            height: `${val}%`,
-                            backgroundColor: 'rgb(239, 68, 68)',
-                            flex: 1,
-                            minWidth: '1px',
-                          }}
-                          title={`${idx}: ${val.toFixed(2)}%`}
+                <CardContent className="space-y-4">
+                  {histogramCanvas && (
+                    <>
+                      <div className="bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                        <img
+                          src={histogramCanvas}
+                          alt="histogram"
+                          className="w-full h-auto"
                         />
-                      ))}
-                    </div>
-                  </div>
+                      </div>
 
-                  {/* Green Histogram */}
-                  <div>
-                    <h3 className="text-sm font-medium text-green-600 mb-2">Green Channel</h3>
-                    <div className="flex items-end gap-0.5 h-32 bg-gray-100 p-2 rounded">
-                      {histogram.g.map((val, idx) => (
-                        <div
-                          key={idx}
-                          style={{
-                            height: `${val}%`,
-                            backgroundColor: 'rgb(34, 197, 94)',
-                            flex: 1,
-                            minWidth: '1px',
-                          }}
-                          title={`${idx}: ${val.toFixed(2)}%`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Blue Histogram */}
-                  <div>
-                    <h3 className="text-sm font-medium text-blue-600 mb-2">Blue Channel</h3>
-                    <div className="flex items-end gap-0.5 h-32 bg-gray-100 p-2 rounded">
-                      {histogram.b.map((val, idx) => (
-                        <div
-                          key={idx}
-                          style={{
-                            height: `${val}%`,
-                            backgroundColor: 'rgb(59, 130, 246)',
-                            flex: 1,
-                            minWidth: '1px',
-                          }}
-                          title={`${idx}: ${val.toFixed(2)}%`}
-                        />
-                      ))}
-                    </div>
-                  </div>
+                      {/* Statistics */}
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="bg-gray-50 p-3 rounded-lg">
+                          <p className="text-xs text-gray-600 mb-1">Brightness</p>
+                          <p className="text-lg font-bold text-gray-900">{stats.brightness}</p>
+                        </div>
+                        <div className="bg-gray-50 p-3 rounded-lg">
+                          <p className="text-xs text-gray-600 mb-1">Contrast</p>
+                          <p className="text-lg font-bold text-gray-900">{stats.contrast}</p>
+                        </div>
+                        <div className="bg-red-50 p-3 rounded-lg">
+                          <p className="text-xs text-red-600 mb-1">Avg Red</p>
+                          <p className="text-lg font-bold text-red-700">{stats.avgR}</p>
+                        </div>
+                        <div className="bg-green-50 p-3 rounded-lg">
+                          <p className="text-xs text-green-600 mb-1">Avg Green</p>
+                          <p className="text-lg font-bold text-green-700">{stats.avgG}</p>
+                        </div>
+                        <div className="bg-blue-50 p-3 rounded-lg">
+                          <p className="text-xs text-blue-600 mb-1">Avg Blue</p>
+                          <p className="text-lg font-bold text-blue-700">{stats.avgB}</p>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </CardContent>
               </Card>
+            )}
+          </div>
 
-              {stats && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Statistics</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="p-3 bg-red-50 rounded">
-                        <p className="text-xs text-gray-600">Red Average</p>
-                        <p className="text-xl font-bold text-red-600">{stats.avgR}</p>
-                      </div>
-                      <div className="p-3 bg-green-50 rounded">
-                        <p className="text-xs text-gray-600">Green Average</p>
-                        <p className="text-xl font-bold text-green-600">{stats.avgG}</p>
-                      </div>
-                      <div className="p-3 bg-blue-50 rounded">
-                        <p className="text-xs text-gray-600">Blue Average</p>
-                        <p className="text-xl font-bold text-blue-600">{stats.avgB}</p>
-                      </div>
-                      <div className="p-3 bg-gray-100 rounded">
-                        <p className="text-xs text-gray-600">Total Pixels</p>
-                        <p className="text-lg font-bold text-gray-700">{stats.totalPixels}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </>
+          {/* Error Display */}
+          {error && (
+            <Card className="border-red-200 bg-red-50">
+              <CardContent className="pt-6">
+                <p className="text-sm text-red-700">{error}</p>
+              </CardContent>
+            </Card>
           )}
-
-          <Card>
-            <CardHeader>
-              <CardTitle>About Histograms</CardTitle>
-              <CardDescription>Understanding color distribution</CardDescription>
-            </CardHeader>
-            <CardContent className="text-sm text-gray-600 space-y-2">
-              <p>
-                • A histogram shows the distribution of color values in an image
-              </p>
-              <p>
-                • The X-axis represents pixel intensity values (0-255)
-              </p>
-              <p>
-                • The Y-axis shows the frequency of each value
-              </p>
-              <p>
-                • Useful for exposure and contrast analysis
-              </p>
-            </CardContent>
-          </Card>
         </div>
       </main>
       <Footer />
     </>
   );
-}
+};
+
+export default HistogramGenerator;

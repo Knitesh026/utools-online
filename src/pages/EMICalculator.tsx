@@ -1,265 +1,191 @@
-import { useState } from 'react';
-import { Copy, AlertCircle, BarChart3 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Input } from '@/components/ui/input';
+import { useState } from "react";
+import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { DollarSign } from "lucide-react";
 
-export default function EMICalculator() {
-  const [principal, setPrincipal] = useState(100000);
-  const [rate, setRate] = useState(8.5);
-  const [tenure, setTenure] = useState(5);
-  const [emi, setEmi] = useState(0);
-  const [totalAmount, setTotalAmount] = useState(0);
-  const [totalInterest, setTotalInterest] = useState(0);
-  const [error, setError] = useState('');
+const EMICalculator = () => {
+  const [principal, setPrincipal] = useState("");
+  const [rate, setRate] = useState("");
+  const [tenure, setTenure] = useState("");
+  const [result, setResult] = useState<{
+    monthlyEMI: number;
+    totalAmount: number;
+    totalInterest: number;
+  } | null>(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const calculateEMI = () => {
+  const handleCalculate = () => {
+    setLoading(true);
+    setError("");
+    setResult(null);
+
     if (!principal || !rate || !tenure) {
-      setError('Please fill all fields');
+      setError("Please fill in all fields");
+      setLoading(false);
       return;
     }
 
-    if (principal <= 0 || rate < 0 || tenure <= 0) {
-      setError('Please enter valid values');
+    const p = parseFloat(principal);
+    const r = parseFloat(rate);
+    const t = parseFloat(tenure);
+
+    if (p <= 0 || r < 0 || t <= 0) {
+      setError("Please enter valid amounts (positive numbers)");
+      setLoading(false);
       return;
     }
 
-    setError('');
+    try {
+      const monthlyRate = r / 100 / 12;
+      const months = t * 12;
 
-    // Formula: EMI = P × r × (1 + r)^n / ((1 + r)^n - 1)
-    // where P = Principal, r = monthly rate, n = total months
-    const monthlyRate = rate / 12 / 100;
-    const numberOfPayments = tenure * 12;
+      let monthlyEMI: number;
+      if (monthlyRate === 0) {
+        monthlyEMI = p / months;
+      } else {
+        monthlyEMI =
+          (p * monthlyRate * Math.pow(1 + monthlyRate, months)) /
+          (Math.pow(1 + monthlyRate, months) - 1);
+      }
 
-    if (monthlyRate === 0) {
-      const calculatedEmi = principal / numberOfPayments;
-      setEmi(calculatedEmi);
-      setTotalAmount(principal);
-      setTotalInterest(0);
-    } else {
-      const numerator = monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments);
-      const denominator = Math.pow(1 + monthlyRate, numberOfPayments) - 1;
-      const calculatedEmi = principal * (numerator / denominator);
+      const totalAmount = monthlyEMI * months;
+      const totalInterest = totalAmount - p;
 
-      const total = calculatedEmi * numberOfPayments;
-      const interest = total - principal;
-
-      setEmi(calculatedEmi);
-      setTotalAmount(total);
-      setTotalInterest(interest);
+      setResult({
+        monthlyEMI: Math.round(monthlyEMI * 100) / 100,
+        totalAmount: Math.round(totalAmount * 100) / 100,
+        totalInterest: Math.round(totalInterest * 100) / 100,
+      });
+    } catch (err) {
+      setError("Failed to calculate EMI");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const reset = () => {
-    setPrincipal(100000);
-    setRate(8.5);
-    setTenure(5);
-    setEmi(0);
-    setTotalAmount(0);
-    setTotalInterest(0);
-    setError('');
+  const handleReset = () => {
+    setPrincipal("");
+    setRate("");
+    setTenure("");
+    setResult(null);
+    setError("");
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-green-50 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold text-gray-900">EMI Calculator</h1>
-          <p className="text-gray-600">Calculate monthly EMI for loans and mortgages</p>
+  const inputSection = (
+    <>
+      <CardHeader>
+        <CardTitle>Loan Details</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <Label htmlFor="principal" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+            Principal Amount (₹)
+          </Label>
+          <Input
+            id="principal"
+            type="number"
+            placeholder="e.g., 500000"
+            value={principal}
+            onChange={(e) => setPrincipal(e.target.value)}
+            min="0"
+            className="border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+          />
         </div>
 
-        {/* Calculator Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Loan Details</CardTitle>
-            <CardDescription>Enter loan information to calculate EMI</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid md:grid-cols-3 gap-4">
-              {/* Principal Amount */}
-              <div>
-                <label className="text-sm font-medium text-gray-700 block mb-2">
-                  Loan Amount (₹)
-                </label>
-                <Input
-                  type="number"
-                  value={principal}
-                  onChange={(e) => setPrincipal(Number(e.target.value))}
-                  placeholder="100000"
-                  className="w-full"
-                />
-                <input
-                  type="range"
-                  min="10000"
-                  max="10000000"
-                  step="10000"
-                  value={principal}
-                  onChange={(e) => setPrincipal(Number(e.target.value))}
-                  className="w-full mt-2 h-2 bg-gray-200 rounded-lg"
-                />
-              </div>
+        <div>
+          <Label htmlFor="rate" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+            Annual Interest Rate (%)
+          </Label>
+          <Input
+            id="rate"
+            type="number"
+            placeholder="e.g., 8.5"
+            value={rate}
+            onChange={(e) => setRate(e.target.value)}
+            min="0"
+            step="0.1"
+            className="border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+          />
+        </div>
 
-              {/* Interest Rate */}
-              <div>
-                <label className="text-sm font-medium text-gray-700 block mb-2">
-                  Annual Interest Rate (%)
-                </label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={rate}
-                  onChange={(e) => setRate(Number(e.target.value))}
-                  placeholder="8.5"
-                  className="w-full"
-                />
-                <input
-                  type="range"
-                  min="0"
-                  max="20"
-                  step="0.1"
-                  value={rate}
-                  onChange={(e) => setRate(Number(e.target.value))}
-                  className="w-full mt-2 h-2 bg-gray-200 rounded-lg"
-                />
-              </div>
-
-              {/* Tenure */}
-              <div>
-                <label className="text-sm font-medium text-gray-700 block mb-2">
-                  Tenure (Years)
-                </label>
-                <Input
-                  type="number"
-                  value={tenure}
-                  onChange={(e) => setTenure(Number(e.target.value))}
-                  placeholder="5"
-                  className="w-full"
-                />
-                <input
-                  type="range"
-                  min="1"
-                  max="30"
-                  step="1"
-                  value={tenure}
-                  onChange={(e) => setTenure(Number(e.target.value))}
-                  className="w-full mt-2 h-2 bg-gray-200 rounded-lg"
-                />
-              </div>
-            </div>
-
-            {/* Buttons */}
-            <div className="flex gap-2 justify-center">
-              <Button
-                onClick={calculateEMI}
-                className="bg-green-500 hover:bg-green-600 gap-2 flex-1"
-              >
-                <BarChart3 className="h-4 w-4" />
-                Calculate EMI
-              </Button>
-              <Button
-                onClick={reset}
-                variant="outline"
-                className="flex-1"
-              >
-                Reset
-              </Button>
-            </div>
-
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Results */}
-        {emi > 0 && (
-          <div className="grid md:grid-cols-3 gap-4">
-            <Card className="border-2 border-green-500">
-              <CardContent className="pt-6">
-                <div className="text-center">
-                  <p className="text-sm text-gray-600 mb-2">Monthly EMI</p>
-                  <p className="text-3xl font-bold text-green-600">
-                    ₹{emi.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-2 border-blue-500">
-              <CardContent className="pt-6">
-                <div className="text-center">
-                  <p className="text-sm text-gray-600 mb-2">Total Interest</p>
-                  <p className="text-3xl font-bold text-blue-600">
-                    ₹{totalInterest.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-2 border-purple-500">
-              <CardContent className="pt-6">
-                <div className="text-center">
-                  <p className="text-sm text-gray-600 mb-2">Total Amount</p>
-                  <p className="text-3xl font-bold text-purple-600">
-                    ₹{totalAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Amortization Table */}
-        {emi > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Payment Schedule (First 12 Months)</CardTitle>
-            </CardHeader>
-            <CardContent className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="border-b bg-gray-50">
-                  <tr>
-                    <th className="text-left py-2 px-2">Month</th>
-                    <th className="text-right py-2 px-2">EMI</th>
-                    <th className="text-right py-2 px-2">Principal</th>
-                    <th className="text-right py-2 px-2">Interest</th>
-                    <th className="text-right py-2 px-2">Balance</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Array.from({ length: Math.min(12, tenure * 12) }).map((_, i) => {
-                    const monthlyRate = rate / 12 / 100;
-                    let balance = principal;
-
-                    for (let j = 0; j <= i; j++) {
-                      const interest = balance * monthlyRate;
-                      const principalPayment = emi - interest;
-                      balance -= principalPayment;
-                    }
-
-                    const interest = balance < 0 ? 0 : balance * monthlyRate;
-                    const principalPayment = emi - interest;
-
-                    return (
-                      <tr key={i} className="border-b hover:bg-gray-50">
-                        <td className="py-2 px-2">{i + 1}</td>
-                        <td className="text-right py-2 px-2">₹{emi.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
-                        <td className="text-right py-2 px-2">₹{principalPayment.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
-                        <td className="text-right py-2 px-2">₹{interest.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
-                        <td className="text-right py-2 px-2">₹{Math.max(0, balance).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-    </div>
+        <div>
+          <Label htmlFor="tenure" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+            Tenure (Years)
+          </Label>
+          <Input
+            id="tenure"
+            type="number"
+            placeholder="e.g., 5"
+            value={tenure}
+            onChange={(e) => setTenure(e.target.value)}
+            min="0.1"
+            step="0.1"
+            className="border-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+          />
+        </div>
+      </CardContent>
+    </>
   );
-}
+
+  const outputSection = result ? (
+    <>
+      <CardHeader>
+        <CardTitle>EMI Breakdown</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950 p-4 rounded-lg border border-green-200 dark:border-green-800">
+          <div className="text-xs text-green-700 dark:text-green-300 mb-1">Monthly EMI</div>
+          <div className="text-3xl font-bold text-green-700 dark:text-green-400">
+            ₹{result.monthlyEMI.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+              ₹{(result.totalAmount / 100000).toFixed(1)}L
+            </div>
+            <div className="text-xs text-blue-700 dark:text-blue-300 mt-1">Total Amount</div>
+          </div>
+          <div className="p-4 bg-orange-50 dark:bg-orange-950 border border-orange-200 dark:border-orange-800 rounded-lg">
+            <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+              ₹{(result.totalInterest / 100000).toFixed(1)}L
+            </div>
+            <div className="text-xs text-orange-700 dark:text-orange-300 mt-1">Total Interest</div>
+          </div>
+        </div>
+      </CardContent>
+    </>
+  ) : undefined;
+
+  return (
+    <ProfessionalToolLayout
+      title="EMI Calculator"
+      description="Calculate your monthly loan installments and total interest"
+      inputSection={inputSection}
+      outputSection={outputSection}
+      error={error}
+      actionButton={{
+        label: "Calculate",
+        onClick: handleCalculate,
+        icon: "DollarSign",
+        loading,
+        disabled: !principal || !rate || !tenure,
+      }}
+      resetButton={{
+        label: "Reset",
+        onClick: handleReset,
+      }}
+      features={[
+        { icon: "💰", title: "Loan Planning", description: "Plan your borrowing efficiently" },
+        { icon: "📊", title: "Detailed Breakdown", description: "Interest and total amounts" },
+        { icon: "⚡", title: "Instant Results", description: "Calculate in seconds" },
+      ]}
+    />
+  );
+};
+
+export default EMICalculator;
