@@ -35,34 +35,75 @@ const Header = () => {
           {/* All Category Links */}
           {toolCategories.map((category) => (
             <div key={category.name} className="relative group">
-              <Link
-                to="/tools"
+              <button
                 className="flex items-center gap-1.5 text-black hover:text-primary transition-colors text-sm font-medium py-2"
               >
                 {category.name.replace(" Tools", "")}
                 <ChevronDown className="h-4 w-4 group-hover:rotate-180 transition-transform" />
-              </Link>
+              </button>
 
-              {/* Category Tools Submenu */}
-              <div className="absolute left-0 mt-0 w-56 bg-card border border-border rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 max-h-96 overflow-y-auto">
-                <div className="p-2 space-y-1">
-                  {category.tools.slice(0, 5).map((tool) => (
-                    <Link
-                      key={tool.title}
-                      to={tool.to}
-                      className="block px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-primary/10 rounded transition-colors"
-                    >
-                      {tool.title}
-                    </Link>
-                  ))}
-                  {category.tools.length > 5 && (
+              {/* Multi-column Category Tools Submenu */}
+              <div className="absolute left-0 mt-0 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 pt-2">
+                <div className="bg-white border border-border rounded-xl shadow-2xl overflow-hidden min-w-max">
+                  {/* Header */}
+                  <div className="px-6 py-4 border-b border-border/50 bg-gray-50">
+                    <h3 className="text-sm font-bold text-gray-900">{category.name}</h3>
+                    <p className="text-xs text-gray-600 mt-1">{category.description}</p>
+                  </div>
+
+                  {/* Tools Grid */}
+                  <div className="p-6">
+                    <div className="grid grid-cols-3 gap-6">
+                      {/* Split tools into 3 columns */}
+                      {[0, 1, 2].map((columnIndex) => (
+                        <div key={columnIndex} className="space-y-3">
+                          {category.tools
+                            .slice(
+                              columnIndex * Math.ceil(category.tools.length / 3),
+                              (columnIndex + 1) * Math.ceil(category.tools.length / 3)
+                            )
+                            .map((tool) => {
+                              const Icon = tool.icon;
+                              return (
+                                <Link
+                                  key={tool.title}
+                                  to={tool.to}
+                                  className="flex items-start gap-3 p-2 rounded-lg hover:bg-primary/5 transition-colors group/item"
+                                >
+                                  <div 
+                                    className="p-2 rounded-lg flex-shrink-0 mt-0.5"
+                                    style={{ backgroundColor: category.colorTheme.accentColor + "15" }}
+                                  >
+                                    <Icon 
+                                      className="h-4 w-4" 
+                                      style={{ color: category.colorTheme.accentColor }}
+                                    />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-medium text-gray-900 group-hover/item:text-primary transition-colors">
+                                      {tool.title}
+                                    </p>
+                                    {tool.description && (
+                                      <p className="text-xs text-gray-500 mt-0.5">
+                                        {tool.description}
+                                      </p>
+                                    )}
+                                  </div>
+                                </Link>
+                              );
+                            })}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* View All Button */}
                     <Link
                       to="/tools"
-                      className="block px-3 py-2 text-xs text-primary hover:text-primary/80 font-medium hover:bg-primary/10 rounded transition-colors"
+                      className="mt-4 pt-4 border-t border-border/50 text-xs font-semibold text-primary hover:text-primary/80 block text-center py-2 transition-colors"
                     >
-                      View all ({category.tools.length})
+                      View all {category.tools.length} tools →
                     </Link>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
