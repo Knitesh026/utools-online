@@ -15,7 +15,7 @@ export const AdBanner468x60 = ({ className = "" }: { className?: string }) => {
         key: "1a312f9d66b39ae68001fff40d2e629c",
         format: "iframe",
         height: 60,
-        width: 468,
+        width: 728,
         params: {},
       };
       
@@ -32,8 +32,8 @@ export const AdBanner468x60 = ({ className = "" }: { className?: string }) => {
   }, []);
 
   return (
-    <div ref={containerRef} className={`w-full flex justify-center items-center py-2 sm:py-3 px-2 sm:px-4 overflow-x-auto ${className}`}>
-      <div style={{ minHeight: "60px", width: "468px", maxWidth: "100%", flexShrink: 0 }} />
+    <div ref={containerRef} className={`w-full flex justify-center items-center py-2 sm:py-3 px-2 sm:px-4 ${className}`}>
+      <div style={{ minHeight: "60px", width: "728px", maxWidth: "100%", flexShrink: 0 }} />
     </div>
   );
 };
