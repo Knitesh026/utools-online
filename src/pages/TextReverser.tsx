@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { AdPopunder } from "@/components/AdPopunder";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Copy, RefreshCw, Check } from "lucide-react";
@@ -132,8 +131,7 @@ const TextReverser = () => {
       ]}
     />
   
-      <AdPopunder />
-);
+      );
 };
 
 export default TextReverser;

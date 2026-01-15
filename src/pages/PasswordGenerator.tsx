@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { AdPopunder } from "@/components/AdPopunder";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Copy, Check } from "lucide-react";
@@ -197,8 +196,7 @@ const PasswordGenerator = () => {
       }}
     >
       
-      <AdPopunder />
-{password && (
+      {password && (
         <div className="mt-4">
           <button
             onClick={handleCopy}

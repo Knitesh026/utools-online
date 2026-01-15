@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { AdPopunder } from "@/components/AdPopunder";
 import { Upload, Download, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

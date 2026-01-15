@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { AdPopunder } from "@/components/AdPopunder";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -279,8 +278,7 @@ const ImageResizer = () => {
             className="w-full mt-4 bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600 text-white"
           >
             
-      <AdPopunder />
-<Download className="w-4 h-4 mr-2" />
+      <Download className="w-4 h-4 mr-2" />
             Download Resized Image
           </Button>
         )

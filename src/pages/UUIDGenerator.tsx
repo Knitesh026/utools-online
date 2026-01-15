@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { AdPopunder } from "@/components/AdPopunder";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Copy, Check } from "lucide-react";
@@ -136,8 +135,7 @@ const UUIDGenerator = () => {
       actionButton={{
         label: "Generate",
         onClick: () => 
-      <AdPopunder />
-generateUUID(),
+      generateUUID(),
         icon: "Key",
       }}
       resetButton={{

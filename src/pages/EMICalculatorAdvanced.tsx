@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { AdPopunder } from "@/components/AdPopunder";
 import { BarChart3, TrendingUp, RefreshCw, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -343,8 +342,7 @@ const EMICalculatorAdvanced: React.FC = () => {
       ]}
     />
   
-      <AdPopunder />
-);
+      );
 };
 
 export default EMICalculatorAdvanced;

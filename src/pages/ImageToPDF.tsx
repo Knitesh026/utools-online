@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { AdPopunder } from "@/components/AdPopunder";
 import { Upload, Download, AlertCircle, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -85,8 +84,7 @@ export default function ImageToPDF() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-50 p-4 md:p-8">
       
-      <AdPopunder />
-<div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-4xl font-bold text-gray-900">Image to PDF</h1>
           <p className="text-gray-600">Convert multiple images into a single PDF file</p>

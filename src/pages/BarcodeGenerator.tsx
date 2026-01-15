@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { AdPopunder } from "@/components/AdPopunder";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -292,8 +291,7 @@ const BarcodeGenerator = () => {
       children={barcode ? (
         <div className="flex flex-col gap-2">
           
-      <AdPopunder />
-<Button
+      <Button
             onClick={handleDownload}
             className="w-full bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600 text-white"
           >

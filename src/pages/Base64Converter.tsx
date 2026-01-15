@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { AdPopunder } from "@/components/AdPopunder";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -171,8 +170,7 @@ const Base64Converter = () => {
             } text-white`}
           >
             
-      <AdPopunder />
-{copied ? (
+      {copied ? (
               <>
                 <Check className="w-4 h-4 mr-2" />
                 Copied!

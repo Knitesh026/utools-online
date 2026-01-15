@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { AdPopunder } from "@/components/AdPopunder";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { RefreshCw, BarChart3, Copy, Check } from "lucide-react";
@@ -170,8 +169,7 @@ const WordCounter = () => {
       ]}
     />
   
-      <AdPopunder />
-);
+      );
 };
 
 export default WordCounter;

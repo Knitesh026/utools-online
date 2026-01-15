@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { AdPopunder } from "@/components/AdPopunder";
 import ProfessionalToolLayout from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
@@ -114,8 +113,7 @@ const ImageEnhancer = () => {
       inputSection={
         <>
           
-      <AdPopunder />
-<CardHeader>
+      <CardHeader>
             <CardTitle>Upload Image</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
