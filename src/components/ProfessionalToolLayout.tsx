@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import AdsterraAd from "@/components/AdsterraAd";
+import AdBanner468x60 from "@/components/AdBanner468x60";
 
 export interface ProfessionalToolLayoutProps {
   title: string;
@@ -99,7 +99,7 @@ export const ProfessionalToolLayout = ({
           <div className="flex flex-col">
             <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 font-semibold">Advertisement</p>
-              <AdsterraAd slotId={`adsterra_tool_${Math.random()}`} type="vertical" className="w-full" />
+              <AdBanner468x60 />
             </div>
           </div>
         </div>

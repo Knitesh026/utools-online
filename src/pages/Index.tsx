@@ -5,7 +5,9 @@ import ToolCard from "@/components/ToolCard";
 import PopularToolCard from "@/components/PopularToolCard";
 import TestimonialCard from "@/components/TestimonialCard";
 import CategoryToolsGrid from "@/components/CategoryToolsGrid";
-import AdsterraAd from "@/components/AdsterraAd";
+import AdBanner728x90 from "@/components/AdBanner728x90";
+import AdBanner468x60 from "@/components/AdBanner468x60";
+import AdNativeBanner from "@/components/AdNativeBanner";
 import { 
   FileText, 
   Image, 
@@ -75,7 +77,7 @@ const Index = () => {
 
         {/* Top Advertisement Banner */}
         <div className="flex justify-center my-6 sm:my-8">
-          <AdsterraAd slotId="adsterra_ad_1" type="horizontal" />
+          <AdBanner728x90 />
         </div>
 
         {/* Popular Tools Section */}
@@ -105,7 +107,7 @@ const Index = () => {
 
         {/* Middle Advertisement Sidebar */}
         <div className="flex justify-center my-6 sm:my-8">
-          <AdsterraAd slotId="adsterra_ad_2" type="horizontal" />
+          <AdBanner468x60 />
         </div>
 
         {/* Tool Categories Section */}
@@ -140,7 +142,7 @@ const Index = () => {
 
         {/* Bottom Advertisement Banner */}
         <div className="flex justify-center my-6 sm:my-8 mb-12">
-          <AdsterraAd slotId="adsterra_ad_3" type="horizontal" />
+          <AdNativeBanner />
         </div>
         </div>
       </main>

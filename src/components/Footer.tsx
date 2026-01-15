@@ -1,6 +1,6 @@
 import { Wrench, Twitter, Facebook, Youtube, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
-import AdsterraAd from "@/components/AdsterraAd";
+import AdBanner728x90 from "@/components/AdBanner728x90";
 
 const Footer = () => {
   return (
@@ -9,7 +9,7 @@ const Footer = () => {
         {/* Advertisement Banner Before Footer Content */}
         <div className="mb-8 sm:mb-12 flex justify-center">
           <div className="w-full max-w-2xl">
-            <AdsterraAd slotId="adsterra_footer" type="horizontal" />
+            <AdBanner728x90 />
           </div>
         </div>
 
