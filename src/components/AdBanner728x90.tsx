@@ -1,8 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export const AdBanner728x90 = ({ className = "" }: { className?: string }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const loadAd = () => {
+      if (!containerRef.current) return;
+      
       const win = window as any;
       if (win.atOptions === undefined) {
         win.atOptions = {};
@@ -19,14 +23,16 @@ export const AdBanner728x90 = ({ className = "" }: { className?: string }) => {
       const script = document.createElement("script");
       script.src = "https://www.highperformanceformat.com/ba27b45b1809423897eb07da8ecdc101/invoke.js";
       script.async = true;
-      document.body.appendChild(script);
+      containerRef.current.appendChild(script);
     };
 
-    loadAd();
+    // Delay to ensure DOM is ready
+    const timer = setTimeout(loadAd, 100);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className={`flex justify-center py-4 ${className}`}>
+    <div ref={containerRef} className={`w-full flex justify-center items-center py-4 px-2 sm:px-4 ${className}`}>
       <div style={{ minHeight: "90px", width: "728px", maxWidth: "100%" }} />
     </div>
   );

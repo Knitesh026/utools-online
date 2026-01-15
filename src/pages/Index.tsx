@@ -47,7 +47,6 @@ const Index = () => {
       <main className="flex-1">
         {/* Hero Section */}
         <Hero />
-        <AdBanner728x90 className="my-6 sm:my-8" />
 
         <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8 space-y-6 sm:space-y-8">
 
