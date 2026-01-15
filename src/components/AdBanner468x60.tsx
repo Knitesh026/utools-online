@@ -32,8 +32,8 @@ export const AdBanner468x60 = ({ className = "" }: { className?: string }) => {
   }, []);
 
   return (
-    <div ref={containerRef} className={`w-full flex justify-center items-center py-4 px-2 sm:px-4 ${className}`}>
-      <div style={{ minHeight: "60px", width: "468px", maxWidth: "100%" }} />
+    <div className={`w-full flex justify-center py-6 sm:py-8 px-2 sm:px-4 ${className}`}>
+      <div ref={containerRef} style={{ minHeight: "60px", width: "100%", maxWidth: "468px" }} />
     </div>
   );
 };

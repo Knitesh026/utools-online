@@ -9,7 +9,6 @@ import AdBanner728x90 from "@/components/AdBanner728x90";
 import AdBanner468x60 from "@/components/AdBanner468x60";
 import AdNativeBanner from "@/components/AdNativeBanner";
 import AdPopunder from "@/components/AdPopunder";
-import AdSocialBar from "@/components/AdSocialBar";
 import { 
   FileText, 
   Image, 
@@ -48,9 +47,6 @@ const Index = () => {
       
       {/* Popunder Ad - loads in background */}
       <AdPopunder />
-      
-      {/* Social Bar Ad - loads at bottom */}
-      <AdSocialBar />
       
       <main className="flex-1">
         {/* Hero Section */}

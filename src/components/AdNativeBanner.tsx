@@ -4,19 +4,25 @@ export const AdNativeBanner = ({ className = "" }: { className?: string }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
-    
-    // Load the native banner script
-    const script = document.createElement("script");
-    script.src = "https://pl28438939.effectivegatecpm.com/1ecd23d58fd3a85d73e66bb4e80a97da/invoke.js";
-    script.async = true;
-    script.setAttribute("data-cfasync", "false");
-    containerRef.current.appendChild(script);
+    const loadAd = () => {
+      if (!containerRef.current) return;
+      
+      // Load the native banner script
+      const script = document.createElement("script");
+      script.async = true;
+      script.setAttribute("data-cfasync", "false");
+      script.src = "https://pl28438939.effectivegatecpm.com/1ecd23d58fd3a85d73e66bb4e80a97da/invoke.js";
+      containerRef.current.appendChild(script);
+    };
+
+    // Delay to ensure DOM is ready
+    const timer = setTimeout(loadAd, 100);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div ref={containerRef} className={`w-full flex justify-center items-center py-4 ${className}`}>
-      <div id="container-1ecd23d58fd3a85d73e66bb4e80a97da" className="flex justify-center w-full" />
+    <div className={`w-full flex justify-center py-6 sm:py-8 px-2 sm:px-4 ${className}`}>
+      <div ref={containerRef} id="container-1ecd23d58fd3a85d73e66bb4e80a97da" />
     </div>
   );
 };
