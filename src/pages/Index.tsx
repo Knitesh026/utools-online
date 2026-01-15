@@ -113,12 +113,12 @@ const Index = () => {
         </div>
 
         {/* Middle Advertisement Banner */}
-        <div className="w-full justify-center hidden md:flex">
+        {/* <div className="w-full justify-center hidden md:flex">
           <AdBanner728x90 key="middle-banner-desktop" />
         </div>
         <div className="w-full justify-center flex md:hidden">
           <AdBanner468x60 key="middle-banner-mobile" />
-        </div>
+        </div> */}
 
         {/* Tool Categories Section */}
         <div className="space-y-4 sm:space-y-8">

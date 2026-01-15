@@ -15,7 +15,7 @@ export const AdBanner468x60 = ({ className = "" }: { className?: string }) => {
         key: "1a312f9d66b39ae68001fff40d2e629c",
         format: "iframe",
         height: 60,
-        width: 468,
+        width: 368,
         params: {},
       };
       
