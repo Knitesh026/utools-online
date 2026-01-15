@@ -109,9 +109,9 @@ const Index = () => {
           </section>
         </div>
 
-        {/* Middle Advertisement Banner - 468x60 */}
-        <div className="w-full flex justify-center">
-          <AdBanner468x60 key="middle-banner" />
+        {/* Middle Advertisement Banner - 728x90 */}
+        <div className="w-full flex justify-center mt-0">
+          <AdBanner728x90 key="middle-banner" />
         </div>
 
         {/* Tool Categories Section */}
