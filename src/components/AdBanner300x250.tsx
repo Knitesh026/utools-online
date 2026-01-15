@@ -1,35 +1,32 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
+import { adManager } from "@/lib/adManager";
 
 export const AdBanner300x250 = ({ className = "" }: { className?: string }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const bannerId = useMemo(() => `banner_300x250_${Date.now()}_${Math.random()}`, []);
 
   useEffect(() => {
-    const loadAd = () => {
-      if (!containerRef.current) return;
-      
-      // Set atOptions in the window/global scope
-      (window as any).atOptions = {
-        key: "ba27b45b1809423897eb07da8ecdc101",
-        format: "iframe",
-        height: 250,
-        width: 300,
-        params: {}
-      };
-      
-      // Load the ad invoke script with a small delay
-      setTimeout(() => {
-        if (!containerRef.current) return;
-        const adScript = document.createElement("script");
-        adScript.src = "https://www.highperformanceformat.com/ba27b45b1809423897eb07da8ecdc101/invoke.js";
-        adScript.async = true;
-        containerRef.current?.appendChild(adScript);
-      }, 50);
+    if (!containerRef.current) return;
+
+    const config = {
+      key: "ba27b45b1809423897eb07da8ecdc101",
+      format: "iframe",
+      height: 250,
+      width: 300,
+      params: {},
     };
 
-    // Delay to ensure DOM is ready
-    const timer = setTimeout(loadAd, 100);
-    return () => clearTimeout(timer);
-  }, []);
+    adManager.register(
+      bannerId,
+      config,
+      "https://www.highperformanceformat.com/ba27b45b1809423897eb07da8ecdc101/invoke.js",
+      containerRef.current
+    );
+
+    return () => {
+      adManager.unregister(bannerId);
+    };
+  }, [bannerId]);
 
   return (
     <div 
