@@ -75,6 +75,11 @@ const Index = () => {
           </section>
         </div>
 
+        {/* Advertisement Banner - Between Featured and Popular Tools */}
+        <div className="flex justify-center my-6 sm:my-8">
+          <AdBanner468x60 />
+        </div>
+
         {/* Top Advertisement Banner */}
         <div className="flex justify-center my-6 sm:my-8">
           <AdBanner728x90 />

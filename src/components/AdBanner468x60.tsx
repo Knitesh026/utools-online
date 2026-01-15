@@ -26,7 +26,7 @@ export const AdBanner468x60 = ({ className = "" }: { className?: string }) => {
   }, []);
 
   return (
-    <div className={`flex justify-center py-3 ${className}`}>
+    <div className={`flex justify-center items-center w-full py-2 sm:py-3 px-2 sm:px-4 ${className}`}>
       <div style={{ minHeight: "60px", width: "468px", maxWidth: "100%" }} />
     </div>
   );

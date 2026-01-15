@@ -1,4 +1,4 @@
-import { Wrench, Twitter, Facebook, Youtube, Linkedin } from "lucide-react";
+import { Wrench, X, Facebook, Youtube, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
 import AdBanner728x90 from "@/components/AdBanner728x90";
 
@@ -7,11 +7,7 @@ const Footer = () => {
     <footer className="footer-section py-6 sm:py-10 px-4 sm:px-6 mt-10 sm:mt-16">
       <div className="container mx-auto">
         {/* Advertisement Banner Before Footer Content */}
-        <div className="mb-8 sm:mb-12 flex justify-center">
-          <div className="w-full max-w-2xl">
-            <AdBanner728x90 />
-          </div>
-        </div>
+        <AdBanner728x90 />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
           {/* Logo and Description */}
@@ -66,7 +62,7 @@ const Footer = () => {
             </Link>
             <div className="flex items-center gap-2 sm:gap-3">
               <a href="#" className="w-7 sm:w-8 h-7 sm:h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors flex-shrink-0">
-                <Twitter className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-white" />
+                <X className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-white" />
               </a>
               <a href="#" className="w-7 sm:w-8 h-7 sm:h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors flex-shrink-0">
                 <Facebook className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-white" />
