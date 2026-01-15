@@ -6,7 +6,8 @@ import PopularToolCard from "@/components/PopularToolCard";
 import TestimonialCard from "@/components/TestimonialCard";
 import CategoryToolsGrid from "@/components/CategoryToolsGrid";
 import AdBanner728x90 from "@/components/AdBanner728x90";
-import AdBanner468x60 from "@/components/AdBanner468x60";
+import AdBanner300x250 from "@/components/AdBanner300x250";
+import AdBannerSticky320x100 from "@/components/AdBannerSticky320x100";
 import AdNativeBanner from "@/components/AdNativeBanner";
 import AdPopunder from "@/components/AdPopunder";
 import { 
@@ -48,7 +49,10 @@ const Index = () => {
       {/* Popunder Ad - loads in background */}
       <AdPopunder />
       
-      <main className="flex-1">
+      {/* Sticky Mobile Bottom Ad - 320x100 */}
+      <AdBannerSticky320x100 key="sticky-mobile-ad" />
+      
+      <main className="flex-1 pb-28 md:pb-0">
         {/* Hero Section */}
         <Hero />
 
@@ -79,8 +83,8 @@ const Index = () => {
           </section>
         </div>
 
-        {/* Top Advertisement Banner - 728x90 */}
-        <div className="w-full flex justify-center">
+        {/* Top Advertisement Banner - 728x90 Desktop Only */}
+        <div className="w-full hidden md:flex justify-center">
           <AdBanner728x90 key="top-banner" />
         </div>
 
@@ -109,8 +113,13 @@ const Index = () => {
           </section>
         </div>
 
-        {/* Middle Advertisement Banner - 728x90 */}
-        <div className="w-full flex justify-center mt-0">
+        {/* In-Content Advertisement Banner - 300x250 */}
+        <div className="w-full flex justify-center">
+          <AdBanner300x250 key="incontent-banner" />
+        </div>
+
+        {/* Middle Advertisement Banner - 728x90 Desktop Only */}
+        <div className="w-full hidden md:flex justify-center">
           <AdBanner728x90 key="middle-banner" />
         </div>
 
@@ -129,13 +138,6 @@ const Index = () => {
 
         {/* Testimonials Section */}
         <section className="mt-6 sm:mt-12 mb-6 sm:mb-12">
-          <div className="mb-4 sm:mb-8">
-            <h2 className="text-base sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">Testimonials</h2>
-            <p className="text-xs sm:text-sm text-muted-foreground">
-              This app saved me hours and effort! Simple tools that just work.
-              <span className="text-xs sm:text-sm ml-2">- A. Patel, Student</span>
-            </p>
-          </div>
           <TestimonialCard
             name="A. Chen"
             role="Student"
@@ -144,9 +146,14 @@ const Index = () => {
           />
         </section>
 
-        {/* Bottom Advertisement Banner - Native Banner */}
+        {/* Bottom Advertisement Banner - 300x250 */}
         <div className="w-full flex justify-center">
-          <AdNativeBanner key="bottom-banner" />
+          <AdBanner300x250 key="bottom-banner" />
+        </div>
+
+        {/* Native Advertisement Banner */}
+        <div className="w-full flex justify-center">
+          <AdNativeBanner key="native-banner" />
         </div>
         </div>
       </main>
