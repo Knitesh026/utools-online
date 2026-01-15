@@ -220,9 +220,7 @@ const BMICalculator = () => {
         }
       ]}
     />
-  
-      <AdPopunder />
-);
+  );
 };
 
 export default BMICalculator;
