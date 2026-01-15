@@ -5,6 +5,7 @@ import ToolCard from "@/components/ToolCard";
 import PopularToolCard from "@/components/PopularToolCard";
 import TestimonialCard from "@/components/TestimonialCard";
 import CategoryToolsGrid from "@/components/CategoryToolsGrid";
+import AdsterraAd from "@/components/AdsterraAd";
 import { 
   FileText, 
   Image, 
@@ -72,6 +73,11 @@ const Index = () => {
           </section>
         </div>
 
+        {/* Top Advertisement Banner */}
+        <div className="flex justify-center my-6 sm:my-8">
+          <AdsterraAd slotId="adsterra_ad_1" type="horizontal" />
+        </div>
+
         {/* Popular Tools Section */}
         <div className="rounded-lg sm:rounded-[0.5rem] p-4 sm:p-6 bg-card shadow-md" style={{ backgroundColor: '#edf2fb' }}>
           <section className="mb-0">
@@ -95,6 +101,11 @@ const Index = () => {
               ))}
             </div>
           </section>
+        </div>
+
+        {/* Middle Advertisement Sidebar */}
+        <div className="flex justify-center my-6 sm:my-8">
+          <AdsterraAd slotId="adsterra_ad_2" type="horizontal" />
         </div>
 
         {/* Tool Categories Section */}
@@ -126,6 +137,11 @@ const Index = () => {
             rating={4.7}
           />
         </section>
+
+        {/* Bottom Advertisement Banner */}
+        <div className="flex justify-center my-6 sm:my-8 mb-12">
+          <AdsterraAd slotId="adsterra_ad_3" type="horizontal" />
+        </div>
         </div>
       </main>
 

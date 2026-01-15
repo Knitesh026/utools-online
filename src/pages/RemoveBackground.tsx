@@ -219,11 +219,12 @@ const RemoveBackground = () => {
 
               {/* Action Buttons */}
               <div className="flex gap-4">
-                <label className="flex-1">
-                  <Button className="w-full bg-primary hover:bg-primary/90 cursor-pointer">
+                <label htmlFor="file-input-remove-bg" className="flex-1">
+                  <Button className="w-full bg-primary hover:bg-primary/90 cursor-pointer" type="button">
                     Choose File
                   </Button>
                   <input
+                    id="file-input-remove-bg"
                     type="file"
                     accept="image/*"
                     className="hidden"

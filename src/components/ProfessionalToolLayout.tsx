@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AdsterraAd from "@/components/AdsterraAd";
 
 export interface ProfessionalToolLayoutProps {
   title: string;
@@ -86,23 +87,31 @@ export const ProfessionalToolLayout = ({
         )}
 
         {/* Main Content - Side by Side Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
           {/* Input Section */}
-          <div className="flex flex-col">
+          <div className="flex flex-col lg:col-span-2">
             <Card className="border-gray-200 dark:border-gray-700 dark:bg-gray-900 flex-1 shadow-sm hover:shadow-md transition-shadow">
               {inputSection}
             </Card>
           </div>
 
-          {/* Output Section */}
-          {outputSection && (
-            <div className="flex flex-col">
-              <Card className="border-gray-200 dark:border-gray-700 flex-1 shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-950">
-                {outputSection}
-              </Card>
+          {/* Sidebar Ad Space */}
+          <div className="flex flex-col">
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 font-semibold">Advertisement</p>
+              <AdsterraAd slotId={`adsterra_tool_${Math.random()}`} type="vertical" className="w-full" />
             </div>
-          )}
+          </div>
         </div>
+
+        {/* Output Section - Full Width */}
+        {outputSection && (
+          <div className="flex flex-col mt-6 md:mt-8">
+            <Card className="border-gray-200 dark:border-gray-700 flex-1 shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-950">
+              {outputSection}
+            </Card>
+          </div>
+        )}
 
         {/* Custom Children Content */}
         {children}

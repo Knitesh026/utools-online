@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
@@ -14,7 +14,6 @@ const ImageCompressor = () => {
   const [error, setError] = useState("");
   const [originalSize, setOriginalSize] = useState(0);
   const [compressedSize, setCompressedSize] = useState(0);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -121,21 +120,22 @@ const ImageCompressor = () => {
         <CardTitle>Upload Image</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div
-          className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <Upload className="w-8 h-8 mx-auto text-gray-400 dark:text-gray-500 mb-2" />
-          <p className="text-sm text-gray-600 dark:text-gray-400">Click to upload or drag and drop</p>
-          <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">PNG, JPG, WebP up to 50MB</p>
+        <label htmlFor="file-input-compressor" className="cursor-pointer block">
+          <div
+            className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+          >
+            <Upload className="w-8 h-8 mx-auto text-gray-400 dark:text-gray-500 mb-2" />
+            <p className="text-sm text-gray-600 dark:text-gray-400">Click to upload or drag and drop</p>
+            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">PNG, JPG, WebP up to 50MB</p>
+          </div>
           <input
-            ref={fileInputRef}
+            id="file-input-compressor"
             type="file"
             accept="image/*"
             onChange={handleFileSelect}
             className="hidden"
           />
-        </div>
+        </label>
 
         {preview && (
           <div className="space-y-4">

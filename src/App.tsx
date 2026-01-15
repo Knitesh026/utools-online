@@ -55,10 +55,15 @@ import PDFToWord from "./pages/PDFToWord";
 import DocumentsConverter from "./pages/DocumentsConverter";
 import ESignPDF from "./pages/ESignPDF";
 import FaceBlur from "./pages/FaceBlur";
+import useAdsterraAds from "./hooks/use-adsterra";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  // Initialize Adsterra ads globally
+  useAdsterraAds();
+
+  return (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -136,6 +141,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;

@@ -152,18 +152,18 @@ const MergePDF: React.FC = () => {
             Drag and drop PDFs here
           </p>
           <p className="text-xs text-gray-500 mb-3">or click to select</p>
-          <input
-            type="file"
-            accept=".pdf"
-            multiple
-            onChange={handleFileChange}
-            className="hidden"
-            id="pdf-input"
-          />
-          <label htmlFor="pdf-input" className="cursor-pointer">
-            <Button variant="outline" type="button">
+          <label htmlFor="pdf-input" className="cursor-pointer inline-block">
+            <input
+              type="file"
+              accept=".pdf"
+              multiple
+              onChange={handleFileChange}
+              className="hidden"
+              id="pdf-input"
+            />
+            <div className="px-4 py-2 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground inline-block font-medium text-sm">
               Choose Files
-            </Button>
+            </div>
           </label>
         </div>
 

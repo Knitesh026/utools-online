@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,6 @@ const HistogramGenerator = () => {
   });
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -308,21 +307,22 @@ const HistogramGenerator = () => {
                 <CardDescription>Select an image to analyze</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div
-                  className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 transition"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
-                  <p className="text-xs text-gray-500 mt-1">PNG, JPG, WebP up to 50MB</p>
+                <label htmlFor="file-input-histogram" className="cursor-pointer block">
+                  <div
+                    className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 transition"
+                  >
+                    <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+                    <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
+                    <p className="text-xs text-gray-500 mt-1">PNG, JPG, WebP up to 50MB</p>
+                  </div>
                   <input
-                    ref={fileInputRef}
+                    id="file-input-histogram"
                     type="file"
                     accept="image/*"
                     onChange={handleFileSelect}
                     className="hidden"
                   />
-                </div>
+                </label>
 
                 {preview && (
                   <div className="space-y-3">

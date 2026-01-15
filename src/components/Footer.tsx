@@ -1,10 +1,18 @@
 import { Wrench, Twitter, Facebook, Youtube, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
+import AdsterraAd from "@/components/AdsterraAd";
 
 const Footer = () => {
   return (
     <footer className="footer-section py-6 sm:py-10 px-4 sm:px-6 mt-10 sm:mt-16">
       <div className="container mx-auto">
+        {/* Advertisement Banner Before Footer Content */}
+        <div className="mb-8 sm:mb-12 flex justify-center">
+          <div className="w-full max-w-2xl">
+            <AdsterraAd slotId="adsterra_footer" type="horizontal" />
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
           {/* Logo and Description */}
           <div className="md:col-span-1">

@@ -1,1 +1,2 @@
 google.com, ca-pub-1294105144279821, DIRECT, f08c47fec0942fa0
+adsterra.com, 160616fe745475bed521854a284bae67, RESELLER

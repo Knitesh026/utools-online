@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,6 @@ const PDFToImage = () => {
   const [converted, setConverted] = useState<string[]>([]);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -103,21 +102,22 @@ const PDFToImage = () => {
                 <CardDescription>Upload a PDF file</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div
-                  className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 transition"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
-                  <p className="text-xs text-gray-500 mt-1">PDF files up to 50MB</p>
+                <label htmlFor="file-input-pdftoimage" className="cursor-pointer block">
+                  <div
+                    className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 transition"
+                  >
+                    <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+                    <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
+                    <p className="text-xs text-gray-500 mt-1">PDF files up to 50MB</p>
+                  </div>
                   <input
-                    ref={fileInputRef}
+                    id="file-input-pdftoimage"
                     type="file"
                     accept=".pdf"
                     onChange={handleFileSelect}
                     className="hidden"
                   />
-                </div>
+                </label>
 
                 {file && (
                   <div className="space-y-3">
