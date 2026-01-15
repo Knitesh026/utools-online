@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-export const AdBanner368x60 = ({ className = "" }: { className?: string }) => {
+export const AdBanner468x60 = ({ className = "" }: { className?: string }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -15,7 +15,7 @@ export const AdBanner368x60 = ({ className = "" }: { className?: string }) => {
         key: "1a312f9d66b39ae68001fff40d2e629c",
         format: "iframe",
         height: 60,
-        width: 368,
+        width: 468,
         params: {},
       };
       
@@ -33,9 +33,9 @@ export const AdBanner368x60 = ({ className = "" }: { className?: string }) => {
 
   return (
     <div className={`w-full flex justify-center px-2 sm:px-4 ${className}`}>
-      <div ref={containerRef} style={{ minHeight: "60px", width: "100%", maxWidth: "368px" }} />
+      <div ref={containerRef} style={{ minHeight: "60px", width: "100%", maxWidth: "468px" }} />
     </div>
   );
 };
 
-export default AdBanner368x60;
+export default AdBanner468x60;

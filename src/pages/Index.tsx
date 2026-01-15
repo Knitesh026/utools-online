@@ -10,6 +10,7 @@ import AdBanner300x250 from "@/components/AdBanner300x250";
 import AdBannerSticky320x100 from "@/components/AdBannerSticky320x100";
 import AdNativeBanner from "@/components/AdNativeBanner";
 import AdPopunder from "@/components/AdPopunder";
+import AdBanner468x60 from "@/components/AdBanner468x60";
 import { 
   FileText, 
   Image, 
@@ -110,9 +111,9 @@ const Index = () => {
           </section>
         </div>
 
-        {/* Middle Advertisement Banner - 728x90 */}
-        <div className="w-full flex justify-center mt-0">
-          <AdBanner728x90 key="middle-banner" />
+        {/* Middle Advertisement Banner - 468x60 */}
+        <div className="w-full flex justify-center">
+          <AdBanner468x60 key="middle-banner" />
         </div>
 
         {/* Tool Categories Section */}
