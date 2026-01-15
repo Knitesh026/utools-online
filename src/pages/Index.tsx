@@ -6,7 +6,7 @@ import PopularToolCard from "@/components/PopularToolCard";
 import TestimonialCard from "@/components/TestimonialCard";
 import CategoryToolsGrid from "@/components/CategoryToolsGrid";
 import AdBanner728x90 from "@/components/AdBanner728x90";
-import AdBanner468x60 from "@/components/AdBanner468x60";
+import AdBanner368x60 from "@/components/AdBanner368x60";
 import AdNativeBanner from "@/components/AdNativeBanner";
 import AdPopunder from "@/components/AdPopunder";
 import { 
@@ -84,7 +84,7 @@ const Index = () => {
           <AdBanner728x90 key="top-banner-desktop" />
         </div>
         <div className="w-full justify-center flex md:hidden">
-          <AdBanner468x60 key="top-banner-mobile" />
+          <AdBanner368x60 key="top-banner-mobile" />
         </div>
 
         {/* Popular Tools Section */}
@@ -117,7 +117,7 @@ const Index = () => {
           <AdBanner728x90 key="middle-banner-desktop" />
         </div>
         <div className="w-full justify-center flex md:hidden">
-          <AdBanner468x60 key="middle-banner-mobile" />
+          <AdBanner368x60 key="middle-banner-mobile" />
         </div> */}
 
         {/* Tool Categories Section */}

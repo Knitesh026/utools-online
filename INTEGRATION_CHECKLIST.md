@@ -4,7 +4,7 @@
 
 ### React Components Created
 - ✅ `src/components/AdBanner728x90.tsx` - 728x90px banner
-- ✅ `src/components/AdBanner468x60.tsx` - 468x60px banner
+- ✅ `src/components/AdBanner368x60.tsx` - 368x60px banner
 - ✅ `src/components/AdNativeBanner.tsx` - Native widget banner
 
 ### Pages/Components Updated
@@ -23,7 +23,7 @@
 | Type | Key/ID | Position | Status |
 |------|--------|----------|--------|
 | Banner 728x90 | ba27b45b1809423897eb07da8ecdc101 | Homepage (Top) + Footer | ✅ |
-| Banner 468x60 | 1a312f9d66b39ae68001fff40d2e629c | Homepage (Middle) + Tool Pages (Sidebar) | ✅ |
+| Banner 368x60 | 1a312f9d66b39ae68001fff40d2e629c | Homepage (Middle) + Tool Pages (Sidebar) | ✅ |
 | Native Widget | 1ecd23d58fd3a85d73e66bb4e80a97da | Homepage (Bottom) | ✅ |
 | Popunder | 9e4fc482b5b90a0eaa81c26b92deb385 | Global (<head>) | ✅ |
 | Social Bar | 00f00986598af8d8398d08edf55aff69 | Global (before </body>) | ✅ |
@@ -72,11 +72,11 @@
 
 **Homepage (Index.tsx)**
 - Top: AdBanner728x90 (high visibility)
-- Middle: AdBanner468x60 (after popular tools)
+- Middle: AdBanner368x60 (after popular tools)
 - Bottom: AdNativeBanner (before footer)
 
 **Tool Pages**
-- Sidebar: AdBanner468x60 (non-intrusive)
+- Sidebar: AdBanner368x60 (non-intrusive)
 
 **Footer**
 - Top: AdBanner728x90 (consistent with homepage)
