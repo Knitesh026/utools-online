@@ -6,6 +6,8 @@ import PopularToolCard from "@/components/PopularToolCard";
 import TestimonialCard from "@/components/TestimonialCard";
 import CategoryToolsGrid from "@/components/CategoryToolsGrid";
 import AdBanner728x90 from "@/components/AdBanner728x90";
+import AdBanner468x60 from "@/components/AdBanner468x60";
+import AdNativeBanner from "@/components/AdNativeBanner";
 import { 
   FileText, 
   Image, 
@@ -74,7 +76,7 @@ const Index = () => {
         </div>
 
         {/* Top Advertisement Banner */}
-        <div className="flex justify-center items-center my-6 sm:my-8 w-full">
+        <div className="flex justify-center my-6 sm:my-8">
           <AdBanner728x90 />
         </div>
 
@@ -103,7 +105,10 @@ const Index = () => {
           </section>
         </div>
 
-
+        {/* Middle Advertisement Sidebar */}
+        <div className="flex justify-center my-6 sm:my-8">
+          <AdBanner468x60 />
+        </div>
 
         {/* Tool Categories Section */}
         <div className="space-y-4 sm:space-y-8">
@@ -135,7 +140,10 @@ const Index = () => {
           />
         </section>
 
-
+        {/* Bottom Advertisement Banner */}
+        <div className="flex justify-center my-6 sm:my-8 mb-12">
+          <AdNativeBanner />
+        </div>
         </div>
       </main>
 
