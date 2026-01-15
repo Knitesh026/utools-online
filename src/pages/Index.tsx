@@ -50,7 +50,10 @@ const Index = () => {
       {/* Popunder Ad - loads in background */}
       <AdPopunder />
       
-      <main className="flex-1">
+      {/* Sticky Mobile Bottom Ad - 320x100 */}
+      <AdBannerSticky320x100 key="sticky-mobile-ad" />
+      
+      <main className="flex-1 pb-32 sm:pb-0">
         {/* Hero Section */}
         <Hero />
 

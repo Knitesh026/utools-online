@@ -29,11 +29,20 @@ export const AdBanner300x250 = ({ className = "" }: { className?: string }) => {
   }, [bannerId]);
 
   return (
-    <div 
-      ref={containerRef} 
-      className={`ad-container-300x250 flex justify-center ${className}`}
-      style={{ minHeight: "250px", minWidth: "300px" }}
-    />
+    <div className={`w-full flex justify-center px-2 sm:px-4 py-4 sm:py-6 ${className}`}>
+      <div 
+        ref={containerRef} 
+        className="ad-container-300x250"
+        style={{ 
+          minHeight: "250px", 
+          width: "100%",
+          maxWidth: "300px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+      />
+    </div>
   );
 };
 

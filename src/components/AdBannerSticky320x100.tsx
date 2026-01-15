@@ -31,8 +31,13 @@ export const AdBannerSticky320x100 = ({ className = "" }: { className?: string }
   return (
     <div 
       ref={containerRef} 
-      className={`ad-container-sticky-mobile fixed bottom-0 left-0 right-0 z-40 flex justify-center md:hidden bg-white border-t ${className}`}
-      style={{ minHeight: "100px", minWidth: "100%" }}
+      className={`ad-container-sticky-mobile fixed bottom-0 left-0 right-0 z-40 flex justify-center md:hidden bg-white border-t w-full ${className}`}
+      style={{ 
+        minHeight: "100px", 
+        maxHeight: "100px",
+        padding: "0.5rem",
+        boxSizing: "border-box"
+      }}
     />
   );
 };
