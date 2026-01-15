@@ -76,8 +76,8 @@ const Index = () => {
         </div>
 
         {/* Top Advertisement Banner */}
-        <div className="flex justify-center my-6 sm:my-8">
-          <AdBanner728x90 />
+        <div className="w-full flex justify-center my-6 sm:my-8 px-2 sm:px-0">
+          <AdBanner728x90 key="top-banner" />
         </div>
 
         {/* Popular Tools Section */}
@@ -105,9 +105,9 @@ const Index = () => {
           </section>
         </div>
 
-        {/* Middle Advertisement Sidebar */}
-        <div className="flex justify-center my-6 sm:my-8">
-          <AdBanner468x60 />
+        {/* Middle Advertisement Banner */}
+        <div className="w-full flex justify-center my-6 sm:my-8 px-2 sm:px-0">
+          <AdBanner468x60 key="middle-banner" />
         </div>
 
         {/* Tool Categories Section */}
@@ -141,8 +141,8 @@ const Index = () => {
         </section>
 
         {/* Bottom Advertisement Banner */}
-        <div className="flex justify-center my-6 sm:my-8 mb-12">
-          <AdNativeBanner />
+        <div className="w-full flex justify-center my-6 sm:my-8 mb-12 px-2 sm:px-0">
+          <AdNativeBanner key="bottom-banner" />
         </div>
         </div>
       </main>

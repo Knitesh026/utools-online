@@ -27,13 +27,13 @@ export const AdBanner728x90 = ({ className = "" }: { className?: string }) => {
     };
 
     // Delay to ensure DOM is ready
-    const timer = setTimeout(loadAd, 100);
+    const timer = setTimeout(loadAd, 200);
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div ref={containerRef} className={`w-full flex justify-center items-center py-4 px-2 sm:px-4 ${className}`}>
-      <div style={{ minHeight: "90px", width: "728px", maxWidth: "100%" }} />
+    <div ref={containerRef} className={`w-full flex justify-center items-center py-4 px-2 sm:px-4 overflow-x-auto ${className}`}>
+      <div style={{ minHeight: "90px", width: "728px", maxWidth: "100%", flexShrink: 0 }} />
     </div>
   );
 };
