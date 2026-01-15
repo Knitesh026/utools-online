@@ -15,7 +15,7 @@ export const AdBanner468x60 = ({ className = "" }: { className?: string }) => {
         key: "1a312f9d66b39ae68001fff40d2e629c",
         format: "iframe",
         height: 60,
-        width: 728,
+        width: 468,
         params: {},
       };
       
@@ -32,21 +32,8 @@ export const AdBanner468x60 = ({ className = "" }: { className?: string }) => {
   }, []);
 
   return (
-    <div className={`w-full flex flex-col items-center gap-4 ${className}`}>
-      {/* Top Ad */}
-      <div ref={containerRef} className="flex justify-center py-2 sm:py-3 px-2 sm:px-4">
-      <div style={{ minHeight: "60px", width: "728px", maxWidth: "100%", flexShrink: 0 }} />
-      </div>
-      
-      {/* Middle Content */}
-      <div className="w-full flex justify-center">
-      {/* Your main content goes here */}
-      </div>
-      
-      {/* Bottom Ad */}
-      <div className="flex justify-center py-2 sm:py-3 px-2 sm:px-4">
-      <div style={{ minHeight: "60px", width: "728px", maxWidth: "100%", flexShrink: 0 }} />
-      </div>
+    <div ref={containerRef} className={`w-full flex justify-center items-center py-4 px-2 sm:px-4 ${className}`}>
+      <div style={{ minHeight: "60px", width: "468px", maxWidth: "100%" }} />
     </div>
   );
 };

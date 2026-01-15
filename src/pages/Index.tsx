@@ -8,6 +8,8 @@ import CategoryToolsGrid from "@/components/CategoryToolsGrid";
 import AdBanner728x90 from "@/components/AdBanner728x90";
 import AdBanner468x60 from "@/components/AdBanner468x60";
 import AdNativeBanner from "@/components/AdNativeBanner";
+import AdPopunder from "@/components/AdPopunder";
+import AdSocialBar from "@/components/AdSocialBar";
 import { 
   FileText, 
   Image, 
@@ -44,6 +46,12 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       
+      {/* Popunder Ad - loads in background */}
+      <AdPopunder />
+      
+      {/* Social Bar Ad - loads at bottom */}
+      <AdSocialBar />
+      
       <main className="flex-1">
         {/* Hero Section */}
         <Hero />
@@ -75,8 +83,8 @@ const Index = () => {
           </section>
         </div>
 
-        {/* Top Advertisement Banner */}
-        <div className="w-full flex justify-center my-6 sm:my-8 px-2 sm:px-0">
+        {/* Top Advertisement Banner - 728x90 */}
+        <div className="w-full flex justify-center">
           <AdBanner728x90 key="top-banner" />
         </div>
 
@@ -105,8 +113,8 @@ const Index = () => {
           </section>
         </div>
 
-        {/* Middle Advertisement Banner */}
-        <div className="w-full flex justify-center my-6 sm:my-8 px-2 sm:px-0">
+        {/* Middle Advertisement Banner - 468x60 */}
+        <div className="w-full flex justify-center">
           <AdBanner468x60 key="middle-banner" />
         </div>
 
@@ -140,8 +148,8 @@ const Index = () => {
           />
         </section>
 
-        {/* Bottom Advertisement Banner */}
-        <div className="w-full flex justify-center my-6 sm:my-8 mb-12 px-2 sm:px-0">
+        {/* Bottom Advertisement Banner - Native Banner */}
+        <div className="w-full flex justify-center">
           <AdNativeBanner key="bottom-banner" />
         </div>
         </div>
