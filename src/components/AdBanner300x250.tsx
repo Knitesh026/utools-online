@@ -29,7 +29,7 @@ export const AdBanner300x250 = ({ className = "" }: { className?: string }) => {
   }, [bannerId]);
 
   return (
-    <div className={`w-full flex justify-center px-2 sm:px-4 py-4 sm:py-6 ${className}`}>
+    <div className={`w-full flex justify-center px-2 sm:px-4 py-4 ${className}`}>
       <div 
         ref={containerRef} 
         className="ad-container-300x250"

@@ -29,7 +29,7 @@ export const AdBanner728x90 = ({ className = "" }: { className?: string }) => {
   }, [bannerId]);
 
   return (
-    <div className={`w-full flex justify-center px-2 sm:px-4 py-2 sm:py-4 overflow-x-auto ${className}`}>
+    <div className={`w-full flex justify-center px-2 sm:px-4 overflow-x-auto ${className}`}>
       <div 
         ref={containerRef} 
         style={{ 
