@@ -1,14 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, ChevronDown } from "lucide-react";
 import { toolCategories } from "@/data/tools";
 import ToolCard from "@/components/ToolCard";
 import { AdNativeBanner } from "@/components/AdNativeBanner";
+import { useSearchParams } from "react-router-dom";
 
 const Tools = () => {
+  const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
+  const categoryParam = searchParams.get("category");
+  
   const [expandedCategory, setExpandedCategory] = useState<string | null>(
-    toolCategories[0]?.name || null
+    categoryParam || toolCategories[0]?.name || null
   );
+
+  // Update expanded category when URL parameter changes
+  useEffect(() => {
+    if (categoryParam) {
+      setExpandedCategory(categoryParam);
+    }
+  }, [categoryParam]);
 
   // Filter tools based on search query
   const filteredCategories = toolCategories

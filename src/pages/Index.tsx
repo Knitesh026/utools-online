@@ -28,23 +28,23 @@ import { toolCategories } from "@/data/tools";
 
 const Index = () => {
   const mainTools = [
-    { title: "PDF Processor", icon: FileText, to: "/pdf-processor", description: "Merge, split, compress and convert PDF files" },
-    { title: "Image Editor", icon: Mountain, iconColor: "text-primary", to: "/image-editor", description: "Edit and enhance your images with powerful tools" },
-    { title: "Video Converter", icon: FileOutput, to: "/video-converter", description: "Convert videos between different formats" },
-    { title: "AI Content Tools", icon: PenTool, iconColor: "text-accent", to: "/ai-tools", description: "Generate and enhance content with AI" },
+    { title: "PDF Processor", icon: FileText, to: "/tools?category=Document%20Tools", description: "Merge, split, compress and convert PDF files" },
+    { title: "Image Editor", icon: Mountain, iconColor: "text-primary", to: "/tools?category=Image%20Tools", description: "Edit and enhance your images with powerful tools" },
+    { title: "Video Converter", icon: FileOutput, to: "/tools", description: "Convert videos between different formats" },
+    { title: "AI Content Tools", icon: PenTool, iconColor: "text-accent", to: "/tools", description: "Generate and enhance content with AI" },
   ];
 
   const popularTools = [
-    { title: "Merge PDF", icon: Files, to: "/merge-pdf" },
-    { title: "MP4 to MP3", icon: Mountain, to: "/mp4-to-mp3" },
-    { title: "Remove Background", icon: Eraser, to: "/remove-background" },
-    { title: "QR Code Maker", icon: QrCode, to: "/qr-code" },
-    { title: "Image Converter", icon: Image, to: "/image-converter" },
-    { title: "PDF to Word", icon: FileText, to: "/pdf-to-word" },
+    { title: "Merge PDF", icon: Files, to: "/merge-pdf", description: "Merge 2 or more PDF files into a single PDF file" },
+    { title: "MP4 to MP3", icon: Mountain, to: "/mp4-to-mp3", description: "Extract audio from MP4 videos" },
+    { title: "Remove Background", icon: Eraser, to: "/remove-background", description: "Remove background from images automatically" },
+    { title: "QR Code Maker", icon: QrCode, to: "/qr-code", description: "Generate QR codes for URLs" },
+    { title: "Image Converter", icon: Image, to: "/image-converter", description: "Convert between image formats" },
+    { title: "PDF to Word", icon: FileText, to: "/pdf-to-word", description: "Convert a PDF to Word Document" },
   ];
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col overflow-x-hidden">
       <Header />
       
       {/* Popunder Ad - loads in background */}
@@ -78,6 +78,7 @@ const Index = () => {
                   description={tool.description}
                   icon={tool.icon}
                   number={index + 1}
+                  to={tool.to}
                 />
               ))}
             </div>
@@ -107,6 +108,7 @@ const Index = () => {
                     title={tool.title}
                     icon={tool.icon}
                     to={tool.to}
+                    description={tool.description}
                   />
                 </div>
               ))}

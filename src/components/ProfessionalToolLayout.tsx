@@ -1,11 +1,18 @@
 import { ReactNode } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdBanner368x60 from "@/components/AdBanner468x60";
+import AdBanner468x250 from "./AdBanner468x250";
 
 export interface ProfessionalToolLayoutProps {
   title: string;
@@ -51,7 +58,7 @@ export const ProfessionalToolLayout = ({
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900">
       <Header />
-      
+
       <main className="flex-1 container mx-auto px-4 md:px-6 py-8 md:py-12 max-w-7xl">
         {/* Hero Section */}
         <section className="mb-8 md:mb-12">
@@ -67,11 +74,18 @@ export const ProfessionalToolLayout = ({
         {features && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 md:mb-12">
             {features.map((feature, idx) => (
-              <Card key={idx} className="border-gray-200 dark:border-gray-700 hover:shadow-md dark:hover:shadow-lg transition-all dark:bg-gray-900">
+              <Card
+                key={idx}
+                className="border-gray-200 dark:border-gray-700 hover:shadow-md dark:hover:shadow-lg transition-all dark:bg-gray-900"
+              >
                 <CardContent className="pt-6">
                   <div className="text-3xl mb-3">{feature.icon}</div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-1">{feature.title}</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{feature.description}</p>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-1">
+                    {feature.title}
+                  </h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {feature.description}
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -80,9 +94,14 @@ export const ProfessionalToolLayout = ({
 
         {/* Error Alert */}
         {error && (
-          <Alert variant="destructive" className="mb-6 md:mb-8 dark:border-red-800 dark:bg-red-950">
+          <Alert
+            variant="destructive"
+            className="mb-6 md:mb-8 dark:border-red-800 dark:bg-red-950"
+          >
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription className="dark:text-red-200">{error}</AlertDescription>
+            <AlertDescription className="dark:text-red-200">
+              {error}
+            </AlertDescription>
           </Alert>
         )}
 
@@ -96,10 +115,14 @@ export const ProfessionalToolLayout = ({
           </div>
 
           {/* Sidebar Ad Space */}
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-3">
             <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 font-semibold">Advertisement</p>
               <AdBanner368x60 />
+            </div>
+            <div className="flex flex-col">
+              <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
+                <AdBanner468x250 />
+              </div>
             </div>
           </div>
         </div>

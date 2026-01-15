@@ -27,7 +27,7 @@ const CategoryToolsGrid = ({
   };
 
   return (
-    <div className="rounded-lg sm:rounded-[0.5rem] p-3 sm:p-6 bg-card shadow-md" style={{ backgroundColor: getLightBackground(colorTheme.accentColor) }}>
+    <div className="rounded-lg sm:rounded-[0.5rem] p-3 sm:p-6 bg-card shadow-md overflow-x-hidden" style={{ backgroundColor: getLightBackground(colorTheme.accentColor) }}>
       <section className="mb-0">
         <div className={`mb-4 sm:mb-6 pb-0 border-b-0`}>
           <h3 className="text-base sm:text-xl lg:text-2xl font-bold text-foreground mb-1 sm:mb-2 leading-tight" style={{ color: colorTheme.accentColor }}>
@@ -50,10 +50,10 @@ const CategoryToolsGrid = ({
                     <Icon height={18} width={18} stroke={colorTheme.iconColor} strokeWidth="1.5" />
                   </div>
                   <div className="mx-1.5 sm:mx-2.5 overflow-hidden w-full flex flex-col justify-center">
-                    <p className="text-sm sm:text-lg font-bold overflow-hidden text-ellipsis whitespace-nowrap" style={{ color: colorTheme.accentColor }}>
+                    <p className="text-xs sm:text-sm font-bold overflow-hidden text-ellipsis whitespace-nowrap text-foreground">
                       {tool.title}
                     </p>
-                    <p className="hidden sm:block overflow-hidden leading-5 text-muted-foreground text-sm max-h-10">
+                    <p className="overflow-hidden leading-4 text-muted-foreground text-xs max-h-8">
                       {tool.description || "Try this tool"}
                     </p>
                   </div>

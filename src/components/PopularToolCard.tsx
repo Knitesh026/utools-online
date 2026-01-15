@@ -38,7 +38,7 @@ const PopularToolCard = ({
           <Icon height={18} width={18} stroke="hsl(var(--primary))" strokeWidth="1.5" />
         </div>
         <div className="mx-1.5 sm:mx-2 overflow-hidden w-full flex flex-col justify-center">
-          <p className="text-xs sm:text-sm font-bold text-primary leading-6 mr-2 sm:mr-3 overflow-hidden text-ellipsis whitespace-nowrap">
+          <p className="text-xs sm:text-sm font-bold text-foreground leading-6 mr-2 sm:mr-3 overflow-hidden text-ellipsis whitespace-nowrap">
             {title}
           </p>
           <p className="hidden sm:block overflow-hidden leading-4 text-muted-foreground text-xs max-h-8">

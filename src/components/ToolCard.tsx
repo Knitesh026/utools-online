@@ -28,7 +28,7 @@ const Card = ({ title, description = "", icon: Icon, number, to, colorTheme }: C
         <Icon height={18} width={18} stroke={iconColor} strokeWidth="1.5" />
       </div>
       <div className="mx-1.5 sm:mx-2 overflow-hidden w-full flex flex-col justify-center">
-        <p className="text-xs sm:text-sm font-bold overflow-hidden text-ellipsis whitespace-nowrap" style={{ color: accentColor }}>
+        <p className="text-xs sm:text-sm font-bold text-foreground overflow-hidden text-ellipsis whitespace-nowrap">
           {title}
         </p>
         <p className="hidden sm:block overflow-hidden leading-4 text-muted-foreground text-xs max-h-8">
