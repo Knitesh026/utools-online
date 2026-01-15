@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AdPopunder } from "@/components/AdPopunder";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Copy, Check } from "lucide-react";
@@ -154,7 +155,9 @@ const GradientGenerator = () => {
       outputSection={outputSection}
       actionButton={{
         label: "Generate",
-        onClick: () => {},
+        onClick: () => 
+      <AdPopunder />
+{},
         icon: "Palette",
       }}
       resetButton={{

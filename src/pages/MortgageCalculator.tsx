@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AdPopunder } from "@/components/AdPopunder";
 import ProfessionalToolLayout from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -89,7 +90,9 @@ const MortgageCalculator = () => {
       description="Calculate home loan monthly payments"
       inputSection={
         <>
-          <CardHeader>
+          
+      <AdPopunder />
+<CardHeader>
             <CardTitle>Loan Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">

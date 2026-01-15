@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { AdPopunder } from "@/components/AdPopunder";
 import { Upload, Download, RefreshCw, FileText, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -297,7 +298,9 @@ const CompressPDF: React.FC = () => {
         },
       ]}
     />
-  );
+  
+      <AdPopunder />
+);
 };
 
 export default CompressPDF;

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AdPopunder } from "@/components/AdPopunder";
 import ProfessionalToolLayout from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -101,7 +102,9 @@ const HTMLColorCodes = () => {
       description="Find and generate color codes and shades"
       inputSection={
         <>
-          <CardHeader>
+          
+      <AdPopunder />
+<CardHeader>
             <CardTitle>Color Picker</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">

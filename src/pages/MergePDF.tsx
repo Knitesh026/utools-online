@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { AdPopunder } from "@/components/AdPopunder";
 import { Upload, Download, RefreshCw, FileText, Combine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -345,7 +346,9 @@ const MergePDF: React.FC = () => {
         },
       ]}
     />
-  );
+  
+      <AdPopunder />
+);
 };
 
 export default MergePDF;

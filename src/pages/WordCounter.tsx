@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AdPopunder } from "@/components/AdPopunder";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { RefreshCw, BarChart3, Copy, Check } from "lucide-react";
@@ -168,7 +169,9 @@ const WordCounter = () => {
         { icon: "📋", title: "Export Results", description: "Copy analysis to clipboard" },
       ]}
     />
-  );
+  
+      <AdPopunder />
+);
 };
 
 export default WordCounter;

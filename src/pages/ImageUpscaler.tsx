@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AdPopunder } from "@/components/AdPopunder";
 import ProfessionalToolLayout from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -123,7 +124,9 @@ const ImageUpscaler = () => {
       description="Enlarge images while preserving quality"
       inputSection={
         <>
-          <CardHeader>
+          
+      <AdPopunder />
+<CardHeader>
             <CardTitle>Upload Image</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">

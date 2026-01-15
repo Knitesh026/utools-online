@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AdPopunder } from "@/components/AdPopunder";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -185,7 +186,9 @@ const EMICalculator = () => {
         { icon: "⚡", title: "Instant Results", description: "Calculate in seconds" },
       ]}
     />
-  );
+  
+      <AdPopunder />
+);
 };
 
 export default EMICalculator;

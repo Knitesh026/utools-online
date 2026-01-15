@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AdPopunder } from "@/components/AdPopunder";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Copy, Download } from "lucide-react";
@@ -85,7 +86,9 @@ const NameGenerator = () => {
       description="Generate random names from various categories"
       inputSection={
         <>
-          <CardHeader>
+          
+      <AdPopunder />
+<CardHeader>
             <CardTitle>Generation Settings</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
