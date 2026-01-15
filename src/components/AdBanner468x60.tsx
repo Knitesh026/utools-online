@@ -14,8 +14,8 @@ export const AdBanner468x60 = ({ className = "" }: { className?: string }) => {
       win.atOptions = {
         key: "1a312f9d66b39ae68001fff40d2e629c",
         format: "iframe",
-        height: 120,
-        width: 936,
+        height: 60,
+        width: 468,
         params: {},
       };
       
@@ -33,7 +33,7 @@ export const AdBanner468x60 = ({ className = "" }: { className?: string }) => {
 
   return (
     <div className={`w-full flex justify-center py-6 sm:py-8 px-2 sm:px-4 ${className}`}>
-      <div ref={containerRef} style={{ minHeight: "120px", width: "100%", maxWidth: "936px" }} />
+      <div ref={containerRef} style={{ minHeight: "60px", width: "100%", maxWidth: "468px" }} />
     </div>
   );
 };

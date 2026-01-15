@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Search, ChevronDown } from "lucide-react";
 import { toolCategories } from "@/data/tools";
 import ToolCard from "@/components/ToolCard";
+import { AdSocialBar } from "@/components/AdSocialBar";
 
 const Tools = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -21,6 +22,7 @@ const Tools = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-accent/5">
+      <AdSocialBar />
       {/* Hero Section */}
       <section className="relative py-4 px-4 sm:py-6 sm:px-6 overflow-hidden">
         <div className="absolute top-0 left-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl -z-10"></div>
