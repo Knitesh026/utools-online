@@ -7,23 +7,25 @@ export const AdBannerSticky320x100 = ({ className = "" }: { className?: string }
     const loadAd = () => {
       if (!containerRef.current) return;
       
-      const win = window as any;
-      if (win.atOptions === undefined) {
-        win.atOptions = {};
-      }
-      win.atOptions = {
-        key: "ba27b45b1809423897eb07da8ecdc101",
-        format: "iframe",
-        height: 100,
-        width: 320,
-        params: {},
-      };
-      
-      // Load the ad script
+      // Create a script element that sets atOptions and loads the ad
       const script = document.createElement("script");
-      script.src = "https://www.highperformanceformat.com/ba27b45b1809423897eb07da8ecdc101/invoke.js";
-      script.async = true;
+      script.textContent = `
+        window.atOptions320x100 = {
+          key: "ba27b45b1809423897eb07da8ecdc101",
+          format: "iframe",
+          height: 100,
+          width: 320,
+          params: {}
+        };
+        window.atOptions = window.atOptions320x100;
+      `;
       containerRef.current.appendChild(script);
+      
+      // Load the ad invoke script
+      const adScript = document.createElement("script");
+      adScript.src = "https://www.highperformanceformat.com/ba27b45b1809423897eb07da8ecdc101/invoke.js";
+      adScript.async = true;
+      containerRef.current.appendChild(adScript);
     };
 
     // Delay to ensure DOM is ready
