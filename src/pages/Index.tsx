@@ -106,7 +106,7 @@ const Index = () => {
         </div>
 
         {/* Middle Advertisement Banner */}
-        <div className="w-full flex justify-center my-6 sm:my-8 px-2 sm:px-0">
+        <div className="w-full flex justify-center my-6 sm:my-8 px-2 sm:px-0 ml-96">
           <AdBanner468x60 key="middle-banner" />
         </div>
 
