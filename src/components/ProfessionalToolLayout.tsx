@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import AdBanner368x60 from "@/components/AdBanner368x60";
+import AdBanner368x60 from "@/components/AdBanner468x60";
 
 export interface ProfessionalToolLayoutProps {
   title: string;

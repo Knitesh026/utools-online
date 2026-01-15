@@ -6,7 +6,7 @@ import PopularToolCard from "@/components/PopularToolCard";
 import TestimonialCard from "@/components/TestimonialCard";
 import CategoryToolsGrid from "@/components/CategoryToolsGrid";
 import AdBanner728x90 from "@/components/AdBanner728x90";
-import AdBanner368x60 from "@/components/AdBanner368x60";
+import AdBanner468x60 from "@/components/AdBanner468x60";
 import AdNativeBanner from "@/components/AdNativeBanner";
 import AdPopunder from "@/components/AdPopunder";
 import { 
@@ -79,12 +79,9 @@ const Index = () => {
           </section>
         </div>
 
-        {/* Top Advertisement Banner */}
-        <div className="w-full justify-center hidden md:flex">
-          <AdBanner728x90 key="top-banner-desktop" />
-        </div>
-        <div className="w-full justify-center flex md:hidden">
-          <AdBanner368x60 key="top-banner-mobile" />
+        {/* Top Advertisement Banner - 728x90 */}
+        <div className="w-full flex justify-center">
+          <AdBanner728x90 key="top-banner" />
         </div>
 
         {/* Popular Tools Section */}
@@ -112,13 +109,10 @@ const Index = () => {
           </section>
         </div>
 
-        {/* Middle Advertisement Banner */}
-        {/* <div className="w-full justify-center hidden md:flex">
-          <AdBanner728x90 key="middle-banner-desktop" />
+        {/* Middle Advertisement Banner - 728x90 */}
+        <div className="w-full flex justify-center mt-0">
+          <AdBanner728x90 key="middle-banner" />
         </div>
-        <div className="w-full justify-center flex md:hidden">
-          <AdBanner368x60 key="middle-banner-mobile" />
-        </div> */}
 
         {/* Tool Categories Section */}
         <div className="space-y-4 sm:space-y-8">
@@ -135,6 +129,13 @@ const Index = () => {
 
         {/* Testimonials Section */}
         <section className="mt-6 sm:mt-12 mb-6 sm:mb-12">
+          <div className="mb-4 sm:mb-8">
+            <h2 className="text-base sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">Testimonials</h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              This app saved me hours and effort! Simple tools that just work.
+              <span className="text-xs sm:text-sm ml-2">- A. Patel, Student</span>
+            </p>
+          </div>
           <TestimonialCard
             name="A. Chen"
             role="Student"
