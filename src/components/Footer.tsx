@@ -1,13 +1,10 @@
 import { Wrench, X, Facebook, Youtube, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
-import AdBanner728x90 from "@/components/AdBanner728x90";
 
 const Footer = () => {
   return (
     <footer className="footer-section py-6 sm:py-10 px-4 sm:px-6 mt-10 sm:mt-16">
       <div className="container mx-auto">
-        {/* Advertisement Banner Before Footer Content */}
-        <AdBanner728x90 />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
           {/* Logo and Description */}
