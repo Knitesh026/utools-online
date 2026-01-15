@@ -21,7 +21,7 @@ export const AdNativeBanner = ({ className = "" }: { className?: string }) => {
   }, []);
 
   return (
-    <div className={`w-full flex justify-center py-6 sm:py-8 px-2 sm:px-4 ${className}`}>
+    <div className={`w-full flex justify-center px-2 sm:px-4 ${className}`}>
       <div ref={containerRef} id="container-1ecd23d58fd3a85d73e66bb4e80a97da" />
     </div>
   );
