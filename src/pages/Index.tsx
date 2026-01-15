@@ -49,10 +49,7 @@ const Index = () => {
       {/* Popunder Ad - loads in background */}
       <AdPopunder />
       
-      {/* Sticky Mobile Bottom Ad - 320x100 */}
-      <AdBannerSticky320x100 key="sticky-mobile-ad" />
-      
-      <main className="flex-1 pb-28 md:pb-0">
+      <main className="flex-1">
         {/* Hero Section */}
         <Hero />
 
@@ -83,9 +80,9 @@ const Index = () => {
           </section>
         </div>
 
-        {/* Top Advertisement Banner - 728x90 Desktop Only */}
-        <div className="w-full hidden md:flex justify-center">
-          <AdBanner728x90 key="top-banner" />
+        {/* Top Advertisement Banner - 728x90 */}
+        <div className="w-full flex justify-center">
+          <AdBanner728x90 key="top-banner"/>
         </div>
 
         {/* Popular Tools Section */}
@@ -113,13 +110,8 @@ const Index = () => {
           </section>
         </div>
 
-        {/* In-Content Advertisement Banner - 300x250 */}
-        <div className="w-full flex justify-center">
-          <AdBanner300x250 key="incontent-banner" />
-        </div>
-
-        {/* Middle Advertisement Banner - 728x90 Desktop Only */}
-        <div className="w-full hidden md:flex justify-center">
+        {/* Middle Advertisement Banner - 728x90 */}
+        <div className="w-full flex justify-center mt-0">
           <AdBanner728x90 key="middle-banner" />
         </div>
 
@@ -146,14 +138,9 @@ const Index = () => {
           />
         </section>
 
-        {/* Bottom Advertisement Banner - 300x250 */}
+        {/* Bottom Advertisement Banner - Native Banner */}
         <div className="w-full flex justify-center">
-          <AdBanner300x250 key="bottom-banner" />
-        </div>
-
-        {/* Native Advertisement Banner */}
-        <div className="w-full flex justify-center">
-          <AdNativeBanner key="native-banner" />
+          <AdNativeBanner key="bottom-banner" />
         </div>
         </div>
       </main>
