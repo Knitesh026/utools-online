@@ -7,25 +7,23 @@ export const AdBanner468x60 = ({ className = "" }: { className?: string }) => {
     const loadAd = () => {
       if (!containerRef.current) return;
       
-      // Create a script element that sets atOptions and loads the ad
-      const script = document.createElement("script");
-      script.textContent = `
-        window.atOptions468x60 = {
-          key: "1a312f9d66b39ae68001fff40d2e629c",
-          format: "iframe",
-          height: 60,
-          width: 468,
-          params: {}
-        };
-        window.atOptions = window.atOptions468x60;
-      `;
-      containerRef.current.appendChild(script);
+      // Set atOptions in the window/global scope
+      (window as any).atOptions = {
+        key: "1a312f9d66b39ae68001fff40d2e629c",
+        format: "iframe",
+        height: 60,
+        width: 468,
+        params: {}
+      };
       
-      // Load the ad invoke script
-      const adScript = document.createElement("script");
-      adScript.src = "https://www.highperformanceformat.com/1a312f9d66b39ae68001fff40d2e629c/invoke.js";
-      adScript.async = true;
-      containerRef.current.appendChild(adScript);
+      // Load the ad invoke script with a small delay
+      setTimeout(() => {
+        if (!containerRef.current) return;
+        const adScript = document.createElement("script");
+        adScript.src = "https://www.highperformanceformat.com/1a312f9d66b39ae68001fff40d2e629c/invoke.js";
+        adScript.async = true;
+        containerRef.current?.appendChild(adScript);
+      }, 50);
     };
 
     // Delay to ensure DOM is ready
