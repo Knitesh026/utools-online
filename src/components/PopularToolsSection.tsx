@@ -49,10 +49,14 @@ const PopularToolsSection = () => {
           ?.tools.slice(0, 12) || [];
 
   return (
-    <section className="py-12 sm:py-16 bg-gradient-to-b from-gray-50 to-white">
-      <div className="container mx-auto px-4 sm:px-6">
+    <section className="relative py-12 sm:py-16 bg-gradient-to-br from-blue-50 via-white to-blue-50 overflow-hidden">
+      {/* Animated gradient blobs */}
+      <div className="absolute top-[-100px] right-[-100px] w-[350px] h-[350px] bg-blue-600/5 rounded-full z-0"></div>
+      <div className="absolute bottom-[-100px] left-[-100px] w-[400px] h-[400px] bg-cyan-500/5 rounded-full z-0"></div>
+      
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Header */}
-        <div className="text-center mb-8 sm:mb-12">
+        <div className="text-center mb-8 sm:mb-8">
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-2 sm:mb-3">
             Our Most Popular Tools
           </h2>

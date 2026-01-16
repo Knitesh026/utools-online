@@ -11,8 +11,11 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import AdBanner368x60 from "@/components/AdBanner468x60";
+import AdBanner728x90 from "@/components/AdBanner728x90";
+import AdBanner468x60 from "@/components/AdBanner468x60";
 import AdBanner468x250 from "./AdBanner468x250";
+import AdSidebar from "./AdSidebar";
+import { AdBannerSticky320x100 } from "./AdBannerSticky320x100";
 
 export interface ProfessionalToolLayoutProps {
   title: string;
@@ -58,6 +61,18 @@ export const ProfessionalToolLayout = ({
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900">
       <Header />
+
+      {/* Top Banner Ad */}
+      <div className="hidden sm:block w-full py-2 px-4 bg-gray-100 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+        <div className="container mx-auto max-w-7xl flex justify-center">
+          <AdBanner728x90 className="max-w-full" />
+        </div>
+      </div>
+
+      {/* Mobile Banner Ad */}
+      <div className="sm:hidden w-full py-1 px-2">
+        <AdBanner468x60 className="max-w-full" />
+      </div>
 
       <main className="flex-1 container mx-auto px-4 md:px-6 py-8 md:py-12 max-w-7xl">
         {/* Hero Section */}
@@ -105,36 +120,33 @@ export const ProfessionalToolLayout = ({
           </Alert>
         )}
 
-        {/* Main Content - Side by Side Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-          {/* Input Section */}
-          <div className="flex flex-col lg:col-span-2">
-            <Card className="border-gray-200 dark:border-gray-700 dark:bg-gray-900 flex-1 shadow-sm hover:shadow-md transition-shadow">
+        {/* Main Content - Flexible Layout with Sidebar Ad */}
+        <div className="flex flex-col lg:flex-row gap-6 md:gap-8">
+          {/* Primary Content Area */}
+          <div className="flex-1 flex flex-col min-w-0">
+            {/* Input Section */}
+            <Card className="border-gray-200 dark:border-gray-700 dark:bg-gray-900 shadow-sm hover:shadow-md transition-shadow">
               {inputSection}
             </Card>
+
+            {/* Output Section - Full Width Below Input */}
+            {outputSection && (
+              <div className="mt-6 md:mt-8">
+                <Card className="border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-950">
+                  {outputSection}
+                </Card>
+              </div>
+            )}
           </div>
 
-          {/* Sidebar Ad Space */}
-          <div className="flex flex-col gap-3">
-            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
-              <AdBanner368x60 />
-            </div>
-            <div className="flex flex-col">
-              <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
-                <AdBanner468x250 />
-              </div>
-            </div>
-          </div>
+          {/* Sidebar with Ad */}
+          <AdSidebar className="mt-6 lg:mt-0" useSkyscraper={false} />
         </div>
 
-        {/* Output Section - Full Width */}
-        {outputSection && (
-          <div className="flex flex-col mt-6 md:mt-8">
-            <Card className="border-gray-200 dark:border-gray-700 flex-1 shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-950">
-              {outputSection}
-            </Card>
-          </div>
-        )}
+        {/* Middle Section Ad (Optional) */}
+        <div className="mt-8 md:mt-12 py-6 px-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 flex justify-center">
+          <AdBanner468x250 />
+        </div>
 
         {/* Custom Children Content */}
         {children}

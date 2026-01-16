@@ -4,7 +4,7 @@ import { Sparkles, Zap, Settings2 } from "lucide-react";
 
 export function Hero() {
   return (
-    <section className="relative w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-10 sm:py-14 overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-50">
+    <section className="relative w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-10 sm:pt-24 overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-50">
       {/* Animated gradient blobs */}
       <div className="absolute top-[-100px] left-[-100px] w-[350px] h-[350px] bg-blue-600/10 rounded-full z-0"></div>
       <div className="absolute bottom-[-100px] right-[-100px] w-[400px] h-[400px] bg-cyan-500/20 rounded-full z-0" style={{ animationDelay: "1s" }}></div>

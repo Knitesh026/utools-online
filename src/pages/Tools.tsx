@@ -4,6 +4,8 @@ import { toolCategories } from "@/data/tools";
 import ToolCard from "@/components/ToolCard";
 import { AdNativeBanner } from "@/components/AdNativeBanner";
 import { useSearchParams } from "react-router-dom";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const Tools = () => {
   const [searchParams] = useSearchParams();
@@ -32,10 +34,11 @@ const Tools = () => {
     .filter((category) => category.tools.length > 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-accent/5">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary/5 via-white to-accent/5">
+      <Header />
       <AdNativeBanner />
       {/* Hero Section */}
-      <section className="relative py-4 px-4 sm:py-6 sm:px-6 overflow-hidden">
+      <section className="relative py-4 px-4 sm:py-24 sm:px-6 overflow-hidden">
         <div className="absolute top-0 left-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl -z-10"></div>
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent/15 rounded-full blur-3xl -z-10"></div>
 
@@ -122,6 +125,11 @@ const Tools = () => {
         </div>
       </section>
 
+      {/* Ad Banner Before Footer */}
+      <div className="py-4 px-4 sm:py-6 sm:px-6 flex justify-center bg-gradient-to-br from-primary/5 via-white to-accent/5">
+        <AdNativeBanner />
+      </div>
+
       {/* Stats Section */}
       <section className="py-6 sm:py-8 px-4 sm:px-6 bg-muted/30">
         <div className="max-w-6xl mx-auto">
@@ -147,6 +155,7 @@ const Tools = () => {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 };
