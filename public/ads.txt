@@ -1,2 +1,21 @@
+# Google AdSense - Primary Publisher
 google.com, ca-pub-1294105144279821, DIRECT, f08c47fec0942fa0
+
+# Google Ad Manager
+google.com, pub-1294105144279821, DIRECT, f08c47fec0942fa0
+
+# Authorized Ad Networks
 adsterra.com, 160616fe745475bed521854a284bae67, RESELLER
+openx.com, 544390760, RESELLER, 6a698e2ec38604c6
+appnexus.com, 3386, RESELLER, f5ab79cb980f11d1
+pubmatic.com, 156377, RESELLER, 5d62403b186f2ace
+rubicon.com, 17960, RESELLER, 0bab68254375566b
+triplelift.com, 12105, RESELLER, 6c33edb13117fd86
+sonobi.com, 1a53b396b3, RESELLER, d4c29acad76b76d6
+33across.com, 0010b00002560cd2b0d0cbd359d5e48e, RESELLER, bbea06d81c4ec017
+emxdgt.com, 337, RESELLER, 1e18e0ee11b92eef
+oftmedia.com, 1a1c1b48311e3a2d917e6a5c1f5f5f5f, RESELLER
+conversantmedia.com, 100164, RESELLER, 03113cd45947496d
+effectivegatecpm.com, 160616fe745475bed521854a284bae67, RESELLER
+
+# Note: Replace pub-xxxxxxxxxxxxxxxx with your actual Google Ad Manager Publisher ID if applicable
