@@ -16,10 +16,11 @@ import {
   TrendingUp,
   Zap,
 } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
 export interface Tool {
   title: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   to: string;
   description?: string;
 }

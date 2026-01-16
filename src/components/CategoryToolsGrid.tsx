@@ -29,14 +29,14 @@ const CategoryToolsGrid = ({
   return (
     <div className="rounded-lg sm:rounded-[0.5rem] p-3 sm:p-6 bg-card shadow-md overflow-x-hidden" style={{ backgroundColor: getLightBackground(colorTheme.accentColor) }}>
       <section className="mb-0">
-        <div className={`mb-4 sm:mb-6 pb-0 border-b-0`}>
-          <h3 className="text-base sm:text-xl lg:text-2xl font-bold text-foreground mb-1 sm:mb-2 leading-tight" style={{ color: colorTheme.accentColor }}>
+        <div className={`mb-3 sm:mb-2 pb-0 border-b-0`}>
+          <h3 className="text-sm sm:text-lg lg:text-xl font-bold text-foreground mb-1 sm:mb-1 leading-tight" style={{ color: colorTheme.accentColor }}>
             {categoryName}
           </h3>
-          <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl">{categoryDescription}</p>
+          <p className="text-xs sm:text-xs text-muted-foreground max-w-2xl">{categoryDescription}</p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4 mt-3 sm:mt-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3 mt-3 sm:mt-3">
           {tools.map((tool) => {
             const Icon = tool.icon;
             

@@ -1,57 +1,13 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Hero } from "@/components/Hero";
-import ToolCard from "@/components/ToolCard";
-import PopularToolCard from "@/components/PopularToolCard";
+import PopularToolsSection from "@/components/PopularToolsSection";
 import TestimonialCard from "@/components/TestimonialCard";
-import CategoryToolsGrid from "@/components/CategoryToolsGrid";
-import AdBanner728x90 from "@/components/AdBanner728x90";
-import AdBanner300x250 from "@/components/AdBanner300x250";
-import AdBannerSticky320x100 from "@/components/AdBannerSticky320x100";
-import AdNativeBanner from "@/components/AdNativeBanner";
-import AdPopunder from "@/components/AdPopunder";
-import AdBanner468x60 from "@/components/AdBanner468x60";
-import { 
-  FileText, 
-  Image, 
-  Type,
-  Palette,
-  Wrench,
-  Mountain,
-  Eraser,
-  QrCode,
-  PenTool,
-  FileOutput,
-  Files
-} from "lucide-react";
-import { toolCategories } from "@/data/tools";
 
 const Index = () => {
-  const mainTools = [
-    { title: "PDF Processor", icon: FileText, to: "/tools?category=Document%20Tools", description: "Merge, split, compress and convert PDF files" },
-    { title: "Image Editor", icon: Mountain, iconColor: "text-primary", to: "/tools?category=Image%20Tools", description: "Edit and enhance your images with powerful tools" },
-    { title: "Video Converter", icon: FileOutput, to: "/tools", description: "Convert videos between different formats" },
-    { title: "AI Content Tools", icon: PenTool, iconColor: "text-accent", to: "/tools", description: "Generate and enhance content with AI" },
-  ];
-
-  const popularTools = [
-    { title: "Merge PDF", icon: Files, to: "/merge-pdf", description: "Merge 2 or more PDF files into a single PDF file" },
-    { title: "MP4 to MP3", icon: Mountain, to: "/mp4-to-mp3", description: "Extract audio from MP4 videos" },
-    { title: "Remove Background", icon: Eraser, to: "/remove-background", description: "Remove background from images automatically" },
-    { title: "QR Code Maker", icon: QrCode, to: "/qr-code", description: "Generate QR codes for URLs" },
-    { title: "Image Converter", icon: Image, to: "/image-converter", description: "Convert between image formats" },
-    { title: "PDF to Word", icon: FileText, to: "/pdf-to-word", description: "Convert a PDF to Word Document" },
-  ];
-
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden">
       <Header />
-      
-      {/* Popunder Ad - loads in background */}
-      <AdPopunder />
-      
-      {/* Sticky Mobile Bottom Ad - 320x100 */}
-      <AdBannerSticky320x100 key="sticky-mobile-ad" />
       
       <main className="flex-1 pb-32 sm:pb-0">
         {/* Hero Section */}
@@ -59,80 +15,8 @@ const Index = () => {
 
         <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8 space-y-6 sm:space-y-8">
 
-        {/* Main Tools Grid */}
-        <div className="rounded-lg sm:rounded-[0.5rem] p-4 sm:p-6 bg-card shadow-md" style={{ backgroundColor: '#f6fff8' }}>
-          <section className="mb-0">
-            <div className="mb-4 sm:mb-6 pb-0 border-b-0">
-              <h2 className="text-base sm:text-xl lg:text-2xl font-bold text-foreground mb-1 sm:mb-2 leading-tight">
-                Featured Tools
-              </h2>
-              <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl">
-                Quick access to our most powerful tools
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 max-w-6xl">
-              {mainTools.map((tool, index) => (
-                <ToolCard
-                  key={tool.title}
-                  title={tool.title}
-                  description={tool.description}
-                  icon={tool.icon}
-                  number={index + 1}
-                  to={tool.to}
-                />
-              ))}
-            </div>
-          </section>
-        </div>
-
-        {/* Top Advertisement Banner - 728x90 */}
-        <div className="w-full flex justify-center">
-          <AdBanner728x90 key="top-banner"/>
-        </div>
-
-        {/* Popular Tools Section */}
-        <div className="rounded-lg sm:rounded-[0.5rem] p-4 sm:p-6 bg-card shadow-md" style={{ backgroundColor: '#edf2fb' }}>
-          <section className="mb-0">
-            <div className="mb-4 sm:mb-6 pb-0 border-b-0">
-              <h2 className="text-base sm:text-xl lg:text-2xl font-bold text-foreground mb-1 sm:mb-2 leading-tight">
-                Popular Tools
-              </h2>
-              <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl">
-                Most used tools by our community
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2 sm:gap-4 md:gap-4">
-              {popularTools.map((tool) => (
-                <div key={tool.title} className="w-full sm:w-[calc(50%-0.25rem)] lg:w-[calc(33.333%-0.75rem)] xl:w-[calc(25%-0.75rem)]">
-                  <PopularToolCard
-                    title={tool.title}
-                    icon={tool.icon}
-                    to={tool.to}
-                    description={tool.description}
-                  />
-                </div>
-              ))}
-            </div>
-          </section>
-        </div>
-
-        {/* Middle Advertisement Banner - 468x60 */}
-        <div className="w-full flex justify-center">
-          <AdBanner468x60 key="middle-banner" />
-        </div>
-
-        {/* Tool Categories Section */}
-        <div className="space-y-4 sm:space-y-8">
-          {toolCategories.map((category, index) => (
-            <CategoryToolsGrid
-              key={category.name}
-              categoryName={category.name}
-              categoryDescription={category.description}
-              tools={category.tools}
-              colorTheme={category.colorTheme}
-            />
-          ))}
-        </div>
+        {/* Most Popular Tools Section with Category Tabs */}
+        <PopularToolsSection />
 
         {/* Testimonials Section */}
         <section className="mt-6 sm:mt-12 mb-6 sm:mb-12">
@@ -144,10 +28,6 @@ const Index = () => {
           />
         </section>
 
-        {/* Bottom Advertisement Banner - Native Banner */}
-        <div className="w-full flex justify-center">
-          <AdNativeBanner key="bottom-banner" />
-        </div>
         </div>
       </main>
 
