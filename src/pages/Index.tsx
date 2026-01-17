@@ -80,7 +80,9 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden">
       <Header />
+      {/* Non-intrusive popunder - placed at page load, doesn't interfere with main content */}
       <AdPopunder />
+      {/* Social bar for additional monetization */}
       <AdSocialBar />
       
       <main className="flex-1 pb-32 sm:pb-0">

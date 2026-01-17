@@ -22,12 +22,12 @@ const Footer = () => {
             <h4 className="text-white font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Legal</h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="text-white/90 hover:text-white text-xs sm:text-sm transition-colors">
+                <Link to="/privacy-policy" className="text-white/90 hover:text-white text-xs sm:text-sm transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link to="/" className="text-white/90 hover:text-white text-xs sm:text-sm transition-colors">
+                <Link to="/privacy-policy" className="text-white/90 hover:text-white text-xs sm:text-sm transition-colors">
                   GDPR
                 </Link>
               </li>
@@ -39,12 +39,12 @@ const Footer = () => {
             <h4 className="text-white font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Support</h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="text-white/90 hover:text-white text-xs sm:text-sm transition-colors">
+                <Link to="/terms-of-service" className="text-white/90 hover:text-white text-xs sm:text-sm transition-colors">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link to="/" className="text-white/90 hover:text-white text-xs sm:text-sm transition-colors">
+                <Link to="/privacy-policy" className="text-white/90 hover:text-white text-xs sm:text-sm transition-colors">
                   CCPA
                 </Link>
               </li>
@@ -54,7 +54,7 @@ const Footer = () => {
           {/* Connect */}
           <div>
             <h4 className="text-white font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Connect</h4>
-            <Link to="/" className="text-white/90 hover:text-white text-xs sm:text-sm transition-colors block mb-4">
+            <Link to="/privacy-policy" className="text-white/90 hover:text-white text-xs sm:text-sm transition-colors block mb-4">
               Report a Bug
             </Link>
             <div className="flex items-center gap-2 sm:gap-3">
