@@ -175,7 +175,7 @@ const Index = () => {
                     <div className="flex items-center justify-center pl-0 md:pl-6">
                       <div className="w-full h-80 rounded-lg">
                         <img 
-                          src="/public/Who.png" 
+                          src="public/Who.webp" 
                           alt="Team collaboration" 
                           className="w-full h-full object-contain"
                         />
