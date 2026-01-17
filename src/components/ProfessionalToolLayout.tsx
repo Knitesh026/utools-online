@@ -13,7 +13,6 @@ import { AlertCircle, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdBanner728x90 from "@/components/AdBanner728x90";
 import AdBanner468x60 from "@/components/AdBanner468x60";
-import AdBanner468x250 from "./AdBanner468x250";
 import AdSidebar from "./AdSidebar";
 import { AdBannerSticky320x100 } from "./AdBannerSticky320x100";
 
@@ -145,7 +144,7 @@ export const ProfessionalToolLayout = ({
 
         {/* Middle Section Ad (Optional) */}
         <div className="mt-8 md:mt-12 py-6 px-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 flex justify-center">
-          <AdBanner468x250 />
+          <AdBanner728x90 />
         </div>
 
         {/* Custom Children Content */}
