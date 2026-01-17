@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AdBanner728x90 } from "@/components/AdBanner728x90";
-import { AdBanner468x250 } from "@/components/AdBanner468x250";
 import { AdNativeBanner } from "@/components/AdNativeBanner";
 import AdSidebar from "@/components/AdSidebar";
 import { AdPopunder } from "@/components/AdPopunder";
@@ -90,18 +89,18 @@ const Index = () => {
         <Hero />
 
         {/* Top Banner Ad */}
-        <div className="w-full py-3 px-2 bg-gray-100/50 border-b border-gray-200 flex justify-center">
+        <div className="w-full py-3 px-2 flex justify-center">
           <AdBanner728x90 className="max-w-full" />
         </div>
 
-        <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8 space-y-6 sm:space-y-8">
+        <div className="container mx-auto px-4 sm:px-6 py-4 space-y-6 sm:space-y-8">
 
         {/* Most Popular Tools Section with Category Tabs */}
         <PopularToolsSection />
 
         {/* Ad Placement - Between Popular and Stats */}
-        <div className="py-6 px-4 bg-gray-50 rounded-lg border border-gray-200 flex justify-center">
-          <AdBanner468x250 />
+        <div className="py-6 px-4 flex justify-center">
+          <AdBanner728x90 />
         </div>
 
         {/* Stats Section */}
