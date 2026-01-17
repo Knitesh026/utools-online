@@ -99,7 +99,7 @@ const Index = () => {
         <PopularToolsSection />
 
         {/* Ad Placement - Between Popular and Stats */}
-        <div className="py-6 px-4 flex justify-center">
+        <div className="px-4 flex justify-center">
           <AdBanner728x90 />
         </div>
 
@@ -142,7 +142,7 @@ const Index = () => {
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Main Content */}
             <div className="flex-1">
-              <div className="py-12 sm:py-16 bg-gradient-to-br from-blue-50 via-white to-blue-50 rounded-lg overflow-hidden relative">
+              <div className="py-8 sm:py-10 bg-gradient-to-br from-blue-50 via-white to-blue-50 rounded-lg overflow-hidden relative">
                 {/* Animated gradient blobs */}
                 <div className="absolute top-[-100px] left-[-100px] w-[350px] h-[350px] bg-blue-600/10 rounded-full z-0"></div>
                 <div className="absolute bottom-[-100px] right-[-100px] w-[400px] h-[400px] bg-cyan-500/20 rounded-full z-0"></div>
@@ -150,20 +150,20 @@ const Index = () => {
                 <div className="relative z-10 px-4 sm:px-6 md:px-8 lg:px-12">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 items-center">
                     {/* Left Content */}
-                    <div className="space-y-6 pr-0 md:pr-6">
+                    <div className="space-y-4 pr-0 md:pr-6">
                       <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
                         Who We Are
                       </h2>
-                      <div className="space-y-4">
-                        <p className="text-lg text-gray-700">
+                      <div className="space-y-3">
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                           At uTools, we believe that powerful software should be accessible to everyone. Our mission is to break down barriers to productivity by offering a comprehensive suite of free, easy-to-use online tools designed for professionals, students, and everyday users.
                         </p>
-                        <p className="text-base text-gray-600">
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                           We're committed to delivering quality, reliability, and innovation without requiring sign-ups, subscriptions, or hidden costs. Every tool we create is built with you in mind.
                         </p>
-                        <div className="pt-2">
+                        <div className="pt-1">
                           <Link to="/about">
-                            <Button className="bg-secondary hover:opacity-90 text-white font-semibold px-6 py-3 transition-opacity">
+                            <Button className="bg-secondary hover:opacity-90 text-white font-semibold px-6 py-2 transition-opacity">
                               Learn More About Us
                             </Button>
                           </Link>
@@ -173,11 +173,11 @@ const Index = () => {
 
                     {/* Right Image */}
                     <div className="flex items-center justify-center pl-0 md:pl-6">
-                      <div className="w-full h-80 rounded-lg overflow-hidden shadow-xl">
+                      <div className="w-full h-80 rounded-lg">
                         <img 
-                          src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop" 
+                          src="/public/Who.png" 
                           alt="Team collaboration" 
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain"
                         />
                       </div>
                     </div>
