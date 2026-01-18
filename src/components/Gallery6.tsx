@@ -120,7 +120,7 @@ const Gallery6 = ({
           }}
           className="relative left-[-1rem]"
         >
-          <CarouselContent className="-mr-4 ml-8 2xl:ml-[max(8rem,calc(50vw-700px+1rem))] 2xl:mr-[max(0rem,calc(50vw-700px-1rem))]">
+          <CarouselContent className="-mr-4 ml-2 2xl:ml-[max(8rem,calc(50vw-700px+1rem))] 2xl:mr-[max(0rem,calc(50vw-700px-1rem))]">
             {items.map((item, index) => {
               const bgColors = [
                 "bg-red-100",      // Light peach/salmon
@@ -133,33 +133,33 @@ const Gallery6 = ({
               const bgColor = bgColors[index % bgColors.length];
               
               return (
-              <CarouselItem key={item.id} className="pl-4 md:max-w-[360px]">
+              <CarouselItem key={item.id} className="pl-2 sm:pl-4 md:max-w-[360px]">
                 <a
                   href={item.url}
                   className="group flex flex-col justify-between"
                 >
                   <div>
-                    <div className={`flex aspect-[3/2] overflow-clip rounded-2xl ${bgColor} p-2`}>
-                      <div className="flex-1 rounded-xl overflow-hidden">
+                    <div className={`flex aspect-[3/2] overflow-clip rounded-lg sm:rounded-2xl ${bgColor} p-1 sm:p-2`}>
+                      <div className="flex-1 rounded-md sm:rounded-xl overflow-hidden">
                         <div className="relative h-full w-full origin-bottom transition duration-300 group-hover:scale-105">
                           <img
                             src={item.image}
                             alt={item.title}
-                            className="h-full w-full object-cover object-center rounded-lg"
+                            className="h-full w-full object-cover object-center rounded-md sm:rounded-lg"
                           />
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="mb-2 line-clamp-3 break-words pt-4 text-lg font-medium md:mb-3 md:pt-4 md:text-xl lg:pt-4 lg:text-2xl">
+                  <div className="mb-1 sm:mb-2 line-clamp-3 break-words pt-2 sm:pt-4 text-sm sm:text-lg md:text-xl lg:text-2xl font-medium md:mb-3 lg:pt-4">
                     {item.title}
                   </div>
-                  <div className="mb-8 line-clamp-2 text-sm text-muted-foreground md:mb-12 md:text-base lg:mb-3">
+                  <div className="mb-4 sm:mb-8 line-clamp-2 text-xs sm:text-sm text-muted-foreground md:mb-12 md:text-base lg:mb-3">
                     {item.summary}
                   </div>
-                  <div className="flex items-center text-sm">
+                  <div className="flex items-center text-xs sm:text-sm">
                     Read more{" "}
-                    <ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
+                    <ArrowRight className="ml-2 size-4 sm:size-5 transition-transform group-hover:translate-x-1" />
                   </div>
                 </a>
               </CarouselItem>

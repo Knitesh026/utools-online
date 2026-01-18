@@ -17,7 +17,7 @@ const PopularToolCard = ({
 }: PopularToolCardProps) => {
   return (
     <Link to={to}>
-      <div className="flex h-14 sm:h-16 overflow-hidden bg-card shadow-lg rounded-sm sm:rounded-[0.5rem] hover:shadow-xl transition-all">
+      <div className="flex h-12 sm:h-16 overflow-hidden bg-card shadow-lg rounded-sm sm:rounded-[0.5rem] hover:shadow-xl transition-all">
         <svg width={16} height={64} xmlns="http://www.w3.org/2000/svg">
           <path d="M 8 0 
                Q 4 4.8, 8 9.6 
@@ -34,14 +34,14 @@ const PopularToolCard = ({
                L 0 0 
                Z" fill="hsl(var(--primary))" stroke="hsl(var(--primary))" strokeWidth={2} strokeLinecap="round" />
         </svg>
-        <div className="flex items-center justify-center px-2 flex-shrink-0">
-          <Icon height={26} width={26} stroke="hsl(var(--primary))" strokeWidth="1.5" />
+        <div className="flex items-center justify-center px-1 sm:px-2 flex-shrink-0">
+          <Icon height={18} width={18} stroke="hsl(var(--primary))" strokeWidth="1.5" className="sm:w-6 sm:h-6" />
         </div>
-        <div className="mx-1.5 sm:mx-2 overflow-hidden w-full flex flex-col justify-center">
-          <p className="text-xs sm:text-sm font-bold text-foreground leading-6 mr-2 sm:mr-3 overflow-hidden text-ellipsis whitespace-nowrap">
+        <div className="mx-1 sm:mx-2 overflow-hidden w-full flex flex-col justify-center">
+          <p className="text-xs sm:text-sm font-bold text-foreground leading-4 sm:leading-6 mr-1 sm:mr-3 overflow-hidden text-ellipsis whitespace-nowrap">
             {title}
           </p>
-          <p className="hidden sm:block overflow-hidden leading-4 text-muted-foreground text-xs max-h-8">
+          <p className="overflow-hidden leading-3 sm:leading-4 text-muted-foreground text-xs max-h-8">
             {description || "Check out this amazing tool!"}
           </p>
         </div>

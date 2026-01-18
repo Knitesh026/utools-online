@@ -37,7 +37,7 @@ const Tools = () => {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary/5 via-white to-accent/5">
       <Header />
       {/* Hero Section */}
-      <section className="relative py-4 px-4 sm:py-24 sm:px-6 overflow-hidden">
+      <section className="relative pb-4 px-4 pt-24 sm:px-6 overflow-hidden">
       <div className="absolute top-0 left-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl -z-10"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent/15 rounded-full blur-3xl -z-10"></div>
 
@@ -104,7 +104,7 @@ const Tools = () => {
             {/* Tools Grid */}
             {expandedCategory === category.name && (
             <div className="mb-3 sm:mb-4">
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
               {category.tools.map((tool) => (
                 <ToolCard
                 key={tool.title}

@@ -36,18 +36,18 @@ const CategoryToolsGrid = ({
           <p className="text-xs sm:text-xs text-muted-foreground max-w-2xl">{categoryDescription}</p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3 mt-3 sm:mt-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3 mt-3 sm:mt-3">
           {tools.map((tool) => {
             const Icon = tool.icon;
             
             return (
               <Link key={tool.title} to={tool.to}>
-                <div className="flex h-14 sm:h-16 overflow-hidden bg-card shadow-lg rounded-sm sm:rounded-[0.5rem] hover:shadow-xl transition-all hover:scale-105" style={{ borderLeft: `4px solid ${colorTheme.accentColor}` }}>
+                <div className="flex h-12 sm:h-16 overflow-hidden bg-card shadow-lg rounded-sm sm:rounded-[0.5rem] hover:shadow-xl transition-all hover:scale-105" style={{ borderLeft: `4px solid ${colorTheme.accentColor}` }}>
                   <svg width={16} height={64} xmlns="http://www.w3.org/2000/svg">
                     <path d="M 8 0 Q 4 4.8, 8 9.6 T 8 19.2 Q 4 24, 8 28.8 T 8 38.4 Q 4 43.2, 8 48 T 8 57.6 Q 4 62.4, 8 67.2 T 8 76.8 Q 4 81.6, 8 86.4 T 8 96 L 0 96 L 0 0 Z" fill={colorTheme.accentColor} stroke={colorTheme.accentColor} strokeWidth={2} strokeLinecap="round" />
                   </svg>
-                  <div className="flex items-center justify-center px-2 sm:px-3 flex-shrink-0">
-                    <Icon height={26} width={26} stroke={colorTheme.iconColor} strokeWidth="1.5" />
+                  <div className="flex items-center justify-center px-1 sm:px-3 flex-shrink-0">
+                    <Icon height={18} width={18} stroke={colorTheme.iconColor} strokeWidth="1.5" className="sm:w-6 sm:h-6" />
                   </div>
                   <div className="mx-1.5 sm:mx-2.5 overflow-hidden w-full flex flex-col justify-center">
                     <p className="text-xs sm:text-sm font-bold overflow-hidden text-ellipsis whitespace-nowrap text-foreground">

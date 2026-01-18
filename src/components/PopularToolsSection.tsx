@@ -56,25 +56,25 @@ const PopularToolsSection = () => {
       
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Header */}
-        <div className="text-center mb-8 sm:mb-8">
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-2 sm:mb-3">
+        <div className="text-center mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-4xl font-bold text-foreground mb-1 sm:mb-3">
             Our Most Popular Tools
           </h2>
-          <p className="text-sm sm:text-base text-muted-foreground">
+          <p className="text-xs sm:text-base text-muted-foreground">
             We present the best of the best. All free, no catch
           </p>
         </div>
 
         {/* Filter Tabs and Tools Container */}
-        <div className="flex gap-6 sm:gap-8">
-          {/* Vertical Category Tabs - Left Sidebar */}
-          <div className="w-32 sm:w-40 flex-shrink-0">
-            <div className="flex flex-col gap-2 sticky top-24">
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-8">
+          {/* Category Tabs - Horizontal on mobile, Vertical on desktop */}
+          <div className="w-full sm:w-32 lg:w-40 flex-shrink-0">
+            <div className="flex flex-row sm:flex-col gap-1.5 sm:gap-2 overflow-x-auto pb-2 sm:pb-0 sticky top-24">
               {categories.map((category) => (
                 <button
                   key={category}
                   onClick={() => setActiveCategory(category)}
-                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-all text-left whitespace-normal ${
+                  className={`px-2 sm:px-4 py-1.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all text-center sm:text-left whitespace-nowrap sm:whitespace-normal flex-shrink-0 sm:flex-shrink-1 ${
                     activeCategory === category
                       ? "bg-primary text-white shadow-md"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"

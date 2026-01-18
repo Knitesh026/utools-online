@@ -2,6 +2,12 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react';
+import {
+  Carousel,
+  CarouselApi,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
 
 
 // MediaItemType defines the structure of a media item
@@ -157,10 +163,22 @@ const GalleryModal = ({ selectedItem, isOpen, onClose, setSelectedItem, mediaIte
                     stiffness: 400,
                     damping: 30
                 }}
-                className="fixed inset-0 w-full min-h-screen sm:h-[90vh] md:h-[600px] backdrop-blur-lg 
-                          rounded-none sm:rounded-lg md:rounded-xl overflow-hidden z-10"
+                className="fixed inset-0 w-full h-screen sm:h-[90vh] md:h-[600px] backdrop-blur-lg 
+                          rounded-none sm:rounded-lg md:rounded-xl overflow-hidden z-50 flex flex-col"
 
             >
+                {/* Close Button - Positioned at top */}
+                <div className="absolute top-2 sm:top-2.5 md:top-3 right-2 sm:right-2.5 md:right-3 z-50">
+                    <motion.button
+                        className="p-2 rounded-full bg-gray-200/80 text-gray-700 hover:bg-gray-300/80 backdrop-blur-sm"
+                        onClick={onClose}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                    >
+                        <X className='w-5 h-5' />
+                    </motion.button>
+                </div>
+
                 {/* Main Content */}
                 <div className="h-full flex flex-col">
                     <div className="flex-1 p-2 sm:p-3 md:p-4 flex items-center justify-center bg-gray-50/50">
@@ -185,9 +203,8 @@ const GalleryModal = ({ selectedItem, isOpen, onClose, setSelectedItem, mediaIte
                                     scale: 0.97,
                                     transition: { duration: 0.15 }
                                 }}
-                                onClick={onClose}
                             >
-                                <MediaItem item={selectedItem} className="w-full h-full object-contain bg-gray-900/20" onClick={onClose} />
+                                <MediaItem item={selectedItem} className="w-full h-full object-contain bg-gray-900/20" />
                                 <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3 md:p-4 
                                               bg-gradient-to-t from-black/50 to-transparent">
                                     <h3 className="text-white text-base sm:text-lg md:text-xl font-semibold">
@@ -203,16 +220,6 @@ const GalleryModal = ({ selectedItem, isOpen, onClose, setSelectedItem, mediaIte
                 </div>
 
                 {/* Close Button */}
-                <motion.button
-                    className="absolute top-2 sm:top-2.5 md:top-3 right-2 sm:right-2.5 md:right-3 
-                              p-2 rounded-full bg-gray-200/80 text-gray-700 hover:bg-gray-300/80 
-                              text-xs sm:text-sm backdrop-blur-sm "
-                    onClick={onClose}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                >
-                    <X className='w-3 h-3' />
-                </motion.button>
 
             </motion.div>
 
@@ -335,19 +342,84 @@ const InteractiveBentoGallery: React.FC<InteractiveBentoGalleryProps> = ({ media
                         mediaItems={items}
                     />
                 ) : (
-                    <motion.div
-                        className="grid grid-cols-1 sm:grid-cols-6 gap-4 auto-rows-[180px]"
-                        initial="hidden"
-                        animate="visible"
-                        exit="hidden"
-                        variants={{
-                            hidden: { opacity: 0 },
-                            visible: {
-                                opacity: 1,
-                                transition: { staggerChildren: 0.1 }
-                            }
-                        }}
-                    >
+                    <>
+                        {/* Mobile Carousel View */}
+                        <Carousel
+                          opts={{
+                            breakpoints: {
+                              "(max-width: 768px)": {
+                                dragFree: true,
+                              },
+                            },
+                          }}
+                          className="sm:hidden"
+                        >
+                          <CarouselContent className="-ml-2">
+                            {items.map((item, index) => (
+                              <CarouselItem key={item.id} className="pl-2 basis-4/5">
+                                <motion.div
+                                  layoutId={`media-${item.id}`}
+                                  className="relative overflow-hidden rounded-xl cursor-pointer h-48"
+                                  onClick={() => setSelectedItem(item)}
+                                  variants={{
+                                    hidden: { y: 50, scale: 0.9, opacity: 0 },
+                                    visible: {
+                                      y: 0,
+                                      scale: 1,
+                                      opacity: 1,
+                                      transition: {
+                                        type: "spring",
+                                        stiffness: 350,
+                                        damping: 25,
+                                        delay: index * 0.05
+                                      }
+                                    }
+                                  }}
+                                  initial="hidden"
+                                  animate="visible"
+                                  whileHover={{ scale: 1.02 }}
+                                >
+                                  <MediaItem
+                                    item={item}
+                                    className="absolute inset-0 w-full h-full"
+                                    onClick={() => setSelectedItem(item)}
+                                  />
+                                  <motion.div
+                                    className="absolute inset-0 flex flex-col justify-end p-2"
+                                    initial={{ opacity: 0 }}
+                                    whileHover={{ opacity: 1 }}
+                                    transition={{ duration: 0.2 }}
+                                  >
+                                    <div className="absolute inset-0 flex flex-col justify-end p-2">
+                                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                                      <h3 className="relative text-white text-xs font-medium line-clamp-1">
+                                        {item.title}
+                                      </h3>
+                                      <p className="relative text-white/70 text-[10px] mt-0.5 line-clamp-2">
+                                        {item.desc}
+                                      </p>
+                                    </div>
+                                  </motion.div>
+                                </motion.div>
+                              </CarouselItem>
+                            ))}
+                          </CarouselContent>
+                        </Carousel>
+
+                        {/* Desktop Grid View */}
+                        <motion.div
+                            className="hidden sm:grid sm:grid-cols-6 gap-4 auto-rows-[180px]"
+                            initial="hidden"
+                            animate="visible"
+                            exit="hidden"
+                            variants={{
+                                hidden: { opacity: 0 },
+                                visible: {
+                                    opacity: 1,
+                                    transition: { staggerChildren: 0.1 }
+                                }
+                            }}
+                        >
                         {items.map((item, index) => (
                             <motion.div
                                 key={item.id}
@@ -375,7 +447,7 @@ const InteractiveBentoGallery: React.FC<InteractiveBentoGalleryProps> = ({ media
                                 onDragStart={() => setIsDragging(true)}
                                 onDragEnd={(e, info) => {
                                     setIsDragging(false);
-                                    const moveDistance = info.offset.x + info.offset.y;
+                                    const moveDistance = info.offset.x;
                                     if (Math.abs(moveDistance) > 50) {
                                         const newItems = [...items];
                                         const draggedItem = newItems[index];
@@ -411,8 +483,7 @@ const InteractiveBentoGallery: React.FC<InteractiveBentoGalleryProps> = ({ media
                                 </motion.div>
                             </motion.div>
                         ))}
-                    </motion.div>
-                )}
+                    </motion.div>                    </>                )}
             </AnimatePresence>
         </div>
     );

@@ -12,6 +12,8 @@ import AdSidebar from "@/components/AdSidebar";
 import { AdPopunder } from "@/components/AdPopunder";
 import { AdSocialBar } from "@/components/AdSocialBar";
 import { Gallery6 } from "@/components/Gallery6";
+import SEOPage from "@/components/SEOPage";
+import { websiteSchema } from "@/lib/seoHelpers";
 
 const Index = () => {
   const [activeUsers, setActiveUsers] = useState(0);
@@ -69,6 +71,13 @@ const Index = () => {
     animate();
   }, []);
   return (
+    <SEOPage
+      title="uTools.online - Free Online Utility Tools for File Conversion, Image Editing & More"
+      description="Discover free online utility tools for file conversion, image editing, PDF processing, video conversion, and AI-powered solutions. No sign-up required, completely secure."
+      canonical="https://utoolss.online/"
+      keywords="free online tools, file converter, image editor, PDF tools, video converter, utility tools, online converter, free tools no sign up"
+      schema={websiteSchema}
+    >
     <div className="min-h-screen flex flex-col overflow-x-hidden">
       <Header />
       {/* Non-intrusive popunder - placed at page load, doesn't interfere with main content */}
@@ -165,7 +174,7 @@ const Index = () => {
 
                     {/* Right Image */}
                     <div className="flex items-center justify-center pl-0 md:pl-6">
-                      <div className="w-full h-80 rounded-lg">
+                      <div className="w-full max-w-xs sm:max-w-sm md:max-w-none h-52 md:h-80 rounded-lg">
                         <img 
                           src="/Who.webp" 
                           alt="Team collaboration" 
@@ -192,10 +201,10 @@ const Index = () => {
 
             <div className="relative z-10 px-4 sm:px-6 md:px-8">
               <div className="mb-2 sm:mb-4 max-w-3xl mx-auto text-center">
-                <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
+                <h2 className="text-xl sm:text-4xl font-bold text-foreground mb-1 sm:mb-2">
                   Free Tools You'd Usually Pay For
                 </h2>
-                <p className="text-sm sm:text-base text-muted-foreground">
+                <p className="text-xs sm:text-base text-muted-foreground">
                   No Limits, No Sign-Up. Access powerful tools without any hidden costs or subscriptions.
                 </p>
               </div>
@@ -314,6 +323,7 @@ const Index = () => {
 
       <Footer />
     </div>
+    </SEOPage>
   );
 };
 

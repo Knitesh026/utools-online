@@ -1,8 +1,12 @@
 User-agent: Googlebot
 Allow: /
+Disallow: /uploads/
+Disallow: /api/
 
 User-agent: Bingbot
 Allow: /
+Disallow: /uploads/
+Disallow: /api/
 
 User-agent: Twitterbot
 Allow: /
@@ -12,3 +16,14 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /uploads/
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://utoolss.online/sitemap.xml
+
+# Crawl delay (optional, time in seconds)
+Crawl-delay: 1
+
+# Request-rate (pages per second)
+Request-rate: 10/1s
