@@ -2,7 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Hero } from "@/components/Hero";
 import PopularToolsSection from "@/components/PopularToolsSection";
-import TestimonialCard from "@/components/TestimonialCard";
+import InteractiveBentoGallery from "@/components/InteractiveBentoGallery";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -11,13 +11,13 @@ import { AdNativeBanner } from "@/components/AdNativeBanner";
 import AdSidebar from "@/components/AdSidebar";
 import { AdPopunder } from "@/components/AdPopunder";
 import { AdSocialBar } from "@/components/AdSocialBar";
+import { Gallery6 } from "@/components/Gallery6";
 
 const Index = () => {
   const [activeUsers, setActiveUsers] = useState(0);
   const [filesConverted, setFilesConverted] = useState(0);
   const [onlineTools, setOnlineTools] = useState(0);
   const [pdfsCreated, setPdfsCreated] = useState(0);
-  const [carouselIndex, setCarouselIndex] = useState(0);
 
   const freeTools = [
     {
@@ -41,14 +41,6 @@ const Index = () => {
       image: "https://images.unsplash.com/photo-1526374965328-7f5ae4e8a83f?w=500&h=300&fit=crop"
     }
   ];
-
-  const handlePrevious = () => {
-    setCarouselIndex((prev) => (prev === 0 ? freeTools.length - 1 : prev - 1));
-  };
-
-  const handleNext = () => {
-    setCarouselIndex((prev) => (prev === freeTools.length - 1 ? 0 : prev + 1));
-  };
 
   useEffect(() => {
     const targets = [1000000, 10000000, 200, 500000];
@@ -106,8 +98,8 @@ const Index = () => {
         {/* Stats Section */}
         <div className="relative mb-8 sm:mb-12 bg-gradient-to-br from-blue-50 via-white to-blue-50 rounded-lg p-6 sm:p-8 overflow-hidden">
           {/* Animated gradient blobs */}
-          <div className="absolute top-[-100px] right-[-100px] w-[250px] h-[250px] bg-blue-600/10 rounded-full z-0"></div>
-          <div className="absolute bottom-[-100px] left-[-100px] w-[300px] h-[300px] bg-cyan-500/20 rounded-full z-0"></div>
+          <div className="absolute top-[-100px] right-[-100px] w-[190px] h-[190px] bg-blue-600/10 rounded-full z-0"></div>
+          <div className="absolute bottom-[-100px] left-[-100px] w-[190px] h-[190px] bg-cyan-500/20 rounded-full z-0"></div>
 
           <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
             <div className="text-center">
@@ -142,7 +134,7 @@ const Index = () => {
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Main Content */}
             <div className="flex-1">
-              <div className="py-8 sm:py-10 bg-gradient-to-br from-blue-50 via-white to-blue-50 rounded-lg overflow-hidden relative">
+              <div className="py-8 sm:pt-10 pb-2 bg-gradient-to-br from-blue-50 via-white to-blue-50 rounded-lg overflow-hidden relative">
                 {/* Animated gradient blobs */}
                 <div className="absolute top-[-100px] left-[-100px] w-[350px] h-[350px] bg-blue-600/10 rounded-full z-0"></div>
                 <div className="absolute bottom-[-100px] right-[-100px] w-[400px] h-[400px] bg-cyan-500/20 rounded-full z-0"></div>
@@ -193,57 +185,121 @@ const Index = () => {
 
         {/* Free Tools Section */}
         <section className="mt-12 sm:mt-16 mb-12 sm:mb-16">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
-                Free Tools You'd Usually Pay For
-              </h2>
-              <p className="text-sm sm:text-base text-muted-foreground mb-1">
-                No Limits, No Sign-Up
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Here's our featured tools
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <button onClick={handlePrevious} className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition">
-                ←
-              </button>
-              <button onClick={handleNext} className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center hover:bg-blue-600 transition">
-                →
-              </button>
-            </div>
-          </div>
+          <div className="relative py-8 sm:py-10 bg-gradient-to-br from-blue-50 via-white to-blue-50 rounded-lg overflow-hidden">
+            {/* Animated gradient blobs */}
+            <div className="absolute top-[-100px] left-[-100px] w-[350px] h-[350px] bg-blue-600/10 rounded-full z-0"></div>
+            <div className="absolute bottom-[-100px] right-[-100px] w-[400px] h-[400px] bg-cyan-500/20 rounded-full z-0"></div>
 
-          <div className="relative overflow-hidden">
-            <div className="flex transition-transform duration-300 ease-in-out" style={{ transform: `translateX(-${carouselIndex * 100}%)` }}>
-              {freeTools.map((tool, index) => (
-                <div key={index} className="w-full sm:w-1/2 lg:w-1/4 flex-shrink-0 px-2">
-                  <div className="rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 bg-white group">
-                    <div className="h-64 overflow-hidden bg-gray-100 relative">
-                      <img src={tool.image} alt={tool.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                    </div>
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-foreground mb-2">{tool.title}</h3>
-                      <p className="text-sm text-gray-600 mb-4 line-clamp-2">{tool.description}</p>
-                      <a href="#" className="text-blue-600 hover:text-blue-700 font-semibold text-sm inline-flex items-center gap-1 transition">
-                        Learn more <span>→</span>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div className="relative z-10 px-4 sm:px-6 md:px-8">
+              <div className="mb-2 sm:mb-4 max-w-3xl mx-auto text-center">
+                <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
+                  Free Tools You'd Usually Pay For
+                </h2>
+                <p className="text-sm sm:text-base text-muted-foreground">
+                  No Limits, No Sign-Up. Access powerful tools without any hidden costs or subscriptions.
+                </p>
+              </div>
+
+              <Gallery6
+                heading=""
+                showDemoLink={false}
+                items={[
+                  {
+                    id: "tool-1",
+                    title: "Profile Photo Maker",
+                    summary: "Style your profile photo for social media",
+                    url: "#",
+                    image: "https://images.unsplash.com/photo-1516321498122-cfc5e2e4c0c8?w=500&h=400&fit=crop"
+                  },
+                  {
+                    id: "tool-2",
+                    title: "Chart Creator",
+                    summary: "Create charts and download as an image",
+                    url: "#",
+                    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&h=400&fit=crop"
+                  },
+                  {
+                    id: "tool-3",
+                    title: "PDF to Word",
+                    summary: "Extract text using OCR from a PDF",
+                    url: "#",
+                    image: "https://images.unsplash.com/photo-1432888498266-38c75b13e784?w=500&h=400&fit=crop"
+                  },
+                  {
+                    id: "tool-4",
+                    title: "PDF Creator",
+                    summary: "Create a PDF quickly and easily",
+                    url: "#",
+                    image: "https://images.unsplash.com/photo-1526374965328-7f5ae4e8a83f?w=500&h=400&fit=crop"
+                  },
+                  {
+                    id: "tool-5",
+                    title: "Image Compressor",
+                    summary: "Compress images without losing quality",
+                    url: "#",
+                    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=400&fit=crop"
+                  }
+                ]}
+              />
             </div>
           </div>
         </section>
 
-        {/* Testimonials Section */}
-        <section className="mt-6 sm:mt-12 mb-6 sm:mb-12">
-          <TestimonialCard
-            name="A. Chen"
-            role="Student"
-            quote="This app saved me hours! Simple & tool that just works!"
-            rating={4.7}
+        {/* Tool Results Gallery Section */}
+        <section className="mt-12 sm:mt-16 mb-12 sm:mb-16">
+          <InteractiveBentoGallery
+            title="Tool Results Gallery"
+            description="Explore amazing results created with our tools"
+            mediaItems={[
+              {
+                id: 1,
+                type: "image",
+                title: "Education",
+                desc: "Learning enhancement",
+                url: "https://images.pexels.com/photos/1254365/pexels-photo-1254365.jpeg",
+                span: "col-span-1 row-span-1"
+              },
+              {
+                id: 2,
+                type: "image",
+                title: "Dog Portrait",
+                desc: "Pet image enhancement",
+                url: "https://images.pexels.com/photos/1254365/pexels-photo-1254365.jpeg",
+                span: "col-span-2 row-span-2"
+              },
+              {
+                id: 3,
+                type: "image",
+                title: "Forest Trail",
+                desc: "Nature enhancement",
+                url: "https://images.pexels.com/photos/2398220/pexels-photo-2398220.jpeg",
+                span: "col-span-2 row-span-1"
+              },
+              {
+                id: 4,
+                type: "image",
+                title: "Beach Sunset",
+                desc: "Coastal beauty",
+                url: "https://images.pexels.com/photos/416978/pexels-photo-416978.jpeg",
+                span: "col-span-1 row-span-1"
+              },
+              {
+                id: 5,
+                type: "image",
+                title: "Parrot",
+                desc: "Vibrant colors",
+                url: "https://images.pexels.com/photos/1308881/pexels-photo-1308881.jpeg",
+                span: "col-span-1 row-span-1"
+              },
+              {
+                id: 6,
+                type: "image",
+                title: "Mountain Sunrise",
+                desc: "Landscape processing",
+                url: "https://images.pexels.com/photos/2398220/pexels-photo-2398220.jpeg",
+                span: "col-span-3 row-span-1"
+              }
+            ]}
           />
         </section>
 

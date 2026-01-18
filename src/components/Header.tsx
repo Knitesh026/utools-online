@@ -36,7 +36,7 @@ const Header = () => {
                   to={firstTool.to}
                   className="px-4 py-4 text-sm font-bold text-foreground hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary whitespace-nowrap"
                 >
-                  {category.name.replace(" Tools", "").toUpperCase()}
+                  {category.name.replace(" Tools", "").charAt(0).toUpperCase() + category.name.replace(" Tools", "").slice(1).toLowerCase()}
                 </Link>
               );
             })}
@@ -48,7 +48,7 @@ const Header = () => {
                 onMouseLeave={() => setActiveDropdown(null)}
                 className="flex items-center gap-2 px-4 py-4 text-sm font-bold text-foreground hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary"
               >
-                CONVERT PDF
+                Convert PDF
                 <ChevronDown className="h-3.5 w-3.5" />
               </button>
 
@@ -112,7 +112,7 @@ const Header = () => {
                 onMouseLeave={() => setActiveDropdown(null)}
                 className="flex items-center gap-2 px-4 py-4 text-sm font-bold text-foreground hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary"
               >
-                ALL TOOLS
+                All Tools
                 <ChevronDown className="h-3.5 w-3.5" />
               </button>
 
@@ -161,30 +161,6 @@ const Header = () => {
               )}
             </div>
           </nav>
-
-          {/* Right Side - Login, Sign Up, Menu */}
-          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-            <button className="hidden text-gray-900 hover:text-primary transition-colors text-sm font-bold px-3 py-2">
-              Login
-            </button>
-
-            <button className="hidden bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-md text-sm font-bold transition-colors">
-              Sign up
-            </button>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 text-foreground hover:text-primary transition-colors"
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </button>
-          </div>
         </div>
       </div>
 
@@ -210,7 +186,7 @@ const Header = () => {
             to="/tools?category=Document Tools"
             className="block px-4 py-3 text-foreground hover:bg-gray-50 transition-colors text-sm font-bold border-b border-gray-100"
           >
-            CONVERT PDF
+            Conver PDF
           </Link>
 
           {/* All Tools Section */}
@@ -218,7 +194,7 @@ const Header = () => {
             to="/tools"
             className="block px-4 py-3 text-foreground hover:bg-gray-50 transition-colors text-sm font-bold border-b border-gray-100"
           >
-            ALL TOOLS
+            All Tools
           </Link>
         </nav>
       )}

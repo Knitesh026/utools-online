@@ -47,7 +47,7 @@ const CategoryToolsGrid = ({
                     <path d="M 8 0 Q 4 4.8, 8 9.6 T 8 19.2 Q 4 24, 8 28.8 T 8 38.4 Q 4 43.2, 8 48 T 8 57.6 Q 4 62.4, 8 67.2 T 8 76.8 Q 4 81.6, 8 86.4 T 8 96 L 0 96 L 0 0 Z" fill={colorTheme.accentColor} stroke={colorTheme.accentColor} strokeWidth={2} strokeLinecap="round" />
                   </svg>
                   <div className="flex items-center justify-center px-2 sm:px-3 flex-shrink-0">
-                    <Icon height={18} width={18} stroke={colorTheme.iconColor} strokeWidth="1.5" />
+                    <Icon height={26} width={26} stroke={colorTheme.iconColor} strokeWidth="1.5" />
                   </div>
                   <div className="mx-1.5 sm:mx-2.5 overflow-hidden w-full flex flex-col justify-center">
                     <p className="text-xs sm:text-sm font-bold overflow-hidden text-ellipsis whitespace-nowrap text-foreground">

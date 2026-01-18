@@ -53,6 +53,7 @@
     "embla-carousel-react": "^8.6.0",
     "gif-encoder": "^0.7.2",
     "gif-js": "^2.1.0",
+    "gsap": "^3.14.2",
     "html2canvas": "^1.4.1",
     "input-otp": "^1.4.2",
     "jsbarcode": "^3.12.3",

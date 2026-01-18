@@ -109,6 +109,7 @@ const Tools = () => {
                 <ToolCard
                 key={tool.title}
                 title={tool.title}
+                description={tool.description}
                 icon={tool.icon}
                 to={tool.to}
                 colorTheme={category.colorTheme}

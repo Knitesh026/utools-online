@@ -35,7 +35,7 @@ const PopularToolCard = ({
                Z" fill="hsl(var(--primary))" stroke="hsl(var(--primary))" strokeWidth={2} strokeLinecap="round" />
         </svg>
         <div className="flex items-center justify-center px-2 flex-shrink-0">
-          <Icon height={18} width={18} stroke="hsl(var(--primary))" strokeWidth="1.5" />
+          <Icon height={26} width={26} stroke="hsl(var(--primary))" strokeWidth="1.5" />
         </div>
         <div className="mx-1.5 sm:mx-2 overflow-hidden w-full flex flex-col justify-center">
           <p className="text-xs sm:text-sm font-bold text-foreground leading-6 mr-2 sm:mr-3 overflow-hidden text-ellipsis whitespace-nowrap">
