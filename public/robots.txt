@@ -21,9 +21,3 @@ Disallow: /api/
 
 # Sitemap location
 Sitemap: https://utoolss.online/sitemap.xml
-
-# Crawl delay (optional, time in seconds)
-Crawl-delay: 1
-
-# Request-rate (pages per second)
-Request-rate: 10/1s
