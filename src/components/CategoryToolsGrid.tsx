@@ -27,7 +27,7 @@ const CategoryToolsGrid = ({
   };
 
   return (
-    <div className="rounded-lg sm:rounded-[0.5rem] p-3 sm:p-6 bg-card shadow-md overflow-x-hidden" style={{ backgroundColor: getLightBackground(colorTheme.accentColor) }}>
+    <div className="rounded-lg sm:rounded-[0.5rem] p-3 sm:p-6 bg-card overflow-x-hidden" style={{ backgroundColor: getLightBackground(colorTheme.accentColor) }}>
       <section className="mb-0">
         <div className={`mb-3 sm:mb-2 pb-0 border-b-0`}>
           <h3 className="text-sm sm:text-lg lg:text-xl font-bold text-foreground mb-1 sm:mb-1 leading-tight" style={{ color: colorTheme.accentColor }}>

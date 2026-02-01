@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { SEOPage } from "@/components/SEOPage";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Copy, Check } from "lucide-react";
+import toolsMetadata from "@/data/toolsMetadata";
 
 interface PasswordOptions {
   length: number;
@@ -21,6 +23,14 @@ const PasswordGenerator = () => {
     symbols: true,
   });
   const [copied, setCopied] = useState(false);
+
+  const metadata = toolsMetadata['password-generator'];
+  const currentUrl = 'https://utoolss.online/password-generator';
+  const breadcrumbs = [
+    { name: 'Home', url: 'https://utoolss.online' },
+    { name: 'Tools', url: 'https://utoolss.online/tools' },
+    { name: 'Password Generator', url: currentUrl }
+  ];
 
   const generatePassword = () => {
     let chars = "";
@@ -159,15 +169,24 @@ const PasswordGenerator = () => {
   ) : undefined;
 
   return (
-    <ProfessionalToolLayout
-      title="Password Generator"
-      description="Create strong and secure passwords with customizable options"
-      inputSection={inputSection}
-      outputSection={outputSection}
-      actionButton={{
-        label: "Generate Password",
-        onClick: generatePassword,
-        icon: "Zap"
+    <SEOPage
+      title={metadata.title}
+      description={metadata.description}
+      keywords={metadata.keywords}
+      canonical={currentUrl}
+      breadcrumbs={breadcrumbs}
+      toolName="Password Generator"
+      toolDescription={metadata.description}
+    >
+      <ProfessionalToolLayout
+        title="Password Generator"
+        description="Create strong and secure passwords with customizable options"
+        inputSection={inputSection}
+        outputSection={outputSection}
+        actionButton={{
+          label: "Generate Password",
+          onClick: generatePassword,
+          icon: "Zap"
       }}
       resetButton={{
         label: "Reset",
@@ -221,6 +240,7 @@ const PasswordGenerator = () => {
         </div>
       )}
     </ProfessionalToolLayout>
+    </SEOPage>
   );
 };
 

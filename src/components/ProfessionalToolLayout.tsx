@@ -73,16 +73,20 @@ export const ProfessionalToolLayout = ({
         <AdBanner468x60 className="max-w-full" />
       </div>
 
-      <main className="flex-1 container mx-auto px-4 md:px-6 py-8 md:py-12 max-w-7xl">
-        {/* Hero Section */}
-        <section className="mb-8 md:mb-12">
-          <h1 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-3">
+      {/* Header Banner */}
+      <div className="w-full bg-gradient-to-r from-primary to-secondary dark:from-primary/80 dark:to-secondary/80 py-12 md:py-16 px-4">
+        <div className="container mx-auto max-w-7xl text-center">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
             {title}
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl">
+          <p className="text-white/90 text-lg md:text-xl max-w-2xl mx-auto">
             {description}
           </p>
-        </section>
+        </div>
+      </div>
+
+      <main className="flex-1 container mx-auto px-4 md:px-6 py-8 md:py-12 max-w-7xl">
+        {/* Hero Section - Removed as header banner replaces it */}
 
         {/* Features Grid */}
         {features && (

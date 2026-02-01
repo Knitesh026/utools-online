@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { SEOPage } from "@/components/SEOPage";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
+import toolsMetadata from "@/data/toolsMetadata";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";

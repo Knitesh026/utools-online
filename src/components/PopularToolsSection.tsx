@@ -109,7 +109,7 @@ const PopularToolsSection = () => {
             {activeCategory === "All Tools" && (
               <div className="space-y-4 sm:space-y-6">
                 {/* Featured Tools Section */}
-                <div className="rounded-lg sm:rounded-[0.5rem] p-3 sm:p-4 bg-card shadow-md" style={{ backgroundColor: '#f6fff8' }}>
+                <div className="rounded-lg sm:rounded-[0.5rem] p-3 sm:p-4 bg-card" style={{ backgroundColor: '#f6fff8' }}>
                   <section className="mb-0">
                     <div className="mb-3 sm:mb-2 pb-0 border-b-0">
                       <h2 className="text-sm sm:text-lg lg:text-xl font-bold text-foreground mb-1 sm:mb-1 leading-tight">
@@ -135,7 +135,7 @@ const PopularToolsSection = () => {
                 </div>
 
                 {/* Popular Tools Section */}
-                <div className="rounded-lg sm:rounded-[0.5rem] p-3 sm:p-4 bg-card shadow-md" style={{ backgroundColor: '#edf2fb' }}>
+                <div className="rounded-lg sm:rounded-[0.5rem] p-3 sm:p-4 bg-card" style={{ backgroundColor: '#edf2fb' }}>
                   <section className="mb-0">
                     <div className="mb-3 sm:mb-2 pb-0 border-b-0">
                       <h2 className="text-sm sm:text-lg lg:text-xl font-bold text-foreground mb-1 sm:mb-1 leading-tight">

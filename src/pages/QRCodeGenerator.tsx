@@ -1,9 +1,18 @@
 import { useState } from "react";
+import { SEOPage } from "@/components/SEOPage";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import toolsMetadata from "@/data/toolsMetadata";
 
 const QRCodeGenerator = () => {
+  const metadata = toolsMetadata['qr-code'];
+  const currentUrl = 'https://utoolss.online/qr-code';
+  const breadcrumbs = [
+    { name: 'Home', url: 'https://utoolss.online' },
+    { name: 'Tools', url: 'https://utoolss.online/tools' },
+    { name: 'QR Code Generator', url: currentUrl }
+  ];
   const [text, setText] = useState("https://example.com");
   const [qrCode, setQrCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -138,17 +147,26 @@ const QRCodeGenerator = () => {
   ) : undefined;
 
   return (
-    <ProfessionalToolLayout
-      title="QR Code Generator"
-      description="Create QR codes for any text, URL, or data with customizable settings"
-      inputSection={inputSection}
-      outputSection={outputSection}
-      error={error}
-      actionButton={{
-        label: "Generate QR Code",
-        onClick: generateQR,
-        loading,
-        icon: "Zap"
+    <SEOPage
+      title={metadata.title}
+      description={metadata.description}
+      keywords={metadata.keywords}
+      canonical={currentUrl}
+      breadcrumbs={breadcrumbs}
+      toolName="QR Code Generator"
+      toolDescription={metadata.description}
+    >
+      <ProfessionalToolLayout
+        title="QR Code Generator"
+        description="Create QR codes for any text, URL, or data with customizable settings"
+        inputSection={inputSection}
+        outputSection={outputSection}
+        error={error}
+        actionButton={{
+          label: "Generate QR Code",
+          onClick: generateQR,
+          loading,
+          icon: "Zap"
       }}
       resetButton={{
         label: "Reset",
@@ -187,7 +205,8 @@ const QRCodeGenerator = () => {
           </button>
         </div>
       )}
-    </ProfessionalToolLayout>
+      </ProfessionalToolLayout>
+    </SEOPage>
   );
 };
 

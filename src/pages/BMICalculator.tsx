@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { SEOPage } from "@/components/SEOPage";
 import { AdPopunder } from "@/components/AdPopunder";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import toolsMetadata from "@/data/toolsMetadata";
 
 const BMICalculator = () => {
   const [weight, setWeight] = useState("");
@@ -11,6 +13,14 @@ const BMICalculator = () => {
   const [unit, setUnit] = useState("kg");
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState("");
+
+  const metadata = toolsMetadata['bmi-calculator'];
+  const currentUrl = 'https://utoolss.online/bmi-calculator';
+  const breadcrumbs = [
+    { name: 'Home', url: 'https://utoolss.online' },
+    { name: 'Tools', url: 'https://utoolss.online/tools' },
+    { name: 'BMI Calculator', url: currentUrl }
+  ];
 
   const handleCalculate = () => {
     if (!weight || !height) {
@@ -187,7 +197,16 @@ const BMICalculator = () => {
   ) : undefined;
 
   return (
-    <ProfessionalToolLayout
+    <SEOPage
+      title={metadata.title}
+      description={metadata.description}
+      keywords={metadata.keywords}
+      canonical={currentUrl}
+      breadcrumbs={breadcrumbs}
+      toolName="BMI Calculator"
+      toolDescription={metadata.description}
+    >
+      <ProfessionalToolLayout
       title="BMI Calculator"
       description="Calculate your Body Mass Index and get health insights"
       inputSection={inputSection}
@@ -220,6 +239,7 @@ const BMICalculator = () => {
         }
       ]}
     />
+    </SEOPage>
   );
 };
 

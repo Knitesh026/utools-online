@@ -1,9 +1,18 @@
 import { useState } from "react";
+import { SEOPage } from "@/components/SEOPage";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Copy, Check } from "lucide-react";
+import toolsMetadata from "@/data/toolsMetadata";
 
 const UUIDGenerator = () => {
+  const metadata = toolsMetadata['uuid-generator'];
+  const currentUrl = 'https://utoolss.online/uuid-generator';
+  const breadcrumbs = [
+    { name: 'Home', url: 'https://utoolss.online' },
+    { name: 'Tools', url: 'https://utoolss.online/tools' },
+    { name: 'UUID Generator', url: currentUrl }
+  ];
   const [uuids, setUuids] = useState<string[]>([]);
   const [copied, setCopied] = useState<number | null>(null);
   const [version, setVersion] = useState("v4");
@@ -127,17 +136,26 @@ const UUIDGenerator = () => {
   ) : undefined;
 
   return (
-    <ProfessionalToolLayout
-      title="UUID Generator"
-      description="Generate unique identifiers for your projects instantly"
-      inputSection={inputSection}
-      outputSection={outputSection}
-      actionButton={{
-        label: "Generate",
-        onClick: () => 
-      generateUUID(),
-        icon: "Key",
-      }}
+    <SEOPage
+      title={metadata.title}
+      description={metadata.description}
+      keywords={metadata.keywords}
+      canonical={currentUrl}
+      breadcrumbs={breadcrumbs}
+      toolName="UUID Generator"
+      toolDescription={metadata.description}
+    >
+      <ProfessionalToolLayout
+        title="UUID Generator"
+        description="Generate unique identifiers for your projects instantly"
+        inputSection={inputSection}
+        outputSection={outputSection}
+        actionButton={{
+          label: "Generate",
+          onClick: () => 
+        generateUUID(),
+          icon: "Key",
+        }}
       resetButton={{
         label: "Clear All",
         onClick: handleReset,
@@ -169,7 +187,8 @@ const UUIDGenerator = () => {
           )}
         </button>
       ) : undefined}
-    />
+      />
+    </SEOPage>
   );
 };
 

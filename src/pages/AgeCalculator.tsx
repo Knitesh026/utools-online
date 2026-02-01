@@ -1,13 +1,23 @@
 import { useState } from "react";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
+import { SEOPage } from "@/components/SEOPage";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import toolsMetadata from "@/data/toolsMetadata";
 
 const AgeCalculator = () => {
   const [birthDate, setBirthDate] = useState("");
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState("");
+
+  const metadata = toolsMetadata['age-calculator'];
+  const currentUrl = 'https://utoolss.online/age-calculator';
+  const breadcrumbs = [
+    { name: 'Home', url: 'https://utoolss.online' },
+    { name: 'Tools', url: 'https://utoolss.online/tools' },
+    { name: 'Age Calculator', url: currentUrl }
+  ];
 
   const handleCalculate = () => {
     if (!birthDate) {
@@ -62,6 +72,9 @@ const AgeCalculator = () => {
         <CardTitle>Select Birth Date</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+          <p className="text-sm text-gray-700 dark:text-gray-300">{metadata.longDescription}</p>
+        </div>
         <div>
           <Label htmlFor="birthDate">Birth Date</Label>
           <Input
@@ -105,41 +118,50 @@ const AgeCalculator = () => {
   ) : undefined;
 
   return (
-    <ProfessionalToolLayout
-      title="Age Calculator"
-      description="Calculate your exact age in years, months, days, and total days lived"
-      inputSection={inputSection}
-      outputSection={outputSection}
-      error={error}
-      actionButton={{
-        label: "Calculate Age",
-        onClick: handleCalculate,
-        icon: "Calculator"
-      }}
-      resetButton={{
-        label: "Reset",
-        onClick: handleReset
-      }}
-      features={[
-        {
-          icon: "📅",
-          title: "Precise Calculation",
-          description: "Get your age down to the exact day"
-        },
-        {
-          icon: "🎂",
-          title: "All Units",
-          description: "See years, months, days, and total days"
-        },
-        {
-          icon: "⚡",
-          title: "Instant Results",
-          description: "Calculate immediately with no delays"
-        }
-      ]}
-    />
-  
-      );
+    <SEOPage
+      title={metadata.title}
+      description={metadata.description}
+      keywords={metadata.keywords}
+      canonical={currentUrl}
+      breadcrumbs={breadcrumbs}
+      toolName="Age Calculator"
+      toolDescription={metadata.description}
+    >
+      <ProfessionalToolLayout
+        title="Age Calculator"
+        description="Calculate your exact age in years, months, days, and total days lived"
+        inputSection={inputSection}
+        outputSection={outputSection}
+        error={error}
+        actionButton={{
+          label: "Calculate Age",
+          onClick: handleCalculate,
+          icon: "Calculator"
+        }}
+        resetButton={{
+          label: "Reset",
+          onClick: handleReset
+        }}
+        features={[
+          {
+            icon: "📅",
+            title: "Precise Calculation",
+            description: "Get your age down to the exact day"
+          },
+          {
+            icon: "🎂",
+            title: "All Units",
+            description: "See years, months, days, and total days"
+          },
+          {
+            icon: "⚡",
+            title: "Instant Results",
+            description: "Calculate immediately with no delays"
+          }
+        ]}
+      />
+    </SEOPage>
+  );
 };
 
 export default AgeCalculator;
