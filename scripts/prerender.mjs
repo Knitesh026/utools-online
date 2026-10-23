@@ -19,13 +19,21 @@ let chrome = process.env.FORCE_BUNDLED_CHROMIUM ? undefined : [process.env.CHROM
 let launchArgs = ["--no-sandbox"];
 if (!chrome) {
   try {
+    // @sparticuz/chromium only unpacks the shared libraries Chrome needs (libnss etc.) when it thinks it runs
+    // on AWS Lambda. Vercel/Netlify build machines are the same Amazon Linux image but lack those libraries.
+    if (isCI && process.platform === "linux") {
+      process.env.AWS_EXECUTION_ENV ||= "AWS_Lambda_nodejs22.x";
+    }
     const { default: chromium } = await import("@sparticuz/chromium");
     chrome = await chromium.executablePath();
     launchArgs = chromium.args;
+    console.log(`prerender: using bundled Chromium at ${chrome}`);
   } catch (e) {
-    console.warn("prerender: no Chrome available, skipping. The site still works; pages just are not pre-rendered.", String(e).slice(0, 120));
+    console.warn("prerender: could not set up Chromium, skipping. The site still works; pages just are not pre-rendered.\n  reason:", String(e).slice(0, 400));
     process.exit(0);
   }
+} else {
+  console.log(`prerender: using Chrome at ${chrome}`);
 }
 
 const sitemap = readFileSync("public/sitemap.xml", "utf8");
@@ -63,8 +71,8 @@ for (const route of routes) {
   done++;
 }
 await browser.close();
-console.log(`prerender: saved ${done} pages`);
+console.log(`prerender: saved ${done} of ${routes.length} pages`);
 } catch (e) {
-  console.warn("prerender failed, deploying the normal build instead:", String(e).slice(0, 200));
+  console.warn("prerender failed, deploying the normal build instead.\n  reason:", String(e).slice(0, 600));
 }
 server.close();

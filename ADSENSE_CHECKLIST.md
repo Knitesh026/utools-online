@@ -43,3 +43,10 @@ a sensible amount of original text, working internal links, and no Adsterra code
    `/tools`, `/guides` and your five best tool pages (about 10 requests per day are allowed).
 3. Check Pages > Indexing weekly. New sites often take 2-6 weeks to be fully crawled; keep adding useful guides.
 4. Get a few real links to the site (your other projects, social profiles, relevant directories). Pages with no inbound links are crawled last.
+
+## Done in Search Console on 23 Oct 2026
+- Re-submitted `sitemap.xml` (accepted).
+- Requested indexing for: `/`, `/tools`, `/guides`, `/merge-pdf`, `/compress-pdf`, `/emi-calculator`, `/image-compressor`, `/qr-code`.
+- The live site did not yet serve prerendered HTML at that time (every URL returned the same 4 KB shell). Check the Vercel build log for a
+  line starting `prerender:`. If it says skipped or failed, run `npm run build:prerender` locally and deploy `dist/`, then use
+  URL Inspection > Request indexing again on the same pages (the daily limit resets).
