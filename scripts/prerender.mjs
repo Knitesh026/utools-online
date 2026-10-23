@@ -8,10 +8,24 @@ import puppeteer from "puppeteer-core";
 
 const DIST = process.env.DIST_DIR || "dist";
 const PORT = 4173;
-const chrome = [process.env.CHROME_PATH, "/usr/bin/google-chrome", "/usr/bin/google-chrome-stable", "/usr/bin/chromium", "/usr/bin/chromium-browser", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"].find((p) => p && existsSync(p));
-if (!chrome) {
-  console.warn("prerender: no Chrome found, skipping (set CHROME_PATH to enable).");
+const isCI = Boolean(process.env.VERCEL || process.env.NETLIFY || process.env.CI);
+if (process.argv.includes("--if-ci") && !isCI && !process.env.PRERENDER) {
+  console.log("prerender: skipped (not a CI build; run `npm run build:prerender` to force).");
   process.exit(0);
+}
+
+// Prefer a local Chrome; on build servers without one, use the bundled Chromium.
+let chrome = process.env.FORCE_BUNDLED_CHROMIUM ? undefined : [process.env.CHROME_PATH, "/usr/bin/google-chrome", "/usr/bin/google-chrome-stable", "/usr/bin/chromium", "/usr/bin/chromium-browser", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"].find((p) => p && existsSync(p));
+let launchArgs = ["--no-sandbox"];
+if (!chrome) {
+  try {
+    const { default: chromium } = await import("@sparticuz/chromium");
+    chrome = await chromium.executablePath();
+    launchArgs = chromium.args;
+  } catch (e) {
+    console.warn("prerender: no Chrome available, skipping. The site still works; pages just are not pre-rendered.", String(e).slice(0, 120));
+    process.exit(0);
+  }
 }
 
 const sitemap = readFileSync("public/sitemap.xml", "utf8");
@@ -30,7 +44,8 @@ const server = createServer((req, res) => {
   res.end(index);
 }).listen(PORT);
 
-const browser = await puppeteer.launch({ executablePath: chrome, headless: true, args: ["--no-sandbox"] });
+try {
+const browser = await puppeteer.launch({ executablePath: chrome, headless: true, args: launchArgs });
 let done = 0;
 for (const route of routes) {
   const page = await browser.newPage();
@@ -48,5 +63,8 @@ for (const route of routes) {
   done++;
 }
 await browser.close();
-server.close();
 console.log(`prerender: saved ${done} pages`);
+} catch (e) {
+  console.warn("prerender failed, deploying the normal build instead:", String(e).slice(0, 200));
+}
+server.close();

@@ -2,69 +2,70 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import About from "./pages/About";
-import Tools from "./pages/Tools";
-import FAQ from "./pages/FAQ";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import TermsOfService from "./pages/TermsOfService";
-import RemoveBackground from "./pages/RemoveBackground";
-import WordCounter from "./pages/WordCounter";
-import TextReverser from "./pages/TextReverser";
-import AgeCalculator from "./pages/AgeCalculator";
-import BMICalculator from "./pages/BMICalculator";
-import UnitConverter from "./pages/UnitConverter";
-import PasswordGenerator from "./pages/PasswordGenerator";
-import UUIDGenerator from "./pages/UUIDGenerator";
-import ImageEnhancer from "./pages/ImageEnhancer";
-import ImageUpscaler from "./pages/ImageUpscaler";
-import CropImage from "./pages/CropImage";
-import QRCodeGenerator from "./pages/QRCodeGenerator";
-import HexToRGB from "./pages/HexToRGB";
-import Base64Converter from "./pages/Base64Converter";
-import EMICalculator from "./pages/EMICalculator";
-import GSTCalculator from "./pages/GSTCalculator";
-import NameGenerator from "./pages/NameGenerator";
-import ImageToPDF from "./pages/ImageToPDF";
-import NotFound from "./pages/NotFound";
-import SitemapPage from "./pages/SitemapPage";
+const About = lazy(() => import("./pages/About"));
+const Tools = lazy(() => import("./pages/Tools"));
+const FAQ = lazy(() => import("./pages/FAQ"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("./pages/TermsOfService"));
+const RemoveBackground = lazy(() => import("./pages/RemoveBackground"));
+const WordCounter = lazy(() => import("./pages/WordCounter"));
+const TextReverser = lazy(() => import("./pages/TextReverser"));
+const AgeCalculator = lazy(() => import("./pages/AgeCalculator"));
+const BMICalculator = lazy(() => import("./pages/BMICalculator"));
+const UnitConverter = lazy(() => import("./pages/UnitConverter"));
+const PasswordGenerator = lazy(() => import("./pages/PasswordGenerator"));
+const UUIDGenerator = lazy(() => import("./pages/UUIDGenerator"));
+const ImageEnhancer = lazy(() => import("./pages/ImageEnhancer"));
+const ImageUpscaler = lazy(() => import("./pages/ImageUpscaler"));
+const CropImage = lazy(() => import("./pages/CropImage"));
+const QRCodeGenerator = lazy(() => import("./pages/QRCodeGenerator"));
+const HexToRGB = lazy(() => import("./pages/HexToRGB"));
+const Base64Converter = lazy(() => import("./pages/Base64Converter"));
+const EMICalculator = lazy(() => import("./pages/EMICalculator"));
+const GSTCalculator = lazy(() => import("./pages/GSTCalculator"));
+const NameGenerator = lazy(() => import("./pages/NameGenerator"));
+const ImageToPDF = lazy(() => import("./pages/ImageToPDF"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const SitemapPage = lazy(() => import("./pages/SitemapPage"));
 // Image Tools
-import ImageCompressor from "./pages/ImageCompressor";
-import ImageResizer from "./pages/ImageResizer";
-import ImageToBase64 from "./pages/ImageToBase64";
-import ImagePixelator from "./pages/ImagePixelator";
-import ImageSharpener from "./pages/ImageSharpener";
-import ImageConverter from "./pages/ImageConverter";
+const ImageCompressor = lazy(() => import("./pages/ImageCompressor"));
+const ImageResizer = lazy(() => import("./pages/ImageResizer"));
+const ImageToBase64 = lazy(() => import("./pages/ImageToBase64"));
+const ImagePixelator = lazy(() => import("./pages/ImagePixelator"));
+const ImageSharpener = lazy(() => import("./pages/ImageSharpener"));
+const ImageConverter = lazy(() => import("./pages/ImageConverter"));
 // Color Tools
-import HTMLColorCodes from "./pages/HTMLColorCodes";
-import GradientGenerator from "./pages/GradientGenerator";
+const HTMLColorCodes = lazy(() => import("./pages/HTMLColorCodes"));
+const GradientGenerator = lazy(() => import("./pages/GradientGenerator"));
 // PDF/Document Tools
-import PDFToImage from "./pages/PDFToImage";
+const PDFToImage = lazy(() => import("./pages/PDFToImage"));
 // Utility Tools
-import BarcodeGenerator from "./pages/BarcodeGenerator";
+const BarcodeGenerator = lazy(() => import("./pages/BarcodeGenerator"));
 // Calculator Tools
-import SIPCalculator from "./pages/SIPCalculator";
-import MortgageCalculator from "./pages/MortgageCalculator";
-import PPPCalculator from "./pages/PPPCalculator";
-import EMICalculatorAdvanced from "./pages/EMICalculatorAdvanced";
+const SIPCalculator = lazy(() => import("./pages/SIPCalculator"));
+const MortgageCalculator = lazy(() => import("./pages/MortgageCalculator"));
+const PPPCalculator = lazy(() => import("./pages/PPPCalculator"));
+const EMICalculatorAdvanced = lazy(() => import("./pages/EMICalculatorAdvanced"));
 // New Tools
-import HistogramGenerator from "./pages/HistogramGenerator";
-import CompressPDF from "./pages/CompressPDF";
-import MergePDF from "./pages/MergePDF";
-import WordToPDF from "./pages/WordToPDF";
-import PDFToWord from "./pages/PDFToWord";
-import DocumentsConverter from "./pages/DocumentsConverter";
-import ESignPDF from "./pages/ESignPDF";
-import FaceBlur from "./pages/FaceBlur";
-import Contact from "./pages/Contact";
+const HistogramGenerator = lazy(() => import("./pages/HistogramGenerator"));
+const CompressPDF = lazy(() => import("./pages/CompressPDF"));
+const MergePDF = lazy(() => import("./pages/MergePDF"));
+const WordToPDF = lazy(() => import("./pages/WordToPDF"));
+const PDFToWord = lazy(() => import("./pages/PDFToWord"));
+const DocumentsConverter = lazy(() => import("./pages/DocumentsConverter"));
+const ESignPDF = lazy(() => import("./pages/ESignPDF"));
+const FaceBlur = lazy(() => import("./pages/FaceBlur"));
+const Contact = lazy(() => import("./pages/Contact"));
 import ErrorBoundary from "./components/ErrorBoundary";
-import CookiePolicy from "./pages/CookiePolicy";
-import Disclaimer from "./pages/Disclaimer";
-import AdvertisingDisclosure from "./pages/AdvertisingDisclosure";
-import Accessibility from "./pages/Accessibility";
-import Guides from "./pages/Guides";
-import GuideDetail from "./pages/GuideDetail";
+const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
+const Disclaimer = lazy(() => import("./pages/Disclaimer"));
+const AdvertisingDisclosure = lazy(() => import("./pages/AdvertisingDisclosure"));
+const Accessibility = lazy(() => import("./pages/Accessibility"));
+const Guides = lazy(() => import("./pages/Guides"));
+const GuideDetail = lazy(() => import("./pages/GuideDetail"));
 
 const queryClient = new QueryClient();
 
@@ -76,6 +77,7 @@ const App = () => {
       <Sonner />
       <BrowserRouter>
         <ErrorBoundary>
+          <Suspense fallback={<div className="min-h-screen bg-background" aria-busy="true" />}>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<About />} />
@@ -156,6 +158,7 @@ const App = () => {
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+          </Suspense>
         </ErrorBoundary>
       </BrowserRouter>
     </TooltipProvider>

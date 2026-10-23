@@ -13,8 +13,9 @@ a sensible amount of original text, working internal links, and no Adsterra code
 4. **Turn on consent for EEA/UK/Switzerland.** In AdSense go to Privacy & messaging, create a GDPR message and publish it. It is free, and required for those visitors.
 5. **Create ad units** in AdSense (Ads > By ad unit > Display), then put the slot ids in `.env` / your host's environment:
    `VITE_ADSENSE_SLOT_INLINE` and `VITE_ADSENSE_SLOT_SIDEBAR`. With them blank, no manual ad boxes render and Auto ads still work.
-6. **Deploy with prerendering** so crawlers get real text without JavaScript: `npm run build:prerender` on a machine with Chrome,
-   then deploy `dist/`. Netlify's default build image has no Chrome, so use `netlify deploy --prod --dir=dist` or run it in CI with Chrome installed.
+6. **Deploy with prerendering** so crawlers get real text without JavaScript. On Vercel or Netlify `npm run build` now prerenders
+   all 70 pages automatically (it uses a bundled Chromium when the build server has no Chrome, and falls back to a normal build if that fails).
+   Check the build log for `prerender: saved 70 pages`. Locally, `npm run build:prerender` does the same.
 7. **Leave `VITE_STIRLING_PDF_URL` unset in production.** If set, Merge PDF would send files to that server and the privacy copy would be wrong.
 8. After deploying, submit `https://<your-domain>/sitemap.xml` in Google Search Console and wait until the guides and several tool pages show as indexed (search `site:<your-domain>`) before you apply.
 
@@ -28,3 +29,17 @@ a sensible amount of original text, working internal links, and no Adsterra code
 - Removed unverifiable claims (user counts, files-processed numbers, fake testimonials) and the fake "message sent" contact form.
 - Removed tools that did not work (GIF Maker, APNG Maker, PDF Lock/Unlock, Base64 to Image) and links to six tools that never existed.
 - Fixed tools that misled users: QR and barcode now generate locally (QR text used to be sent to a third party, and the barcodes would not scan), password and UUID use secure randomness, Compress PDF no longer shows invented savings, PDF to Image/PDF to Word now work, E-sign writes the name and date, BMI imperial units, negative temperatures, Reset crashes on ten pages.
+
+## Search Console findings (read on 23 Oct 2026, property https://utoolss.online/)
+- Indexed: 1 page (the home page, last crawled 10 Sep). Not indexed: 37, all "Discovered - currently not indexed", none ever crawled.
+  That status means Google knows the URL from the sitemap but has not fetched it yet. It is common for new sites with thin or script-only pages.
+- The sitemap Google last read (17 Oct) listed 38 URLs including `/gif-maker`, a tool that was removed. The new sitemap has 70 URLs.
+- Live site at the time of checking: new build deployed, but pages were empty JavaScript shells (no H1, no text in the HTML).
+- 0 clicks, no Core Web Vitals data yet (too little traffic).
+
+## After the prerendered build is live
+1. Search Console > Sitemaps: remove nothing, re-submit `sitemap.xml` so Google re-reads the 70-URL version.
+2. URL Inspection > Test live URL > View tested page: confirm the HTML contains the page text, then **Request indexing** for the home page,
+   `/tools`, `/guides` and your five best tool pages (about 10 requests per day are allowed).
+3. Check Pages > Indexing weekly. New sites often take 2-6 weeks to be fully crawled; keep adding useful guides.
+4. Get a few real links to the site (your other projects, social profiles, relevant directories). Pages with no inbound links are crawled last.

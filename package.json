@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "sitemap": "node scripts/generate-sitemap.mjs",
-    "build": "node scripts/generate-sitemap.mjs && vite build",
-    "build:prerender": "npm run build && node scripts/prerender.mjs",
+    "build": "node scripts/generate-sitemap.mjs && vite build && node scripts/prerender.mjs --if-ci",
+    "build:prerender": "node scripts/generate-sitemap.mjs && vite build && node scripts/prerender.mjs",
     "audit": "node scripts/adsense-audit.mjs",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
@@ -84,6 +84,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
+    "@sparticuz/chromium": "^131.0.1",
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^22.16.5",
     "@types/react": "^18.3.23",
