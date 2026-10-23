@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import ToolExtras from "@/components/ToolExtras";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { Slider } from "@/components/ui/slider";
 import { Download, Upload, RefreshCw } from "lucide-react";
 
 const ImagePixelator = () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
   const [pixelated, setPixelated] = useState<string>("");
@@ -65,6 +67,7 @@ const ImagePixelator = () => {
         smallCtx?.drawImage(img, 0, 0, smallCanvas.width, smallCanvas.height);
 
         // Scale back up (pixelated effect)
+        if (ctx) ctx.imageSmoothingEnabled = false;
         ctx?.drawImage(smallCanvas, 0, 0, smallCanvas.width, smallCanvas.height, 0, 0, w, h);
 
         canvas.toBlob(
@@ -164,6 +167,7 @@ const ImagePixelator = () => {
                   </div>
                   <input
                     id="file-input-pixelator"
+                ref={fileInputRef}
                     type="file"
                     accept="image/*"
                     onChange={handleFileSelect}
@@ -253,6 +257,7 @@ const ImagePixelator = () => {
             </Card>
           )}
         </div>
+      <ToolExtras />
       </main>
       <Footer />
     </>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -6,9 +6,11 @@ import { Download, Upload, RefreshCw } from "lucide-react";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 
 const ImageConverter = () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
   const [converted, setConverted] = useState<string>("");
+  const [convertedExt, setConvertedExt] = useState("jpg");
   const [outputFormat, setOutputFormat] = useState("jpeg");
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
@@ -17,8 +19,6 @@ const ImageConverter = () => {
     { value: "jpeg", label: "JPEG (JPG)" },
     { value: "png", label: "PNG" },
     { value: "webp", label: "WebP" },
-    { value: "bmp", label: "BMP" },
-    { value: "gif", label: "GIF" },
   ];
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,6 +67,10 @@ const ImageConverter = () => {
           return;
         }
 
+        if (outputFormat === "jpeg") {
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
         ctx.drawImage(img, 0, 0);
 
         // Convert to requested format
@@ -74,7 +78,9 @@ const ImageConverter = () => {
         canvas.toBlob(
           (blob) => {
             if (blob) {
+              const extByType: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
               const url = URL.createObjectURL(blob);
+              setConvertedExt(extByType[blob.type] || "png");
               setConverted(url);
             }
             setProcessing(false);
@@ -101,8 +107,7 @@ const ImageConverter = () => {
     if (!converted) return;
     const link = document.createElement("a");
     link.href = converted;
-    const extension = outputFormat === "jpeg" ? "jpg" : outputFormat;
-    link.download = `converted-image.${extension}`;
+    link.download = `converted-image.${convertedExt}`;
     link.click();
   };
 
@@ -134,6 +139,7 @@ const ImageConverter = () => {
           </div>
           <input
             id="file-input-converter"
+                ref={fileInputRef}
             type="file"
             accept="image/*"
             onChange={handleFileSelect}

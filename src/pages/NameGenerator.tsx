@@ -23,14 +23,10 @@ const NameGenerator = () => {
       "Kathleen", "Amy", "Angela", "Shirley", "Anna", "Brenda", "Pamela", "Emma", "Nicole", "Helen"
     ],
     fantasy: [
-      "Aragorn", "Legolas", "Gandalf", "Thorin", "Eowyn", "Arwen", "Galadriel", "Elrond", "Boromir", "Gimli",
-      "Frodo", "Bilbo", "Samwise", "Pippin", "Merry", "Sauron", "Saruman", "Gothmog", "Denethor", "Théoden",
-      "Éothain", "Shadowfax", "Balrog", "Shelob", "Beorn", "Treebeard", "Quickbeam", "Uglúk", "Lurtz", "Gríma"
+      "Aerith","Bramwell","Caelum","Dunmar","Elric","Fenris","Gorran","Harwick","Ilmar","Jarek","Korvin","Lysander","Marrow","Nyx","Orsolya","Pyrrhus","Quillan","Rhosyn","Sorrel","Thistle","Umber","Valdis","Willow","Xerxa","Ysolde","Zorin","Ashgrove","Bellamy","Cinder","Dovecote"
     ],
     fantasy_female: [
-      "Arwen", "Galadriel", "Eowyn", "Éorhild", "Lothíriel", "Éorhild", "Glorfindel", "Morwen", "Haleth", "Éorhild",
-      "Idril", "Eöl", "Maeglin", "Maeglin", "Maeglin", "Maeglin", "Maeglin", "Maeglin", "Maeglin", "Maeglin",
-      "Niënor", "Nienor", "Morwen", "Éorhild", "Éorhild", "Éorhild", "Éorhild", "Éorhild", "Éorhild", "Éorhild"
+      "Aelira","Brynja","Caelith","Dessa","Elowen","Faye","Gwenna","Hanalei","Isolde","Jessamine","Kaia","Liora","Maren","Nerys","Ondine","Perenelle","Quenby","Rowena","Sylvie","Thessaly","Una","Vesper","Wynne","Xanthe","Yara","Zinnia","Adrielle","Briar","Calista","Dahlia","Embla","Freya","Greta","Halcyon","Ivy","Junia","Kestra","Lysandra","Mirelle","Nymeria"
     ],
     tech: [
       "Syntax", "Nexus", "Cipher", "Pixel", "Byte", "Cache", "Index", "Vector", "Matrix", "Quantum",
@@ -44,12 +40,17 @@ const NameGenerator = () => {
     const c = parseInt(count);
     if (c <= 0) return;
 
-    const names = nameDatabase[category] || nameDatabase.male;
+    const names = Array.from(new Set(nameDatabase[category] || nameDatabase.male));
     const selected: string[] = [];
 
-    for (let i = 0; i < c; i++) {
-      const randomIndex = Math.floor(Math.random() * names.length);
-      selected.push(names[randomIndex]);
+    // Shuffle a copy so one run never repeats a name (until the list is exhausted).
+    const pool = [...names];
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    for (let i = 0; i < Math.min(c, pool.length); i++) {
+      selected.push(pool[i]);
     }
 
     setGeneratedNames(selected);

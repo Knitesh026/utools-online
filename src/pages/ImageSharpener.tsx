@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import ToolExtras from "@/components/ToolExtras";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { Slider } from "@/components/ui/slider";
 import { Download, Upload, RefreshCw } from "lucide-react";
 
 const ImageSharpener = () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
   const [sharpened, setSharpened] = useState<string>("");
@@ -202,6 +204,7 @@ const ImageSharpener = () => {
                   </div>
                   <input
                     id="file-input-sharpener"
+                ref={fileInputRef}
                     type="file"
                     accept="image/*"
                     onChange={handleFileSelect}
@@ -291,6 +294,7 @@ const ImageSharpener = () => {
             </Card>
           )}
         </div>
+      <ToolExtras />
       </main>
       <Footer />
     </>

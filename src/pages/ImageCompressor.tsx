@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Download, Upload } from "lucide-react";
 
 const ImageCompressor = () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
   const [compressed, setCompressed] = useState<string>("");
@@ -54,7 +55,11 @@ const ImageCompressor = () => {
         canvas.width = img.width;
         canvas.height = img.height;
         const ctx = canvas.getContext("2d");
-        ctx?.drawImage(img, 0, 0);
+        if (ctx) {
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0);
+        }
 
         canvas.toBlob(
           (blob) => {
@@ -85,7 +90,7 @@ const ImageCompressor = () => {
 
     const link = document.createElement("a");
     link.href = compressed;
-    link.download = `compressed-${file?.name || "image.jpg"}`;
+    link.download = `compressed-${(file?.name || "image").replace(/\.[^/.]+$/, "")}.jpg`;
     link.click();
   };
 
@@ -126,10 +131,11 @@ const ImageCompressor = () => {
           >
             <Upload className="w-8 h-8 mx-auto text-gray-400 dark:text-gray-500 mb-2" />
             <p className="text-sm text-gray-600 dark:text-gray-400">Click to upload or drag and drop</p>
-            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">PNG, JPG, WebP up to 50MB</p>
+            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">PNG, JPG, WebP up to 50MB. Output is JPEG; transparent areas become white.</p>
           </div>
           <input
             id="file-input-compressor"
+                ref={fileInputRef}
             type="file"
             accept="image/*"
             onChange={handleFileSelect}

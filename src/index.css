@@ -4,84 +4,88 @@
 
 @layer base {
   :root {
-    /* Warm light background */
-    --background: 15 100% 97%;
-    --foreground: 10 40% 20%;
+    /* uTools "Sticker Pro" — warm paper canvas, black outlines, flat colour planes, logo red (#ec313c) */
+    --background: 43 30% 95%;        /* warm paper #f6f4ef */
+    --foreground: 0 0% 7%;           /* ink #111111 */
 
-    /* Cards - Pure white */
     --card: 0 0% 100%;
-    --card-foreground: 10 40% 20%;
+    --card-foreground: 0 0% 7%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 10 40% 20%;
+    --popover-foreground: 0 0% 7%;
 
-    /* Primary - Fresh Coral */
-    --primary: 12 100% 54%;
+    /* Primary - exact uTools logo red */
+    --primary: 356 83% 56%;          /* #ec313c */
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Warm Salmon */
-    --secondary: 8 95% 48%;
+    /* Secondary - cobalt (text links, secondary buttons) */
+    --secondary: 226 80% 52%;        /* #2352eb */
     --secondary-foreground: 0 0% 100%;
 
-    /* Muted */
-    --muted: 15 100% 92%;
-    --muted-foreground: 10 30% 50%;
+    /* Sticker planes. Used for category tiles, icon coins and badges only. */
+    --blue: 226 80% 52%;             /* cobalt #2352eb */
+    --pink: 312 100% 78%;            /* #ff90e8 */
+    --yellow: 46 100% 62%;           /* #ffd23f */
+    --lime: 132 53% 74%;             /* #9be5a8 */
+    --sky: 223 100% 74%;             /* #7aa2ff */
+    --peach: 18 100% 77%;            /* #ffb08a */
+    --lilac: 258 100% 89%;           /* #d9c8ff */
 
-    /* Accent - Light Coral */
-    --accent: 18 95% 62%;
-    --accent-foreground: 0 0% 100%;
+    --muted: 43 20% 90%;
+    --muted-foreground: 43 6% 32%;   /* #55524b */
+
+    --accent: 46 100% 90%;           /* soft yellow tint */
+    --accent-foreground: 0 0% 7%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 15 50% 88%;
-    --input: 15 50% 88%;
-    --ring: 12 100% 54%;
+    /* Ink outlines - 2px solid */
+    --border: 0 0% 7%;
+    --input: 0 0% 7%;
+    --ring: 356 83% 56%;
 
-    --radius: 0.75rem;
+    --radius: 1.25rem;
 
-    /* Custom gradients */
-    --gradient-background: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
-    --gradient-card-hover: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(18 95% 96%) 100%);
-    
-    /* Icon colors */
-    --icon-primary: 12 100% 54%;
-    --icon-secondary: 8 95% 48%;
-
-    /* Shadows */
-    --shadow-card: 0 4px 20px -4px hsl(12 100% 54% / 0.08);
-    --shadow-card-hover: 0 8px 30px -4px hsl(12 100% 54% / 0.12);
-    --shadow-button: 0 2px 10px -2px hsl(12 100% 54% / 0.4);
+    /* Flat design: no offset shadows. Depth comes from outlines and colour planes. */
+    --shadow-card: none;
+    --shadow-card-hover: none;
+    --shadow-button: none;
   }
 
   .dark {
-    --background: 10 50% 9%;
-    --foreground: 0 0% 98%;
+    --background: 0 0% 7%;
+    --foreground: 43 30% 95%;
 
-    --card: 10 50% 14%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 11%;
+    --card-foreground: 43 30% 95%;
 
-    --popover: 10 50% 14%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 11%;
+    --popover-foreground: 43 30% 95%;
 
-    --primary: 12 100% 64%;
+    --primary: 356 83% 56%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 8 95% 58%;
+    --secondary: 226 80% 58%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 10 50% 25%;
-    --muted-foreground: 10 20% 65%;
+    --blue: 226 80% 58%;
+    --pink: 312 100% 78%;
+    --yellow: 46 100% 62%;
+    --lime: 132 53% 74%;
+    --sky: 223 100% 74%;
+    --peach: 18 100% 77%;
+    --lilac: 258 100% 89%;
 
-    --accent: 18 95% 70%;
-    --accent-foreground: 0 0% 100%;
+    --muted: 0 0% 16%;
+    --muted-foreground: 43 10% 72%;
 
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 0 0% 98%;
+    --accent: 356 83% 20%;
+    --accent-foreground: 356 83% 75%;
 
-    --border: 10 50% 25%;
-    --input: 10 50% 25%;
-    --ring: 12 100% 64%;
+    --border: 43 30% 90%;
+    --input: 43 30% 90%;
+    --ring: 356 83% 56%;
   }
 }
 
@@ -90,73 +94,138 @@
     @apply border-border;
   }
 
+  html {
+    font-family: 'Nunito', sans-serif;
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground;
-    background: var(--gradient-background);
+    font-family: 'Nunito', sans-serif;
     min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+
+  :focus-visible {
+    outline: 3px solid hsl(var(--primary));
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
 @layer components {
-  .card-tool {
-    @apply bg-card rounded-2xl p-6 transition-all duration-300;
-    box-shadow: var(--shadow-card);
+  /* Outlined card. Lifts on hover, no shadow. */
+  .card-ink {
+    @apply bg-white dark:bg-card border-2 border-border rounded-3xl transition-transform duration-150;
   }
 
-  .card-tool:hover {
-    box-shadow: var(--shadow-card-hover);
+  /* Only clickable cards lift */
+  a.card-ink:hover,
+  a:hover > .card-ink,
+  button.card-ink:hover {
+    transform: translateY(-3px);
+  }
+
+  .card-tool {
+    @apply bg-white dark:bg-card border-2 border-border rounded-3xl p-5 transition-transform duration-150;
+  }
+
+  a.card-tool:hover,
+  a:hover > .card-tool {
+    transform: translateY(-3px);
+  }
+
+  /* Pill buttons */
+  .btn-pressable {
+    @apply inline-flex items-center justify-center font-display font-extrabold rounded-full border-2 border-border transition-all duration-150 cursor-pointer;
+  }
+
+  .btn-pressable:hover {
     transform: translateY(-2px);
   }
 
-  .btn-primary {
-    @apply bg-primary text-primary-foreground px-6 py-2.5 rounded-full font-medium transition-all duration-200;
-    box-shadow: var(--shadow-button);
+  .btn-pressable:active {
+    transform: translateY(1px) scale(0.98);
   }
 
-  .btn-primary:hover {
-    @apply opacity-90;
-    transform: translateY(-1px);
+  .btn-primary {
+    @apply btn-pressable bg-primary text-primary-foreground px-6 py-2.5 font-bold;
+  }
+
+  .btn-blue {
+    @apply btn-pressable bg-foreground text-background px-6 py-2.5 font-bold;
+  }
+
+  .btn-pink {
+    @apply btn-pressable bg-pink text-foreground px-6 py-2.5 font-bold;
+  }
+
+  .btn-white {
+    @apply btn-pressable bg-white text-foreground px-6 py-2.5 font-bold;
   }
 
   .btn-accent {
-    @apply bg-accent text-accent-foreground px-6 py-2 rounded-full font-medium transition-all duration-200;
+    @apply btn-pressable bg-yellow text-foreground px-6 py-2 font-bold;
   }
 
-  .btn-accent:hover {
-    @apply opacity-90;
+  /* Sticker badges */
+  .sticker-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 font-display font-extrabold text-xs uppercase tracking-wider rounded-full border-2 border-border select-none;
+    transition: transform 0.2s ease;
+  }
+
+  .sticker-badge:hover {
+    animation: wobble 0.5s ease-in-out;
   }
 
   .icon-wrapper {
-    @apply w-16 h-16 rounded-xl flex items-center justify-center bg-muted/50;
+    @apply w-12 h-12 rounded-full flex items-center justify-center border-2 border-border;
   }
 
   .search-input {
-    @apply bg-background/80 border border-border rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30;
-  }
-
-  .nav-header {
-    @apply bg-secondary text-secondary-foreground;
-  }
-
-  .footer-section {
-    @apply bg-secondary text-secondary-foreground;
+    @apply bg-white border-2 border-border rounded-full px-5 py-3 text-base font-semibold focus:outline-none focus:ring-0;
   }
 
   .drop-zone {
-    @apply border-2 border-dashed border-primary/40 rounded-xl bg-card p-8 transition-all duration-200;
+    @apply border-2 border-dashed border-border rounded-3xl p-8 transition-colors duration-200;
+    background: hsl(var(--accent));
   }
 
   .drop-zone:hover {
-    @apply border-primary/60 bg-primary/5;
+    background: hsl(var(--yellow) / 0.45);
   }
 
-  .progress-ring {
-    @apply text-primary;
+  /* Round icon "coin" used for category and tool icons */
+  .coin {
+    @apply inline-flex items-center justify-center rounded-full border-2 border-border shrink-0;
   }
 }
 
 @layer utilities {
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
+  .text-shadow-ink {
+    text-shadow: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 }

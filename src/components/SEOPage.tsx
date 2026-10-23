@@ -109,7 +109,7 @@ export const SEOPage: React.FC<SEOPageProps> = ({
     ogUrl.setAttribute('content', window.location.href);
 
     // Remove old schema scripts
-    const oldSchemas = document.querySelectorAll('script[type="application/ld+json"]:not([data-org-schema]):not([data-website-schema])');
+    const oldSchemas = document.querySelectorAll('script[type="application/ld+json"]:not([data-org-schema]):not([data-website-schema]):not([data-faq-schema])');
     oldSchemas.forEach(schema => schema.remove());
 
     // Add breadcrumb schema if provided

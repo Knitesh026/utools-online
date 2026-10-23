@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import ToolExtras from "@/components/ToolExtras";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Upload, RefreshCw } from "lucide-react";
 
 const HistogramGenerator = () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
   const [histogramCanvas, setHistogramCanvas] = useState<string>("");
@@ -317,6 +319,7 @@ const HistogramGenerator = () => {
                   </div>
                   <input
                     id="file-input-histogram"
+                ref={fileInputRef}
                     type="file"
                     accept="image/*"
                     onChange={handleFileSelect}
@@ -418,6 +421,7 @@ const HistogramGenerator = () => {
             </Card>
           )}
         </div>
+      <ToolExtras />
       </main>
       <Footer />
     </>

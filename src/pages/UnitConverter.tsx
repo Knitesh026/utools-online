@@ -72,8 +72,8 @@ const UnitConverter = () => {
 
       const value = parseFloat(inputValue);
 
-      if (isNaN(value) || value < 0) {
-        setError("Please enter a valid positive number");
+      if (isNaN(value) || (value < 0 && category !== "temperature")) {
+        setError(category === "temperature" ? "Please enter a valid number" : "Please enter a valid positive number");
         setLoading(false);
         return;
       }

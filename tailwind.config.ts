@@ -13,6 +13,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        display: ['"Bricolage Grotesque"', "sans-serif"],
+        sans: ["Nunito", "sans-serif"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -23,6 +27,19 @@ export default {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
+        blue: {
+          DEFAULT: "hsl(var(--blue))",
+          foreground: "#ffffff",
+        },
+        pink: {
+          DEFAULT: "hsl(var(--pink))",
+          foreground: "hsl(var(--foreground))",
+        },
+        yellow: "hsl(var(--yellow))",
+        lime: "hsl(var(--lime))",
+        sky: "hsl(var(--sky))",
+        peach: "hsl(var(--peach))",
+        lilac: "hsl(var(--lilac))",
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
@@ -61,6 +78,11 @@ export default {
         "3xl": "1.5rem",
       },
       boxShadow: {
+        /* Flat redesign: legacy hard-shadow utilities resolve to no shadow */
+        hard: "none",
+        "hard-sm": "none",
+        "hard-lg": "none",
+        "hard-xl": "none",
         card: "var(--shadow-card)",
         "card-hover": "var(--shadow-card-hover)",
         button: "var(--shadow-button)",
@@ -82,12 +104,23 @@ export default {
           from: { opacity: "0", transform: "scale(0.95)" },
           to: { opacity: "1", transform: "scale(1)" },
         },
+        marquee: {
+          "0%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+        wobble: {
+          "0%, 100%": { transform: "rotate(var(--rot, 0deg))" },
+          "25%": { transform: "rotate(calc(var(--rot, 0deg) - 6deg))" },
+          "75%": { transform: "rotate(calc(var(--rot, 0deg) + 6deg))" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.4s ease-out",
         "scale-in": "scale-in 0.3s ease-out",
+        marquee: "marquee 28s linear infinite",
+        wobble: "wobble 0.5s ease-in-out",
       },
     },
   },

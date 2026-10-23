@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import ProfessionalToolLayout from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Download, Upload } from "lucide-react";
 
 const ImageUpscaler = () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
   const [upscaled, setUpscaled] = useState<string>("");
@@ -138,6 +139,7 @@ const ImageUpscaler = () => {
               </div>
               <input
                 id="file-input-upscaler"
+                ref={fileInputRef}
                 type="file"
                 accept="image/*"
                 onChange={handleFileSelect}

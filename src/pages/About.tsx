@@ -1,277 +1,127 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
+import SEOPage from "@/components/SEOPage";
+import StickerBadge from "@/components/StickerBadge";
 import { Link } from "react-router-dom";
-import ToolCard from "@/components/ToolCard";
 import {
   FileText,
   Image,
   Code,
   Zap,
-  BarChart3,
-  Shield,
-  FilePlus,
-  Scissors,
-  FileDown,
-  ImageOff,
-  Maximize2,
-  Wand2,
-  TrendingUp,
-  RefreshCw,
-  QrCode,
-  Lock,
-  Lightbulb,
-  Palette,
-  RotateCw,
-  ArrowRightLeft,
-  Calculator,
-  Calendar,
+  ShieldCheck,
+  Heart,
+  ArrowRight,
 } from "lucide-react";
 
 const About = () => {
-  // Icon mapping for tools
-  const iconMap: Record<string, React.ComponentType<any>> = {
-    FilePlus,
-    Scissors,
-    Zap,
-    FileText,
-    FileDown,
-    ImageOff,
-    Maximize2,
-    Wand2,
-    TrendingUp,
-    RefreshCw,
-    QrCode,
-    Code,
-    Lock,
-    Lightbulb,
-    Palette,
-    RotateCw,
-    BarChart3,
-    ArrowRightLeft,
-    Calculator,
-    Calendar,
-  };
-
-  const getIcon = (iconName: string) => {
-    return iconMap[iconName] || FileText;
-  };
-  const mainTools = [
+  const highlights = [
     {
-      title: "PDF Tools Suite",
-      description: "Merge, split, compress, and convert PDF documents",
-      icon: FileText,
-      colorTheme: {
-        gradient: "from-secondary to-secondary",
-        accentColor: "hsl(var(--secondary))",
-        iconColor: "hsl(var(--secondary))",
-        borderColor: "hsl(var(--secondary))"
-      }
+      title: "100% In-Browser Privacy",
+      desc: "Your files never touch remote cloud servers. All conversions, compression, and mathematical tasks execute directly in your device's memory using WebAssembly and HTML5 Canvas.",
+      icon: ShieldCheck,
+      color: "bg-blue text-white",
+      badge: "Private",
     },
     {
-      title: "Image Processing Suite",
-      description: "Compress, resize, enhance, and convert images with AI",
-      icon: Image,
-      colorTheme: {
-        gradient: "from-secondary to-secondary",
-        accentColor: "hsl(var(--secondary))",
-        iconColor: "hsl(var(--secondary))",
-        borderColor: "hsl(var(--secondary))"
-      }
+      title: "Instant Execution",
+      desc: "Zero queues or network upload bottlenecks. Experience immediate results powered by client-side browser performance.",
+      icon: Zap,
+      color: "bg-primary text-white",
+      badge: "Fast",
     },
     {
-      title: "Data Conversion Tools",
-      description: "Convert between different file formats easily",
-      icon: Code,
-      colorTheme: {
-        gradient: "from-secondary to-secondary",
-        accentColor: "hsl(var(--secondary))",
-        iconColor: "hsl(var(--secondary))",
-        borderColor: "hsl(var(--secondary))"
-      }
+      title: "Free for Everyone",
+      desc: "No mandatory subscriptions, trial periods, or sneaky watermarks. Our mission is to keep high-utility digital tools free and accessible worldwide.",
+      icon: Heart,
+      color: "bg-pink text-foreground",
+      badge: "Open",
     },
-  ];
-
-  const allTools = [
-    { name: "PDF Merger", description: "Merge multiple PDF files into a single document", category: "PDF Tools", icon: "FilePlus" },
-    { name: "PDF Splitter", description: "Extract specific pages from PDF documents", category: "PDF Tools", icon: "Scissors" },
-    { name: "PDF Compressor", description: "Reduce PDF file size while maintaining quality", category: "PDF Tools", icon: "Zap" },
-    { name: "PDF to Word Converter", description: "Convert PDF documents to editable Word format", category: "PDF Tools", icon: "FileText" },
-    { name: "Word to PDF Converter", description: "Transform Word documents to PDF format", category: "PDF Tools", icon: "FileDown" },
-    { name: "Image Compressor", description: "Optimize images for web and email", category: "Image Tools", icon: "ImageOff" },
-    { name: "Image Resizer", description: "Resize images to specific dimensions", category: "Image Tools", icon: "Maximize2" },
-    { name: "Background Remover", description: "Remove image backgrounds automatically using AI", category: "Image Tools", icon: "Wand2" },
-    { name: "Image Upscaler", description: "Enhance image resolution with AI technology", category: "Image Tools", icon: "TrendingUp" },
-    { name: "Image Format Converter", description: "Convert between JPEG, PNG, WebP, GIF, and more", category: "Image Tools", icon: "RefreshCw" },
-    { name: "QR Code Generator", description: "Create customizable QR codes for URLs and text", category: "Code Tools", icon: "QrCode" },
-    { name: "Base64 Encoder/Decoder", description: "Encode and decode Base64 text and files", category: "Code Tools", icon: "Code" },
-    { name: "Password Generator", description: "Generate strong, secure passwords", category: "Security Tools", icon: "Lock" },
-    { name: "UUID Generator", description: "Create unique identifiers for applications", category: "Code Tools", icon: "Lightbulb" },
-    { name: "Hex to RGB Converter", description: "Convert color codes between formats", category: "Converter Tools", icon: "Palette" },
-    { name: "Text Reverser", description: "Reverse text and create mirror images", category: "Text Tools", icon: "RotateCw" },
-    { name: "Word Counter", description: "Analyze word and character counts", category: "Text Tools", icon: "BarChart3" },
-    { name: "Unit Converter", description: "Convert between various measurement units", category: "Converter Tools", icon: "ArrowRightLeft" },
-    { name: "Calculator Suite", description: "Advanced calculators for EMI, GST, BMI, and more", category: "Calculator Tools", icon: "Calculator" },
-    { name: "Age Calculator", description: "Calculate age and date differences", category: "Calculator Tools", icon: "Calendar" },
   ];
 
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden">
-      <Header />
+    <SEOPage
+      title="About Us - uTools.online Mission & Technology"
+      description="Learn about uTools.online, our client-side in-browser privacy architecture, and our mission to provide 100% free digital utilities."
+      canonical="https://utoolss.online/about"
+    >
+      <div className="min-h-screen flex flex-col bg-background text-foreground">
+        <Header />
 
-      <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative w-full min-h-[70vh] flex flex-col items-center justify-center px-4 sm:px-6 py-10 sm:py-14 overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-50">
-          {/* Animated gradient blobs */}
-          <div className="absolute top-[-100px] left-[-100px] w-[350px] h-[350px] bg-blue-600/10 rounded-full z-0"></div>
-          <div className="absolute bottom-[-100px] right-[-100px] w-[400px] h-[400px] bg-cyan-500/20 rounded-full z-0"></div>
-
-          <div className="relative z-10 text-center max-w-4xl space-y-6 sm:space-y-8">
-            <div className="flex items-center justify-center gap-4">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-foreground">
-                About
-              </h1>
-              <img 
-                src="/logo.png" 
-                alt="uTools Logo" 
-                className="h-16 sm:h-20 lg:h-24 w-auto"
-              />
-            </div>
-            <p className="text-xl text-gray-700">
-              Empowering millions with free, powerful online tools
+        {/* Hero Header */}
+        <section className="pt-28 pb-8 sm:pt-32 sm:pb-10 px-4 sm:px-6 text-center">
+          <div className="max-w-3xl mx-auto space-y-3">
+            <StickerBadge color="white" rotation={-2}>
+              About Our Platform
+            </StickerBadge>
+            <h1 className="font-display font-extrabold text-3xl sm:text-5xl text-foreground tracking-tight">
+              About uTools.online
+            </h1>
+            <p className="font-sans font-bold text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
+              An independent, privacy-first digital utility suite engineered for students, designers, developers, and everyday users.
             </p>
           </div>
         </section>
 
-        <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 space-y-16">
-          {/* Mission & Vision */}
-          <section className="max-w-4xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6">
-              Our Mission
-            </h2>
-            <p className="text-lg text-gray-700 mb-4">
-              At uTools, we believe that powerful software should be accessible to everyone. Our mission is to break down barriers to productivity by offering a comprehensive suite of free, easy-to-use online tools designed for professionals, students, and everyday users.
+        <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 max-w-3xl flex-1 space-y-10">
+          <section className="space-y-3">
+            <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-tight">What uTools.online is</h2>
+            <p className="font-sans font-semibold text-base leading-relaxed text-foreground/85">
+              uTools.online is a collection of free utilities for everyday jobs: merging and compressing PDFs, resizing and converting images, counting words, generating QR codes and passwords, and working out loan, SIP, GST and age calculations. Each tool has its own page with a plain-language explanation of what it does, the method behind the result, a worked example and the limits you should know about before relying on it.
             </p>
-            <p className="text-lg text-gray-700">
-              We're committed to delivering quality, reliability, and innovation without requiring sign-ups, subscriptions, or hidden costs. Every tool we create is built with you in mind, focusing on simplicity, speed, and security.
+            <p className="font-sans font-semibold text-base leading-relaxed text-foreground/85">
+              Alongside the tools we publish step-by-step guides on the same subjects, such as how an EMI is calculated or which image format to choose, so you can understand the answer as well as get it.
             </p>
           </section>
 
-          {/* Why Choose Us */}
-          <section>
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-8 text-center">
-              Why Choose uTools?
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg">
-                <Zap className="w-12 h-12 text-blue-600 mb-4" />
-                <h3 className="text-xl font-bold text-foreground mb-2">Fast & Reliable</h3>
-                <p className="text-gray-700">
-                  Lightning-fast processing with 99.9% uptime. Your data is processed instantly without delays.
-                </p>
-              </div>
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg">
-                <Shield className="w-12 h-12 text-blue-600 mb-4" />
-                <h3 className="text-xl font-bold text-foreground mb-2">Secure & Private</h3>
-                <p className="text-gray-700">
-                  Your data is encrypted and processed securely. We never store your files or personal information.
-                </p>
-              </div>
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg">
-                <BarChart3 className="w-12 h-12 text-blue-600 mb-4" />
-                <h3 className="text-xl font-bold text-foreground mb-2">Constantly Updated</h3>
-                <p className="text-gray-700">
-                  We regularly add new features and tools based on user feedback. Staying ahead of the curve.
-                </p>
-              </div>
-            </div>
+          <section className="space-y-3">
+            <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-tight">Why we built it</h2>
+            <p className="font-sans font-semibold text-base leading-relaxed text-foreground/85">
+              Many file and calculator sites ask for an account, hide the download behind pop-ups, add watermarks, or send your documents to a server you know nothing about. We wanted tools that open instantly, need no sign-up, and keep your files on your own device wherever that is technically possible.
+            </p>
           </section>
 
-          {/* Main Tools Overview */}
-          <section>
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-8 text-center">
-              Our Main Tools
-            </h2>
-            <div className="flex justify-center px-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-[80rem] w-full">
-                {mainTools.map((tool, index) => (
-                  <ToolCard
-                    key={index}
-                    title={tool.title}
-                    description={tool.description}
-                    icon={tool.icon}
-                    colorTheme={tool.colorTheme}
-                  />
-                ))}
-              </div>
-            </div>
+          <section className="space-y-3">
+            <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-tight">How your files are handled</h2>
+            <p className="font-sans font-semibold text-base leading-relaxed text-foreground/85">
+              The tools run in your browser using the Canvas API, WebAssembly and JavaScript libraries. For these tools the file you choose is processed in your device's memory and is not sent to our servers. Each tool page states how it processes data, and our <Link to="/privacy-policy" className="underline text-secondary">Privacy Policy</Link> explains what limited information the site and its advertising partners do collect.
+            </p>
           </section>
 
-          {/* Complete Tools List */}
-          <section className="relative overflow-hidden">
-            {/* Animated gradient blobs */}
-            <div className="absolute top-[-100px] left-[-100px] w-[350px] h-[350px] bg-secondary/5 rounded-full z-0"></div>
-            <div className="absolute bottom-[-100px] right-[-100px] w-[400px] h-[400px] bg-secondary/10 rounded-full z-0"></div>
-            
-            <div className="relative z-10">
-              <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-8 text-center">
-                Complete Tools Catalog
-              </h2>
-              <p className="text-lg text-gray-700 text-center mb-8 max-w-3xl mx-auto">
-                We offer over 200 free online tools covering PDF processing, image manipulation, data conversion, calculations, and much more. All designed for ease of use and maximum productivity.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-3">
-              {allTools.map((tool, index) => {
-                const IconComponent = getIcon(tool.icon);
-                return (
-                  <div key={index} className="relative overflow-hidden bg-white rounded-lg p-3 border border-gray-200 hover:shadow-lg transition-shadow duration-300">
-                    {/* Decorative circles */}
-                    <div className="absolute top-[-80px] right-[-80px] w-[200px] h-[200px] bg-blue-600/5 rounded-full z-0"></div>
-                    <div className="absolute bottom-[-60px] left-[-60px] w-[150px] h-[150px] bg-cyan-500/10 rounded-full z-0"></div>
-                    
-                    {/* Card content */}
-                    <div className="relative z-10 flex items-center gap-2">
-                      <div className="flex-shrink-0 bg-secondary/10 rounded-lg p-2 flex items-center justify-center">
-                        <IconComponent size={28} className="text-secondary" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold text-secondary mb-0.5">{tool.category}</p>
-                        <h4 className="font-bold text-foreground text-sm mb-0.5 line-clamp-2">{tool.name}</h4>
-                        <p className="text-xs text-gray-600 line-clamp-2">{tool.description}</p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-              </div>
-            </div>
+          <section className="space-y-3">
+            <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-tight">How the site is funded</h2>
+            <p className="font-sans font-semibold text-base leading-relaxed text-foreground/85">
+              uTools.online is free to use. It is supported by advertising served by Google AdSense. Ads are labelled, kept separate from tools and results, and never required to use a tool. Read the <Link to="/advertising-disclosure" className="underline text-secondary">Advertising Disclosure</Link> for details, including how to manage ad personalisation.
+            </p>
           </section>
 
-          {/* Call to Action */}
-          <section className="relative overflow-hidden rounded-lg p-12 text-center bg-gradient-to-br from-blue-50 via-white to-blue-50">
-            {/* Animated gradient blobs */}
-            <div className="absolute top-[-100px] left-[-100px] w-[350px] h-[350px] bg-blue-600/5 rounded-full z-0"></div>
-            <div className="absolute bottom-[-100px] right-[-100px] w-[400px] h-[400px] bg-cyan-500/10 rounded-full z-0"></div>
+          <section className="space-y-3">
+            <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-tight">Editorial standards and corrections</h2>
+            <p className="font-sans font-semibold text-base leading-relaxed text-foreground/85">
+              Explanations, formulas and worked examples are written to be checked: calculations are recomputed before publication, and we describe estimates as estimates. Calculators and health, tax or legal topics are general information, not professional advice; see our <Link to="/disclaimer" className="underline text-secondary">Disclaimer</Link>.
+            </p>
+            <p className="font-sans font-semibold text-base leading-relaxed text-foreground/85">
+              If you find an error, a broken tool or an unclear explanation, please <Link to="/contact" className="underline text-secondary">contact us</Link>. Confirmed mistakes are corrected as soon as we can.
+            </p>
+          </section>
 
-            <div className="relative z-10">
-              <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
-                Start Using Our Tools Today
-              </h2>
-              <p className="text-lg mb-8 text-gray-700">
-                Join millions of users who trust uTools for their everyday tasks.
-              </p>
-              <Link to="/tools">
-                <Button size="lg" className="bg-secondary text-white hover:opacity-90">
-                  Explore All Tools
-                </Button>
+          <div className="card-ink p-6 sm:p-8 bg-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="font-display font-extrabold text-xl text-foreground">Ready to explore?</h2>
+              <p className="font-sans font-bold text-sm text-muted-foreground mt-0.5">Browse every tool or start with a guide.</p>
+            </div>
+            <div className="flex gap-2">
+              <Link to="/tools" className="btn-blue text-sm px-5 py-2.5">
+                <span>All tools</span>
+                <ArrowRight className="w-4 h-4 ml-1.5" />
               </Link>
+              <Link to="/guides" className="btn-white text-sm px-5 py-2.5">Guides</Link>
             </div>
-          </section>
-        </div>
-      </main>
+          </div>
+        </main>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </SEOPage>
   );
 };
 

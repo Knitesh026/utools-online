@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Download, Upload } from "lucide-react";
 
 const ImageResizer = () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
   const [resized, setResized] = useState<string>("");
@@ -150,6 +151,7 @@ const ImageResizer = () => {
           </div>
           <input
             id="file-input-resizer"
+                ref={fileInputRef}
             type="file"
             accept="image/*"
             onChange={handleFileSelect}

@@ -49,9 +49,13 @@ const PasswordGenerator = () => {
       return;
     }
 
+    // Uniform random picks from the browser's cryptographic generator (rejection sampling avoids modulo bias).
+    const limit = Math.floor(0x100000000 / chars.length) * chars.length;
+    const buf = new Uint32Array(1);
     let generated = "";
-    for (let i = 0; i < options.length; i++) {
-      generated += chars.charAt(Math.floor(Math.random() * chars.length));
+    while (generated.length < options.length) {
+      crypto.getRandomValues(buf);
+      if (buf[0] < limit) generated += chars.charAt(buf[0] % chars.length);
     }
     setPassword(generated);
   };

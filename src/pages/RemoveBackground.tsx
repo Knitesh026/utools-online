@@ -1,381 +1,499 @@
-import { useState, useCallback } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { Upload, Image as ImageIcon, Download, Copy, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
+import React, { useState, useRef, useCallback } from "react";
+import { Upload, Download, RefreshCw, ZoomIn, ZoomOut, Check, Sliders, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import ProfessionalToolLayout from "@/components/ProfessionalToolLayout";
 
-const RemoveBackground = () => {
-  const [isDragging, setIsDragging] = useState(false);
+export default function RemoveBackground() {
   const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [result, setResult] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [processedUrl, setProcessedUrl] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [outputFormat, setOutputFormat] = useState("png");
-  const [zoom, setZoom] = useState(100);
+  const [error, setError] = useState("");
+  const [tolerance, setTolerance] = useState<number>(35);
+  const [feathering, setFeathering] = useState<number>(2);
+  const [bgMode, setBgMode] = useState<"transparent" | "white" | "custom">("transparent");
+  const [customColor, setCustomColor] = useState<string>("#ffffff");
+  const [zoom, setZoom] = useState<number>(100);
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  }, []);
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const droppedFile = e.dataTransfer.files[0];
-    if (droppedFile && droppedFile.type.startsWith("image/")) {
-      processFile(droppedFile);
+  const handleFileSelect = (selectedFile: File) => {
+    if (!selectedFile.type.startsWith("image/")) {
+      setError("Please select a valid image file (PNG, JPG, WebP).");
+      return;
     }
-  }, []);
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      processFile(selectedFile);
+    if (selectedFile.size > 25 * 1024 * 1024) {
+      setError("Image size exceeds the 25MB limit.");
+      return;
     }
-  };
 
-  const processFile = (selectedFile: File) => {
+    setError("");
     setFile(selectedFile);
+    setProcessedUrl(null);
+
     const reader = new FileReader();
     reader.onload = (e) => {
-      setPreview(e.target?.result as string);
-      simulateProcessing();
+      const url = e.target?.result as string;
+      setPreviewUrl(url);
+      executeBackgroundRemoval(url, tolerance, feathering, bgMode, customColor);
+    };
+    reader.onerror = () => {
+      setError("Failed to read the selected image file.");
     };
     reader.readAsDataURL(selectedFile);
   };
 
-  const simulateProcessing = () => {
+  const executeBackgroundRemoval = (
+    imageSource: string,
+    tol: number,
+    feather: number,
+    mode: "transparent" | "white" | "custom",
+    customBg: string
+  ) => {
     setProcessing(true);
-    setProgress(0);
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setProcessing(false);
-          // Mock result - in real app this would be from backend
-          setResult("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
-          return 100;
+    setError("");
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        const width = img.naturalWidth || img.width;
+        const height = img.naturalHeight || img.height;
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        if (!ctx) {
+          throw new Error("Unable to initialize canvas context.");
         }
-        return prev + Math.random() * 15;
-      });
-    }, 200);
+
+        ctx.drawImage(img, 0, 0);
+        const imgData = ctx.getImageData(0, 0, width, height);
+        const data = imgData.data;
+
+        // Sample border pixels to establish background color profiles
+        const samplePoints = [
+          [0, 0],
+          [width - 1, 0],
+          [0, height - 1],
+          [width - 1, height - 1],
+          [Math.floor(width / 2), 0],
+          [0, Math.floor(height / 2)],
+          [width - 1, Math.floor(height / 2)],
+        ];
+
+        const bgSamples: Array<[number, number, number]> = [];
+        for (const [x, y] of samplePoints) {
+          const idx = (y * width + x) * 4;
+          bgSamples.push([data[idx], data[idx + 1], data[idx + 2]]);
+        }
+
+        // Distance function in RGB space
+        const colorDist = (r1: number, g1: number, b1: number, r2: number, g2: number, b2: number) => {
+          return Math.sqrt(
+            Math.pow(r1 - r2, 2) + Math.pow(g1 - g2, 2) + Math.pow(b1 - b2, 2)
+          );
+        };
+
+        // Flood-fill connectivity mask from border to avoid deleting interior matching colors
+        const visited = new Uint8Array(width * height);
+        const queue: number[] = [];
+
+        // Check matching tolerance
+        const isBgColor = (idx: number) => {
+          const r = data[idx];
+          const g = data[idx + 1];
+          const b = data[idx + 2];
+          for (const [sr, sg, sb] of bgSamples) {
+            if (colorDist(r, g, b, sr, sg, sb) <= tol * 3.5) {
+              return true;
+            }
+          }
+          return false;
+        };
+
+        // Seed with all edge pixels that match background
+        for (let x = 0; x < width; x++) {
+          const topIdx = (0 * width + x) * 4;
+          if (isBgColor(topIdx)) {
+            visited[x] = 1;
+            queue.push(x);
+          }
+          const bottomIdx = ((height - 1) * width + x) * 4;
+          if (isBgColor(bottomIdx)) {
+            const pos = (height - 1) * width + x;
+            visited[pos] = 1;
+            queue.push(pos);
+          }
+        }
+
+        for (let y = 0; y < height; y++) {
+          const leftIdx = (y * width + 0) * 4;
+          if (isBgColor(leftIdx) && !visited[y * width]) {
+            visited[y * width] = 1;
+            queue.push(y * width);
+          }
+          const rightIdx = (y * width + (width - 1)) * 4;
+          if (isBgColor(rightIdx) && !visited[y * width + (width - 1)]) {
+            const pos = y * width + (width - 1);
+            visited[pos] = 1;
+            queue.push(pos);
+          }
+        }
+
+        // BFS flood fill outwards
+        let head = 0;
+        while (head < queue.length) {
+          const pos = queue[head++];
+          const x = pos % width;
+          const y = Math.floor(pos / width);
+
+          const neighbors = [
+            [x + 1, y],
+            [x - 1, y],
+            [x, y + 1],
+            [x, y - 1],
+          ];
+
+          for (const [nx, ny] of neighbors) {
+            if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+              const npos = ny * width + nx;
+              if (!visited[npos]) {
+                const nidx = npos * 4;
+                if (isBgColor(nidx)) {
+                  visited[npos] = 1;
+                  queue.push(npos);
+                }
+              }
+            }
+          }
+        }
+
+        // Parse custom color if set
+        let customR = 255, customG = 255, customB = 255;
+        if (mode === "custom" && customBg.startsWith("#")) {
+          const hex = customBg.replace("#", "");
+          customR = parseInt(hex.substring(0, 2), 16) || 255;
+          customG = parseInt(hex.substring(2, 4), 16) || 255;
+          customB = parseInt(hex.substring(4, 6), 16) || 255;
+        }
+
+        // Apply alpha or replacement
+        for (let i = 0; i < width * height; i++) {
+          if (visited[i] === 1) {
+            const idx = i * 4;
+            if (mode === "transparent") {
+              data[idx + 3] = 0; // Alpha 0
+            } else if (mode === "white") {
+              data[idx] = 255;
+              data[idx + 1] = 255;
+              data[idx + 2] = 255;
+              data[idx + 3] = 255;
+            } else if (mode === "custom") {
+              data[idx] = customR;
+              data[idx + 1] = customG;
+              data[idx + 2] = customB;
+              data[idx + 3] = 255;
+            }
+          }
+        }
+
+        ctx.putImageData(imgData, 0, 0);
+        const resultDataUrl = canvas.toDataURL("image/png");
+        setProcessedUrl(resultDataUrl);
+      } catch (err) {
+        console.error("Background removal error:", err);
+        setError("Error during background removal. Please try a different image.");
+      } finally {
+        setProcessing(false);
+      }
+    };
+    img.onerror = () => {
+      setError("Failed to process image format.");
+      setProcessing(false);
+    };
+    img.src = imageSource;
   };
 
-  const clearFile = () => {
-    setFile(null);
-    setPreview(null);
-    setResult(null);
-    setProgress(0);
-    setProcessing(false);
-    setZoom(100);
+  const handleApplyChanges = () => {
+    if (previewUrl) {
+      executeBackgroundRemoval(previewUrl, tolerance, feathering, bgMode, customColor);
+    }
   };
 
-  const downloadImage = () => {
-    if (!result) return;
+  const handleDownload = () => {
+    if (!processedUrl || !file) return;
     const link = document.createElement("a");
-    link.href = result;
-    link.download = `removed-background.${outputFormat}`;
+    link.href = processedUrl;
+    link.download = `${file.name.replace(/\.[^/.]+$/, "")}-no-bg.png`;
     link.click();
   };
 
-  const copyToClipboard = () => {
-    if (!result) return;
-    navigator.clipboard.writeText(result);
+  const handleReset = () => {
+    setFile(null);
+    setPreviewUrl(null);
+    setProcessedUrl(null);
+    setError("");
+    setTolerance(35);
   };
 
-  const outputFormats = [
-    { id: "png", label: "PNG (Transparent)" },
-    { id: "jpg", label: "JPG (White Background)" },
-    { id: "webp", label: "WebP (Modern Format)" },
-  ];
-
-  return (
-    <div className="min-h-screen flex flex-col">
-      
-      <Header />
-
-      <main className="flex-1 container mx-auto px-6 py-12">
-        {/* Hero Section */}
-        <section className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-3">
-            Remove Background
-          </h1>
-          <p className="text-muted-foreground text-lg max-w-2xl">
-            Erase image backgrounds instantly with AI-powered precision. Perfect for product photos, portraits, and professional use.
+  const inputSection = (
+    <div className="space-y-6">
+      {!previewUrl ? (
+        <div
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => {
+            e.preventDefault();
+            if (e.dataTransfer.files?.[0]) {
+              handleFileSelect(e.dataTransfer.files[0]);
+            }
+          }}
+          className="border-2 border-dashed border-indigo-200 dark:border-indigo-900/50 hover:border-primary rounded-2xl p-8 sm:p-12 text-center transition-all bg-indigo-50/20 cursor-pointer"
+          onClick={() => document.getElementById("bg-file-input")?.click()}
+        >
+          <input
+            id="bg-file-input"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              if (e.target.files?.[0]) {
+                handleFileSelect(e.target.files[0]);
+              }
+            }}
+          />
+          <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
+            <Upload className="w-8 h-8" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+            Choose an Image or Drag & Drop Here
+          </h3>
+          <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mx-auto">
+            Supports PNG, JPG, and WebP up to 25MB. Instant background transparency with smart edge detection.
           </p>
-        </section>
-
-        {/* Features Highlight */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-          <div className="flex gap-3 items-start p-4 bg-orange-50 dark:bg-orange-950/20 rounded-lg border border-orange-200 dark:border-orange-800">
-            <span className="text-orange-500">⚡</span>
-            <div>
-              <h4 className="font-semibold text-foreground">Fast Processing</h4>
-              <p className="text-sm text-muted-foreground">Instant results in seconds</p>
-            </div>
-          </div>
-          <div className="flex gap-3 items-start p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-            <span className="text-blue-500">🎯</span>
-            <div>
-              <h4 className="font-semibold text-foreground">Precise Detection</h4>
-              <p className="text-sm text-muted-foreground">AI-powered edge detection</p>
-            </div>
-          </div>
-          <div className="flex gap-3 items-start p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
-            <span className="text-green-500">🔄</span>
-            <div>
-              <h4 className="font-semibold text-foreground">Multiple Formats</h4>
-              <p className="text-sm text-muted-foreground">PNG, JPG, WebP support</p>
-            </div>
-          </div>
+          <Button className="mt-4 bg-primary text-white font-medium px-6">
+            Browse Image
+          </Button>
         </div>
+      ) : (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            {/* Original Preview */}
+            <div className="space-y-2">
+              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Original Photo</Label>
+              <div className="border border-slate-200 dark:border-gray-800 rounded-xl overflow-hidden bg-slate-100 dark:bg-gray-800 flex items-center justify-center h-64 p-2">
+                <img
+                  src={previewUrl}
+                  alt="Original"
+                  className="max-h-full max-w-full object-contain rounded"
+                  style={{ transform: `scale(${zoom / 100})`, transition: "transform 0.2s" }}
+                />
+              </div>
+            </div>
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Upload Section */}
-          <div className="lg:col-span-2">
-            <div className="space-y-6">
-              {/* Drop Zone */}
+            {/* Processed Output */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Background Removed</Label>
+                {processing && <span className="text-xs text-primary font-medium animate-pulse">Processing...</span>}
+              </div>
               <div
-                className={`border-2 border-dashed rounded-xl p-12 text-center transition-all ${
-                  isDragging
-                    ? "border-primary bg-primary/10"
-                    : file
-                    ? "border-green-500/30 bg-green-50/50 dark:bg-green-950/20"
-                    : "border-border hover:border-primary/50"
-                }`}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
+                className="border border-slate-200 dark:border-gray-800 rounded-xl overflow-hidden flex items-center justify-center h-64 p-2 relative"
+                style={{
+                  backgroundImage: bgMode === "transparent" ? "radial-gradient(#cbd5e1 1px, transparent 1px)" : undefined,
+                  backgroundSize: "16px 16px",
+                  backgroundColor: bgMode === "white" ? "#ffffff" : bgMode === "custom" ? customColor : "#f8fafc",
+                }}
               >
-                {processing ? (
-                  <div className="space-y-4">
-                    {/* Progress Ring */}
-                    <div className="relative w-40 h-40 mx-auto">
-                      <svg className="w-full h-full transform -rotate-90">
-                        <circle
-                          cx="80"
-                          cy="80"
-                          r="70"
-                          className="stroke-muted"
-                          strokeWidth="8"
-                          fill="none"
-                        />
-                        <circle
-                          cx="80"
-                          cy="80"
-                          r="70"
-                          className="stroke-primary"
-                          strokeWidth="8"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeDasharray={`${2 * Math.PI * 70}`}
-                          strokeDashoffset={`${2 * Math.PI * 70 * (1 - progress / 100)}`}
-                          style={{ transition: "stroke-dashoffset 0.1s ease" }}
-                        />
-                      </svg>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-3xl font-bold text-foreground">{Math.round(progress)}%</span>
-                      </div>
-                    </div>
-                    <p className="text-lg font-semibold text-foreground">Processing your image...</p>
-                    <p className="text-sm text-muted-foreground">This may take a few moments</p>
-                  </div>
-                ) : preview ? (
-                  <div className="space-y-4">
-                    <div className="w-24 h-24 rounded-xl bg-primary/10 flex items-center justify-center mx-auto">
-                      <ImageIcon className="h-12 w-12 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-foreground mb-1">{file?.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {(file?.size || 0) > 1024 * 1024
-                          ? `${((file?.size || 0) / (1024 * 1024)).toFixed(1)} MB`
-                          : `${((file?.size || 0) / 1024).toFixed(1)} KB`}
-                      </p>
-                    </div>
-                    <p className="text-sm text-green-600 dark:text-green-400 font-medium">✓ Ready to process</p>
-                  </div>
+                {processedUrl ? (
+                  <img
+                    src={processedUrl}
+                    alt="Processed result"
+                    className="max-h-full max-w-full object-contain rounded"
+                    style={{ transform: `scale(${zoom / 100})`, transition: "transform 0.2s" }}
+                  />
                 ) : (
-                  <div className="space-y-4">
-                    <div className="w-20 h-20 rounded-xl border-2 border-primary/30 flex items-center justify-center mx-auto bg-primary/5">
-                      <Upload className="h-10 w-10 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-foreground mb-2">
-                        Drop your image here
-                      </h3>
-                      <p className="text-muted-foreground">or click to browse files</p>
-                    </div>
-                    <p className="text-xs text-muted-foreground">Supported formats: JPG, PNG, WebP (Max 50MB)</p>
-                  </div>
+                  <div className="text-xs text-muted-foreground">Generating transparent image...</div>
                 )}
               </div>
+            </div>
+          </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-4">
-                <label htmlFor="file-input-remove-bg" className="flex-1">
-                  <Button className="w-full bg-primary hover:bg-primary/90 cursor-pointer" type="button">
-                    Choose File
+          {/* Controls Bar */}
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-gray-800/50 border border-slate-200 dark:border-gray-700 space-y-4">
+            <div className="flex items-center gap-2 text-sm font-bold text-gray-800 dark:text-gray-200">
+              <Sliders className="w-4 h-4 text-primary" />
+              <span>Sensitivity & Background Settings</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Tolerance Slider */}
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs">
+                  <span className="font-medium text-gray-700 dark:text-gray-300">Tolerance Sensitivity</span>
+                  <span className="font-bold text-primary">{tolerance}%</span>
+                </div>
+                <Slider
+                  min={5}
+                  max={80}
+                  step={1}
+                  value={[tolerance]}
+                  onValueChange={(val) => setTolerance(val[0])}
+                />
+              </div>
+
+              {/* Background Color Mode */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-gray-700 dark:text-gray-300">Background Output</Label>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={bgMode === "transparent" ? "default" : "outline"}
+                    onClick={() => setBgMode("transparent")}
+                    className="text-xs flex-1"
+                  >
+                    Transparent
                   </Button>
-                  <input
-                    id="file-input-remove-bg"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleFileSelect}
-                  />
-                </label>
-                <Button variant="outline" className="flex-1">
-                  Paste Image URL
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={bgMode === "white" ? "default" : "outline"}
+                    onClick={() => setBgMode("white")}
+                    className="text-xs flex-1"
+                  >
+                    Pure White
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={bgMode === "custom" ? "default" : "outline"}
+                    onClick={() => setBgMode("custom")}
+                    className="text-xs flex-1"
+                  >
+                    Custom
+                  </Button>
+                </div>
+              </div>
+
+              {/* Custom Color Input if Custom is selected */}
+              {bgMode === "custom" && (
+                <div className="space-y-2">
+                  <Label className="text-xs font-medium text-gray-700 dark:text-gray-300">Pick Custom Color</Label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={customColor}
+                      onChange={(e) => setCustomColor(e.target.value)}
+                      className="w-10 h-9 p-1 rounded border border-slate-300 cursor-pointer"
+                    />
+                    <span className="text-xs font-mono text-muted-foreground uppercase">{customColor}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-200 dark:border-gray-700">
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setZoom(Math.max(50, zoom - 25))}
+                  className="h-8 px-2 text-xs"
+                >
+                  <ZoomOut className="w-3.5 h-3.5 mr-1" /> Zoom Out
+                </Button>
+                <span className="text-xs text-muted-foreground">{zoom}%</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setZoom(Math.min(200, zoom + 25))}
+                  className="h-8 px-2 text-xs"
+                >
+                  <ZoomIn className="w-3.5 h-3.5 mr-1" /> Zoom In
+                </Button>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  onClick={handleApplyChanges}
+                  disabled={processing}
+                  className="bg-primary text-white text-xs h-8"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${processing ? "animate-spin" : ""}`} />
+                  Re-process
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleDownload}
+                  disabled={!processedUrl}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8"
+                >
+                  <Download className="w-3.5 h-3.5 mr-1.5" />
+                  Download PNG
                 </Button>
               </div>
             </div>
           </div>
-
-          {/* Sidebar Options */}
-          <div className="space-y-6">
-            {/* Output Format */}
-            <div className="p-6 bg-card rounded-xl border border-border">
-              <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                <span className="text-lg">⚙️</span> Output Format
-              </h3>
-              <div className="space-y-3">
-                {outputFormats.map((format) => (
-                  <label
-                    key={format.id}
-                    className="flex items-center gap-3 cursor-pointer group p-3 rounded-lg hover:bg-muted transition-colors"
-                  >
-                    <input
-                      type="radio"
-                      name="outputFormat"
-                      value={format.id}
-                      checked={outputFormat === format.id}
-                      onChange={(e) => setOutputFormat(e.target.value)}
-                      className="w-4 h-4 cursor-pointer"
-                    />
-                    <span className="text-sm text-foreground font-medium">{format.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Processing Info */}
-            <div className="p-6 bg-blue-50 dark:bg-blue-950/20 rounded-xl border border-blue-200 dark:border-blue-800">
-              <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                <span className="text-lg">ℹ️</span> How it works
-              </h3>
-              <ol className="text-sm text-muted-foreground space-y-2">
-                <li className="flex gap-2">
-                  <span className="font-semibold text-primary">1.</span>
-                  <span>Upload your image</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="font-semibold text-primary">2.</span>
-                  <span>AI removes background</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="font-semibold text-primary">3.</span>
-                  <span>Download the result</span>
-                </li>
-              </ol>
-            </div>
-          </div>
         </div>
-
-        {/* Result Section */}
-        {result && (
-          <section className="mt-12 p-8 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl border border-border">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Original vs Result */}
-              <div>
-                <h3 className="text-lg font-semibold text-foreground mb-4">Original Image</h3>
-                <div className="relative bg-card rounded-lg overflow-hidden border border-border">
-                  <img
-                    src={preview}
-                    alt="Original"
-                    className="w-full h-auto"
-                    style={{ maxHeight: "400px", objectFit: "contain" }}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold text-foreground mb-4">Result with Background Removed</h3>
-                <div className="relative bg-white dark:bg-slate-900 rounded-lg overflow-hidden border border-border" style={{ backgroundImage: 'repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 20px 20px' }}>
-                  <div style={{ zoom: `${zoom}%`, transformOrigin: 'top center' }}>
-                    <img
-                      src={result}
-                      alt="Result"
-                      className="w-full h-auto"
-                      style={{ maxHeight: "400px", objectFit: "contain" }}
-                    />
-                  </div>
-                </div>
-
-                {/* Zoom Controls */}
-                <div className="flex items-center gap-2 mt-4 bg-card p-3 rounded-lg border border-border">
-                  <button
-                    onClick={() => setZoom(Math.max(50, zoom - 10))}
-                    className="p-2 hover:bg-muted rounded transition-colors"
-                    title="Zoom Out"
-                  >
-                    <ZoomOut className="h-4 w-4" />
-                  </button>
-                  <span className="text-sm font-semibold min-w-12 text-center">{zoom}%</span>
-                  <button
-                    onClick={() => setZoom(Math.min(200, zoom + 10))}
-                    className="p-2 hover:bg-muted rounded transition-colors"
-                    title="Zoom In"
-                  >
-                    <ZoomIn className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => setZoom(100)}
-                    className="ml-auto p-2 hover:bg-muted rounded transition-colors"
-                    title="Reset Zoom"
-                  >
-                    <RotateCcw className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Download Actions */}
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button
-                onClick={downloadImage}
-                className="bg-primary hover:bg-primary/90 flex items-center gap-2"
-              >
-                <Download className="h-4 w-4" />
-                Download Image
-              </Button>
-              <Button
-                onClick={copyToClipboard}
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <Copy className="h-4 w-4" />
-                Copy to Clipboard
-              </Button>
-              <Button onClick={clearFile} variant="outline" className="flex items-center gap-2">
-                <RotateCcw className="h-4 w-4" />
-                Process Another
-              </Button>
-            </div>
-          </section>
-        )}
-      </main>
-
-      <Footer />
+      )}
     </div>
   );
-};
 
-export default RemoveBackground;
+  return (
+    <ProfessionalToolLayout
+      title="Background Remover"
+      description="Remove image backgrounds automatically with smart client-side edge and color keying. 100% private, no server upload."
+      category="Image Tools"
+      inputSection={inputSection}
+      error={error}
+      resetButton={previewUrl ? { label: "Upload Different Image", onClick: handleReset } : undefined}
+      howToUse={[
+        "Select or drag-and-drop your image (PNG, JPG, or WebP) into the upload box.",
+        "The smart detector automatically samples background edges to render transparency.",
+        "Fine-tune the Sensitivity slider or change background to Transparent, White, or Custom Color.",
+        "Click 'Download PNG' to save your clean, transparent photo instantly."
+      ]}
+      aboutText="Background Remover is an advanced browser-based photo editor designed to strip solid or uniform backgrounds from photos without transmitting your image over the web. Built using HTML5 Canvas pixel manipulation, it detects background boundary colors and transforms them into an alpha transparency channel. This makes it ideal for e-commerce product photos, social media avatars, thumbnails, and graphic design projects while preserving your complete privacy."
+      faqs={[
+        {
+          question: "Is this background remover really free?",
+          answer: "Yes, it is completely free with no usage limits, watermark overlays, or account requirements."
+        },
+        {
+          question: "Does my image get uploaded to any server?",
+          answer: "No. All pixel isolation happens directly inside your web browser using HTML5 Canvas. Your image never leaves your device."
+        },
+        {
+          question: "Which images work best?",
+          answer: "Images with solid, uniform, or distinct background colors (e.g. studio backdrops, white product backgrounds, simple wallpapers) yield the highest fidelity cutouts."
+        },
+        {
+          question: "Can I replace the background with white or another color?",
+          answer: "Yes! Use the Background Output toggle to switch between Transparent (PNG), Pure White, or any custom color."
+        }
+      ]}
+      features={[
+        {
+          icon: "⚡",
+          title: "Real-Time Processing",
+          description: "Instant canvas-based cutout generation without server delays."
+        },
+        {
+          icon: "🛡️",
+          title: "Zero Data Leakage",
+          description: "Files are processed strictly in local browser memory."
+        },
+        {
+          icon: "🎨",
+          title: "Custom Backgrounds",
+          description: "Export as transparent PNG, e-commerce white, or custom colors."
+        }
+      ]}
+    />
+  );
+}

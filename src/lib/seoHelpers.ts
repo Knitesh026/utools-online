@@ -37,14 +37,12 @@ export const organizationSchema = {
   name: 'uTools.online',
   url: 'https://utoolss.online',
   logo: 'https://utoolss.online/logo.png',
-  description: 'Free online utility tools for file conversion, image editing, PDF processing, and more.',
-  sameAs: [
-    'https://twitter.com/uToolsOnline',
-  ],
+  description: 'Free online tools and guides for PDF, image, text and calculator tasks.',
   contactPoint: {
     '@type': 'ContactPoint',
     contactType: 'Customer Service',
     url: 'https://utoolss.online/contact',
+    email: 'support@utoolss.online',
   },
 };
 
@@ -58,7 +56,7 @@ export const websiteSchema = {
     '@type': 'SearchAction',
     target: {
       '@type': 'EntryPoint',
-      urlTemplate: 'https://utoolss.online/search?q={search_term_string}',
+      urlTemplate: 'https://utoolss.online/tools?search={search_term_string}',
     },
     'query-input': 'required name=search_term_string',
   },

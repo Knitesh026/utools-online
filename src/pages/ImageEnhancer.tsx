@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import ProfessionalToolLayout from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Download, Upload } from "lucide-react";
 
 const ImageEnhancer = () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
   const [enhanced, setEnhanced] = useState<string>("");
@@ -127,6 +128,7 @@ const ImageEnhancer = () => {
               </div>
               <input
                 id="file-input-enhancer"
+                ref={fileInputRef}
                 type="file"
                 accept="image/*"
                 onChange={handleFileSelect}

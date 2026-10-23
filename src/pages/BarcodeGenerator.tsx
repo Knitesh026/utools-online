@@ -1,4 +1,6 @@
 import { useState } from "react";
+import JsBarcode from "jsbarcode";
+import QRCode from "qrcode";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,142 +16,47 @@ const BarcodeGenerator = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Simple QR code generator using qr-server API
-  const generateQRCode = (value: string) => {
-    if (!value.trim()) {
-      setError("Please enter text to encode");
-      return;
-    }
-    const encoded = encodeURIComponent(value);
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encoded}`;
-    setBarcode(qrUrl);
+  // Everything below is generated locally in the browser; the entered text is never sent anywhere.
+  const generateQRCode = async (value: string) => {
+    const url = await QRCode.toDataURL(value, { width: 300, margin: 2, errorCorrectionLevel: "M" });
+    setBarcode(url);
     setError("");
   };
 
-  // Barcode 128 simulator (simple visual representation)
-  const generateCode128 = (value: string) => {
-    if (!value.trim()) {
-      setError("Please enter text to encode");
-      return;
-    }
-
+  const generateLinear = (value: string, jsBarcodeFormat: "CODE128" | "EAN13") => {
     const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    if (!ctx) {
-      setError("Unable to generate barcode");
-      return;
-    }
-
-    canvas.width = 300;
-    canvas.height = 150;
-
-    // White background
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Draw barcode pattern (simplified)
-    ctx.fillStyle = "black";
-    const barWidth = Math.max(1, Math.floor(canvas.width / (value.length * 8)));
-    let xPos = 10;
-
-    for (let i = 0; i < value.length; i++) {
-      const charCode = value.charCodeAt(i);
-      const binary = charCode.toString(2).padStart(8, "0");
-
-      for (let j = 0; j < binary.length; j++) {
-        if (binary[j] === "1") {
-          ctx.fillRect(xPos, 20, barWidth, 80);
-        }
-        xPos += barWidth;
-      }
-    }
-
-    // Draw text below barcode
-    ctx.fillStyle = "black";
-    ctx.font = "12px monospace";
-    ctx.textAlign = "center";
-    ctx.fillText(value, canvas.width / 2, 120);
-
-    const dataUrl = canvas.toDataURL("image/png");
-    setBarcode(dataUrl);
+    JsBarcode(canvas, value, {
+      format: jsBarcodeFormat,
+      displayValue: true,
+      margin: 12,
+      width: 2,
+      height: 90,
+      background: "#ffffff",
+      lineColor: "#000000",
+    });
+    setBarcode(canvas.toDataURL("image/png"));
     setError("");
   };
 
-  // EAN 13 simulator
-  const generateEAN13 = (value: string) => {
-    if (!value.trim() || value.length > 12) {
-      setError("EAN-13 requires up to 12 digits");
-      return;
-    }
-
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    if (!ctx) {
-      setError("Unable to generate barcode");
-      return;
-    }
-
-    canvas.width = 300;
-    canvas.height = 150;
-
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Draw pattern
-    ctx.fillStyle = "black";
-    const barWidth = 2;
-    let xPos = 10;
-
-    // Start guard
-    ctx.fillRect(xPos, 20, barWidth, 90);
-    xPos += barWidth * 3;
-
-    // Draw bars for each digit
-    for (let i = 0; i < value.length; i++) {
-      const digit = parseInt(value[i]);
-      const bars = digit % 2 === 0 ? "1010" : "1100";
-
-      for (let j = 0; j < bars.length; j++) {
-        if (bars[j] === "1") {
-          ctx.fillRect(xPos, 20, barWidth, 80);
-        }
-        xPos += barWidth;
-      }
-    }
-
-    // End guard
-    ctx.fillRect(xPos, 20, barWidth, 90);
-
-    // Draw text
-    ctx.fillStyle = "black";
-    ctx.font = "12px monospace";
-    ctx.textAlign = "center";
-    ctx.fillText(value, canvas.width / 2, 120);
-
-    const dataUrl = canvas.toDataURL("image/png");
-    setBarcode(dataUrl);
-    setError("");
-  };
-
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!text.trim()) {
       setError("Please enter text to encode");
       return;
     }
 
-    if (format === "ean13" && text.length !== 12) {
-      setError("EAN-13 requires exactly 12 digits");
+    if (format === "ean13" && !/^\d{12}$/.test(text)) {
+      setError("EAN-13 needs exactly 12 digits; the 13th check digit is added for you.");
       return;
     }
 
     setLoading(true);
     try {
       if (format === "qr") {
-        generateQRCode(text);
+        await generateQRCode(text);
       } else if (format === "code128") {
-        generateCode128(text);
+        generateLinear(text, "CODE128");
       } else if (format === "ean13") {
-        generateEAN13(text);
+        generateLinear(text, "EAN13");
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to generate barcode");

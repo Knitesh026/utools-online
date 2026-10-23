@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { SEOPage } from "@/components/SEOPage";
-import { AdPopunder } from "@/components/AdPopunder";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -45,7 +44,8 @@ const BMICalculator = () => {
         heightInMeters = h * 0.0254;
       }
 
-      const bmi = w / (heightInMeters * heightInMeters);
+      const weightInKg = unit === "kg" ? w : w * 0.45359237; // pounds to kilograms
+      const bmi = weightInKg / (heightInMeters * heightInMeters);
 
       let category = "";
       let color = "";

@@ -3,6 +3,9 @@ import { Upload, Download, AlertCircle, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import ToolExtras from '@/components/ToolExtras';
 
 export default function ImageToPDF() {
   const [images, setImages] = useState<string[]>([]);
@@ -82,12 +85,12 @@ export default function ImageToPDF() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-50 p-4 md:p-8">
-      
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
+      <Header />
+      <div className="flex-1 max-w-4xl w-full mx-auto space-y-6 px-4 md:px-8 pt-28 sm:pt-32 pb-10">
         <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold text-gray-900">Image to PDF</h1>
-          <p className="text-gray-600">Convert multiple images into a single PDF file</p>
+          <h1 className="font-display font-extrabold text-4xl sm:text-5xl tracking-tighter">Image to PDF</h1>
+          <p className="font-sans font-bold text-muted-foreground">Convert multiple images into a single PDF file</p>
         </div>
 
         {/* Upload Section */}
@@ -173,7 +176,9 @@ export default function ImageToPDF() {
             </CardContent>
           </Card>
         )}
+        <ToolExtras />
       </div>
+      <Footer />
     </div>
   );
 }

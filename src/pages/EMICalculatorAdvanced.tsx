@@ -36,7 +36,7 @@ const EMICalculatorAdvanced: React.FC = () => {
     return emi;
   };
 
-  const generateAmortization = () => {
+  const generateAmortization = (fullSchedule = false) => {
     const p = principal - down;
     const r = rate / 100 / 12;
     const n = tenureUnit === "years" ? tenure * 12 : tenure;
@@ -52,7 +52,7 @@ const EMICalculatorAdvanced: React.FC = () => {
       remainingBalance -= principalPayment;
       totalInterestPaid += interestPayment;
 
-      if (month % Math.ceil(n / 12) === 0 || month <= 3 || month === n) {
+      if (fullSchedule || month % Math.ceil(n / 12) === 0 || month <= 3 || month === n) {
         breakdown.push({
           month,
           principalPayment,
@@ -74,7 +74,7 @@ const EMICalculatorAdvanced: React.FC = () => {
 
   const downloadSchedule = () => {
     let csv = "Month,Principal Payment,Interest Payment,Remaining Balance,Total Interest Paid\n";
-    amortization.forEach((row) => {
+    generateAmortization(true).forEach((row) => {
       csv += `${row.month},${row.principalPayment.toFixed(2)},${row.interestPayment.toFixed(2)},${row.remainingBalance.toFixed(2)},${row.totalInterestPaid.toFixed(2)}\n`;
     });
 

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import ToolExtras from "@/components/ToolExtras";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { Upload, Copy, Check, RefreshCw } from "lucide-react";
 import { useState as useCopyState } from "react";
 
 const ImageToBase64 = () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
   const [base64, setBase64] = useState("");
@@ -147,6 +149,7 @@ const ImageToBase64 = () => {
                   </div>
                   <input
                     id="file-input-tobase64"
+                ref={fileInputRef}
                     type="file"
                     accept="image/*"
                     onChange={handleFileSelect}
@@ -241,6 +244,7 @@ const ImageToBase64 = () => {
             </Card>
           )}
         </div>
+      <ToolExtras />
       </main>
       <Footer />
     </>

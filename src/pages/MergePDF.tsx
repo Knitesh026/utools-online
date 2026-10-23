@@ -4,7 +4,11 @@ import { SEOPage } from "@/components/SEOPage";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import ProfessionalToolLayout from "@/components/ProfessionalToolLayout";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import ToolArticle from "@/components/ToolArticle";
+import AdUnit from "@/components/AdUnit";
+import { getToolContent } from "@/data/toolContent";
 import toolsMetadata from "@/data/toolsMetadata";
 import { mergePdfs } from "@/lib/stirlingPdfApi";
 import { downloadBlob } from "@/lib/api";
@@ -229,7 +233,7 @@ const MergePDF: React.FC = () => {
             or click the button below to select files from your computer
           </p>
           
-          <Button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white px-12 py-3 text-base font-bold">
+          <Button className="bg-primary hover:bg-primary/90 text-white rounded-full px-12 py-3 text-base font-bold">
             <Upload className="h-5 w-5 mr-2" />
             Upload from PC or Mobile
           </Button>
@@ -313,7 +317,7 @@ const MergePDF: React.FC = () => {
             <Button
               onClick={mergePDFsWithBlob}
               disabled={pdfFiles.length < 2 || merging}
-              className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white py-3 text-base font-bold rounded-lg"
+              className="bg-primary hover:bg-primary/90 text-white rounded-full py-3 text-base font-bold rounded-lg"
             >
               {merging ? (
                 <>
@@ -413,14 +417,15 @@ const MergePDF: React.FC = () => {
       toolName="PDF Merger"
       toolDescription={metadata.description}
     >
-      <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-slate-950 dark:to-slate-900">
+      <div className="min-h-screen bg-background text-foreground">
+        <Header />
         {/* Header Banner */}
-        <div className="bg-gradient-to-r from-primary to-secondary dark:from-primary/80 dark:to-secondary/80 text-white py-10 md:py-14 shadow-lg">
+        <div className="pt-28 pb-6 sm:pt-32 sm:pb-8">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">
+            <h1 className="font-display font-extrabold text-4xl sm:text-5xl tracking-tighter mb-3">
               {metadata.title.split(' - ')[0]}
             </h1>
-            <p className="text-base md:text-lg text-white/90">
+            <p className="font-sans font-bold text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
               {metadata.description}
             </p>
           </div>
@@ -453,7 +458,7 @@ const MergePDF: React.FC = () => {
                   <div
                     className={`size-12 rounded-full flex items-center justify-center mb-2 shadow-lg font-bold text-base transition-all duration-500 relative z-10 ${
                       currentStep === item.step
-                        ? "bg-gradient-to-br from-primary to-secondary dark:from-primary/80 dark:to-secondary/80 text-white scale-110 ring-4 ring-primary/30 dark:ring-primary/50"
+                        ? "bg-primary text-white scale-110 ring-4 ring-primary/30"
                         : currentStep > item.step
                         ? "bg-green-500 dark:bg-green-600 text-white"
                         : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
@@ -580,11 +585,19 @@ const MergePDF: React.FC = () => {
             </div>
           </div>
 
+          {getToolContent("/merge-pdf") && (
+            <div className="mt-14 space-y-8">
+              <AdUnit placement="inline" />
+              <ToolArticle content={getToolContent("/merge-pdf")!} />
+            </div>
+          )}
+
           {/* Footer Note */}
           <div className="mt-12 text-center text-sm text-gray-500 dark:text-gray-400">
-            <p>Uploaded and generated files are deleted 1 hour after upload</p>
+            <p>Files are processed in your browser and are not stored on our servers</p>
           </div>
         </div>
+        <Footer />
       </div>
     </SEOPage>
   );

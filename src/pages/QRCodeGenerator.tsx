@@ -1,4 +1,5 @@
 import { useState } from "react";
+import QRCode from "qrcode";
 import { SEOPage } from "@/components/SEOPage";
 import { ProfessionalToolLayout } from "@/components/ProfessionalToolLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,8 +31,12 @@ const QRCodeGenerator = () => {
     setError("");
 
     try {
-      const encodedText = encodeURIComponent(text);
-      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodedText}&ecc=${errorLevel}`;
+      // Generated locally in the browser; the text is never sent anywhere.
+      const qrUrl = await QRCode.toDataURL(text, {
+        width: size,
+        margin: 2,
+        errorCorrectionLevel: errorLevel as "L" | "M" | "Q" | "H",
+      });
       setQrCode(qrUrl);
     } catch (err) {
       setError("Failed to generate QR code");

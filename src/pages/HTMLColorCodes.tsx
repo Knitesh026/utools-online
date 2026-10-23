@@ -11,7 +11,7 @@ const HTMLColorCodes = () => {
 
   const colorDatabase: Record<string, string> = {
     "Red": "#FF0000",
-    "Green": "#00FF00",
+    "Green": "#008000",
     "Blue": "#0000FF",
     "Yellow": "#FFFF00",
     "Cyan": "#00FFFF",
@@ -228,7 +228,7 @@ const HTMLColorCodes = () => {
         },
       }}
       features={[
-        { icon: "🎨", title: "100+ Colors", description: "Named & hex codes" },
+        { icon: "🎨", title: `${Object.keys(colorDatabase).length} Named Colors`, description: "Named & hex codes" },
         { icon: "🎯", title: "Color Shades", description: "Generate tints & shades" },
         { icon: "📋", title: "Easy Copy", description: "Copy color codes instantly" },
       ]}

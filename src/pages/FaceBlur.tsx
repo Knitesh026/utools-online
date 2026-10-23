@@ -1,305 +1,427 @@
-import { useState } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import React, { useState, useRef, useEffect } from "react";
+import { Upload, Download, RefreshCw, EyeOff, ShieldCheck, Plus, Trash2, Sliders } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Download, Upload, RefreshCw, AlertCircle } from "lucide-react";
+import ProfessionalToolLayout from "@/components/ProfessionalToolLayout";
 
-const FaceBlur = () => {
+interface BlurBox {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export default function FaceBlur() {
   const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string>("");
-  const [blurred, setBlurred] = useState<string>("");
-  const [intensity, setIntensity] = useState(15);
-  const [processing, setProcessing] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [processedUrl, setProcessedUrl] = useState<string | null>(null);
+  const [blurBoxes, setBlurBoxes] = useState<BlurBox[]>([]);
+  const [blurIntensity, setBlurIntensity] = useState<number>(20);
+  const [blurType, setBlurType] = useState<"blur" | "pixelate">("blur");
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(null);
+  const [currentBox, setCurrentBox] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
   const [error, setError] = useState("");
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (!selectedFile) return;
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const imageElementRef = useRef<HTMLImageElement | null>(null);
 
+  const handleFileSelect = (selectedFile: File) => {
     if (!selectedFile.type.startsWith("image/")) {
-      setError("Please select an image file");
+      setError("Please select a valid image file (PNG, JPG, WebP).");
       return;
     }
-
-    if (selectedFile.size > 50 * 1024 * 1024) {
-      setError("File size must be less than 50MB");
+    if (selectedFile.size > 25 * 1024 * 1024) {
+      setError("File size exceeds 25MB limit.");
       return;
     }
 
     setError("");
     setFile(selectedFile);
-    setBlurred("");
+    setBlurBoxes([]);
+    setProcessedUrl(null);
 
     const reader = new FileReader();
     reader.onload = (e) => {
-      setPreview(e.target?.result as string);
+      const url = e.target?.result as string;
+      setImageUrl(url);
+
+      const img = new Image();
+      img.onload = () => {
+        imageElementRef.current = img;
+        // Default: Add one centered face-sized sample blur box
+        const boxW = Math.round(img.width * 0.2);
+        const boxH = Math.round(img.width * 0.2);
+        const boxX = Math.round((img.width - boxW) / 2);
+        const boxY = Math.round((img.height - boxH) / 3);
+        setBlurBoxes([
+          {
+            id: "initial-1",
+            x: boxX,
+            y: boxY,
+            width: boxW,
+            height: boxH,
+          },
+        ]);
+      };
+      img.src = url;
     };
     reader.readAsDataURL(selectedFile);
   };
 
-  const blurImage = async () => {
-    if (!preview) return;
+  // Re-render canvas whenever image, blur boxes, intensity, or blurType changes
+  useEffect(() => {
+    if (!imageElementRef.current || !imageUrl) return;
+    renderCanvas();
+  }, [blurBoxes, blurIntensity, blurType, imageUrl]);
 
-    setProcessing(true);
-    try {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
+  const renderCanvas = () => {
+    const img = imageElementRef.current;
+    if (!img) return;
 
-      if (!ctx) {
-        setError("Failed to process image");
-        setProcessing(false);
-        return;
-      }
+    const canvas = canvasRef.current || document.createElement("canvas");
+    canvas.width = img.naturalWidth || img.width;
+    canvas.height = img.naturalHeight || img.height;
 
-      const img = new Image();
-      img.onload = () => {
-        canvas.width = img.width;
-        canvas.height = img.height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-        // Draw original image
-        ctx.drawImage(img, 0, 0);
+    // Draw base original image
+    ctx.drawImage(img, 0, 0);
 
-        // Apply blur filter (simple pixelation-based blur)
-        // This is a placeholder approach - actual face detection would require ML library
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-        const step = Math.ceil(intensity / 5);
+    // Apply blur/pixelation to each selected face / region box
+    for (const box of blurBoxes) {
+      const bx = Math.max(0, box.x);
+      const by = Math.max(0, box.y);
+      const bw = Math.min(canvas.width - bx, box.width);
+      const bh = Math.min(canvas.height - by, box.height);
 
-        // Apply simple blur effect across entire image
-        // In production, you'd use face-api.js or ml5.js for actual face detection
-        for (let i = 0; i < data.length; i += 4 * step) {
-          if (i + 4 * step < data.length) {
-            const avg_r = (data[i] + data[i + 4] + data[i + 8] + data[i + 12]) / 4;
-            const avg_g = (data[i + 1] + data[i + 5] + data[i + 9] + data[i + 13]) / 4;
-            const avg_b = (data[i + 2] + data[i + 6] + data[i + 10] + data[i + 14]) / 4;
+      if (bw <= 0 || bh <= 0) continue;
 
-            for (let j = 0; j < step && i + j * 4 < data.length; j++) {
-              data[i + j * 4] = avg_r;
-              data[i + j * 4 + 1] = avg_g;
-              data[i + j * 4 + 2] = avg_b;
-            }
-          }
-        }
-
-        ctx.putImageData(imageData, 0, 0);
-
-        // Apply additional blur filter
-        ctx.filter = `blur(${intensity}px)`;
+      if (blurType === "blur") {
+        // High quality multi-pass box blur for face obscuration
         const tempCanvas = document.createElement("canvas");
-        tempCanvas.width = canvas.width;
-        tempCanvas.height = canvas.height;
+        tempCanvas.width = bw;
+        tempCanvas.height = bh;
         const tempCtx = tempCanvas.getContext("2d");
         if (tempCtx) {
-          tempCtx.drawImage(canvas, 0, 0);
+          tempCtx.drawImage(canvas, bx, by, bw, bh, 0, 0, bw, bh);
+          ctx.save();
+          ctx.filter = `blur(${Math.max(4, Math.round(blurIntensity))}px)`;
+          ctx.drawImage(tempCanvas, bx, by);
+          ctx.restore();
         }
+      } else {
+        // Pixelate mode
+        const pixelSize = Math.max(6, Math.round(blurIntensity * 1.2));
+        const tempCanvas = document.createElement("canvas");
+        const scaledW = Math.max(1, Math.floor(bw / pixelSize));
+        const scaledH = Math.max(1, Math.floor(bh / pixelSize));
+        tempCanvas.width = scaledW;
+        tempCanvas.height = scaledH;
 
-        canvas.toBlob(
-          (blob) => {
-            if (blob) {
-              const reader = new FileReader();
-              reader.onload = (e) => {
-                setBlurred(e.target?.result as string);
-                setProcessing(false);
-              };
-              reader.readAsDataURL(blob);
-            }
-          },
-          "image/png"
-        );
-      };
-
-      img.src = preview;
-    } catch (err) {
-      setError("Failed to blur image");
-      setProcessing(false);
+        const tempCtx = tempCanvas.getContext("2d");
+        if (tempCtx) {
+          tempCtx.drawImage(canvas, bx, by, bw, bh, 0, 0, scaledW, scaledH);
+          ctx.imageSmoothingEnabled = false;
+          ctx.drawImage(tempCanvas, 0, 0, scaledW, scaledH, bx, by, bw, bh);
+          ctx.imageSmoothingEnabled = true;
+        }
+      }
     }
+
+    setProcessedUrl(canvas.toDataURL("image/png"));
+  };
+
+  // Mouse / Touch drawing to create new blur boxes
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    const container = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - container.left;
+    const y = e.clientY - container.top;
+
+    setIsDrawing(true);
+    setStartPos({ x, y });
+    setCurrentBox({ x, y, width: 0, height: 0 });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDrawing || !startPos) return;
+    const container = e.currentTarget.getBoundingClientRect();
+    const curX = e.clientX - container.left;
+    const curY = e.clientY - container.top;
+
+    const x = Math.min(startPos.x, curX);
+    const y = Math.min(startPos.y, curY);
+    const width = Math.abs(curX - startPos.x);
+    const height = Math.abs(curY - startPos.y);
+
+    setCurrentBox({ x, y, width, height });
+  };
+
+  const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDrawing || !startPos || !currentBox || !imageElementRef.current) {
+      setIsDrawing(false);
+      return;
+    }
+
+    const container = e.currentTarget.getBoundingClientRect();
+    const scaleX = imageElementRef.current.naturalWidth / container.width;
+    const scaleY = imageElementRef.current.naturalHeight / container.height;
+
+    // Only add if box is at least 15x15 px
+    if (currentBox.width > 15 && currentBox.height > 15) {
+      const newBox: BlurBox = {
+        id: `box-${Date.now()}`,
+        x: Math.round(currentBox.x * scaleX),
+        y: Math.round(currentBox.y * scaleY),
+        width: Math.round(currentBox.width * scaleX),
+        height: Math.round(currentBox.height * scaleY),
+      };
+      setBlurBoxes([...blurBoxes, newBox]);
+    }
+
+    setIsDrawing(false);
+    setStartPos(null);
+    setCurrentBox(null);
+  };
+
+  const handleRemoveBox = (id: string) => {
+    setBlurBoxes(blurBoxes.filter((b) => b.id !== id));
   };
 
   const handleDownload = () => {
-    if (!blurred) return;
-
+    if (!processedUrl || !file) return;
     const link = document.createElement("a");
-    link.href = blurred;
-    link.download = `blurred-${file?.name || "image.png"}`;
+    link.href = processedUrl;
+    link.download = `${file.name.replace(/\.[^/.]+$/, "")}-blurred.png`;
     link.click();
   };
 
   const handleReset = () => {
     setFile(null);
-    setPreview("");
-    setBlurred("");
-    setIntensity(15);
+    setImageUrl(null);
+    setProcessedUrl(null);
+    setBlurBoxes([]);
     setError("");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
   };
 
-  return (
-    <>
-      <Header />
-      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8 md:py-12 px-4">
-        <div className="max-w-4xl mx-auto space-y-8">
-          {/* Header */}
-          <div className="text-center space-y-2">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900">Face Blur</h1>
-            <p className="text-gray-600">Blur faces in photos for privacy</p>
+  const inputSection = (
+    <div className="space-y-6">
+      {!imageUrl ? (
+        <div
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => {
+            e.preventDefault();
+            if (e.dataTransfer.files?.[0]) {
+              handleFileSelect(e.dataTransfer.files[0]);
+            }
+          }}
+          className="border-2 border-dashed border-purple-200 dark:border-purple-900/50 hover:border-purple-500 rounded-2xl p-8 sm:p-12 text-center transition-all bg-purple-50/20 cursor-pointer"
+          onClick={() => document.getElementById("face-blur-input")?.click()}
+        >
+          <input
+            id="face-blur-input"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              if (e.target.files?.[0]) {
+                handleFileSelect(e.target.files[0]);
+              }
+            }}
+          />
+          <div className="w-16 h-16 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center mx-auto mb-4">
+            <EyeOff className="w-8 h-8" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+            Upload Image to Blur Faces or Sensitive Details
+          </h3>
+          <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mx-auto">
+            Click & drag to blur faces, license plates, badges, or private info. 100% private.
+          </p>
+          <Button className="mt-4 bg-purple-600 hover:bg-purple-700 text-white font-medium px-6">
+            Select Photo
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              Click & Drag On Photo Below to Add Face Blur Zones
+            </Label>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-primary">{blurBoxes.length} zone(s) blurred</span>
+              <Button size="sm" variant="ghost" onClick={handleReset} className="text-xs text-muted-foreground hover:text-red-600">
+                Change Photo
+              </Button>
+            </div>
           </div>
 
-          {/* Features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="border-gray-200">
-              <CardContent className="pt-6">
-                <div className="text-2xl mb-2">🔒</div>
-                <h4 className="font-semibold text-gray-900 mb-1">Privacy Protection</h4>
-                <p className="text-sm text-gray-600">Protect identities</p>
-              </CardContent>
-            </Card>
-            <Card className="border-gray-200">
-              <CardContent className="pt-6">
-                <div className="text-2xl mb-2">🎚️</div>
-                <h4 className="font-semibold text-gray-900 mb-1">Adjustable Intensity</h4>
-                <p className="text-sm text-gray-600">Control blur strength</p>
-              </CardContent>
-            </Card>
-            <Card className="border-gray-200">
-              <CardContent className="pt-6">
-                <div className="text-2xl mb-2">⚡</div>
-                <h4 className="font-semibold text-gray-900 mb-1">Quick Processing</h4>
-                <p className="text-sm text-gray-600">Instant results</p>
-              </CardContent>
-            </Card>
-          </div>
+          {/* Interactive Photo Canvas Area with Drag-to-Box */}
+          <div className="relative border border-slate-300 dark:border-gray-700 rounded-xl overflow-hidden bg-slate-900 flex items-center justify-center select-none">
+            <div
+              className="relative cursor-crosshair inline-block max-w-full"
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+            >
+              {processedUrl && (
+                <img
+                  src={processedUrl}
+                  alt="Processed"
+                  className="max-h-[500px] w-auto object-contain block pointer-events-none"
+                />
+              )}
 
-          {/* Info Alert */}
-          <Card className="border-amber-200 bg-amber-50">
-            <CardContent className="pt-6">
-              <div className="flex gap-3">
-                <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-amber-900 mb-1">Note</p>
-                  <p className="text-sm text-amber-800">
-                    This tool applies a general blur effect. For precise face detection, consider using specialized face detection libraries.
-                  </p>
+              {/* In-progress Drag Box */}
+              {isDrawing && currentBox && (
+                <div
+                  className="absolute border-2 border-primary bg-primary/25 rounded pointer-events-none"
+                  style={{
+                    left: `${currentBox.x}px`,
+                    top: `${currentBox.y}px`,
+                    width: `${currentBox.width}px`,
+                    height: `${currentBox.height}px`,
+                  }}
+                />
+              )}
+            </div>
+          </div>
+          {blurBoxes.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {blurBoxes.map((b, i) => (
+                <Button key={b.id} size="sm" variant="outline" onClick={() => handleRemoveBox(b.id)} className="text-xs h-7">
+                  <Trash2 className="w-3 h-3 mr-1" /> Remove zone {i + 1}
+                </Button>
+              ))}
+            </div>
+          )}
+          <p className="text-xs text-muted-foreground text-center">
+            Drag a box over any face or sensitive detail to blur it immediately.
+          </p>
+
+          {/* Controls Bar */}
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-gray-800/50 border border-slate-200 dark:border-gray-700 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-center">
+              {/* Blur Intensity Slider */}
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs">
+                  <span className="font-medium text-gray-700 dark:text-gray-300">Blur Intensity</span>
+                  <span className="font-bold text-primary">{blurIntensity}px</span>
+                </div>
+                <Slider
+                  min={5}
+                  max={50}
+                  step={1}
+                  value={[blurIntensity]}
+                  onValueChange={(val) => setBlurIntensity(val[0])}
+                />
+              </div>
+
+              {/* Blur Style Mode */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-gray-700 dark:text-gray-300">Blur Style</Label>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={blurType === "blur" ? "default" : "outline"}
+                    onClick={() => setBlurType("blur")}
+                    className="text-xs flex-1"
+                  >
+                    Smooth Gaussian
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={blurType === "pixelate" ? "default" : "outline"}
+                    onClick={() => setBlurType("pixelate")}
+                    className="text-xs flex-1"
+                  >
+                    Censor Pixelate
+                  </Button>
                 </div>
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Main Content */}
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Input Section */}
-            <Card className="border-gray-200 shadow-sm">
-              <CardHeader>
-                <CardTitle>Upload Image</CardTitle>
-                <CardDescription>Select an image to blur</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <label htmlFor="file-input-faceblur" className="cursor-pointer block">
-                  <div
-                    className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 transition"
-                  >
-                    <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
-                    <p className="text-xs text-gray-500 mt-1">PNG, JPG, WebP up to 50MB</p>
-                  </div>
-                  <input
-                    id="file-input-faceblur"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileSelect}
-                    className="hidden"
-                  />
-                </label>
+              {/* Clear Zones */}
+              <div className="flex items-end">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setBlurBoxes([])}
+                  disabled={blurBoxes.length === 0}
+                  className="w-full text-xs text-red-600 border-red-200 hover:bg-red-50"
+                >
+                  <Trash2 className="w-3.5 h-3.5 mr-1" />
+                  Clear All Blur Zones
+                </Button>
+              </div>
+            </div>
 
-                {preview && (
-                  <div className="space-y-3">
-                    <div>
-                      <label className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-700">Blur Intensity</span>
-                        <span className="text-sm font-bold text-blue-600">{intensity}px</span>
-                      </label>
-                      <Slider
-                        value={[intensity]}
-                        onValueChange={(val) => setIntensity(val[0])}
-                        min={5}
-                        max={50}
-                        step={1}
-                      />
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button
-                        onClick={blurImage}
-                        disabled={processing}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-                      >
-                        {processing ? "Processing..." : "Blur Image"}
-                      </Button>
-                      <Button
-                        onClick={handleReset}
-                        variant="outline"
-                        className="flex-1"
-                      >
-                        <RefreshCw className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {!preview && (
-                  <div className="text-center py-4">
-                    <p className="text-sm text-gray-500">No image selected</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Output Section */}
-            {(preview || blurred) && (
-              <Card className="border-gray-200 shadow-sm">
-                <CardHeader>
-                  <CardTitle>Preview</CardTitle>
-                  <CardDescription>Blurred image preview</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
-                    <img
-                      src={blurred || preview}
-                      alt="preview"
-                      className="max-w-full max-h-full object-contain"
-                    />
-                  </div>
-
-                  {blurred && (
-                    <Button
-                      onClick={handleDownload}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white"
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Download Blurred Image
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            )}
+            <div className="flex justify-end pt-2 border-t border-slate-200 dark:border-gray-700">
+              <Button
+                onClick={handleDownload}
+                disabled={!processedUrl}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs px-6 py-2"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download Protected Image
+              </Button>
+            </div>
           </div>
-
-          {/* Error Display */}
-          {error && (
-            <Card className="border-red-200 bg-red-50">
-              <CardContent className="pt-6">
-                <p className="text-sm text-red-700">{error}</p>
-              </CardContent>
-            </Card>
-          )}
         </div>
-      </main>
-      <Footer />
-    </>
+      )}
+    </div>
   );
-};
 
-export default FaceBlur;
+  return (
+    <ProfessionalToolLayout
+      title="Photo & Face Blur (Privacy Censor)"
+      description="Select and blur faces, identity cards, license plates, and sensitive details on photos. 100% private in-browser editor."
+      category="Image Tools"
+      inputSection={inputSection}
+      error={error}
+      resetButton={imageUrl ? { label: "Upload Different Photo", onClick: handleReset } : undefined}
+      howToUse={[
+        "Upload the photo you want to censor or protect.",
+        "Click and drag directly on the photo over any face or sensitive zone.",
+        "Select your preferred censor style (Smooth Gaussian Blur or Mosaic Pixelate).",
+        "Fine-tune the Blur Intensity slider and click 'Download Protected Image'."
+      ]}
+      aboutText="Photo & Face Blur provides precise privacy censoring for photos before sharing them online. By allowing you to draw custom blur boxes directly over faces, badges, documents, or license plates, your private identifiable information is obscured with zero risk of unblurring. All pixel filtering runs locally inside your browser canvas."
+      faqs={[
+        {
+          question: "Can anyone reverse or unblur the blurred faces?",
+          answer: "No. The blur and pixelation filters permanently blend and rewrite the underlying pixel color values onto the canvas, making mathematical reconstruction impossible."
+        },
+        {
+          question: "Can I blur multiple faces on a single photo?",
+          answer: "Yes! Simply click and drag over each face or region you wish to protect. You can add as many blur zones as needed."
+        },
+        {
+          question: "Does my photo get stored online?",
+          answer: "No. The entire photo editing and censoring process runs in your browser memory."
+        }
+      ]}
+      features={[
+        {
+          icon: "🎯",
+          title: "Selective Privacy Zones",
+          description: "Click & drag precisely over faces or sensitive regions."
+        },
+        {
+          icon: "🔒",
+          title: "Irreversible Censoring",
+          description: "Pixels are permanently blended for true anonymity."
+        },
+        {
+          icon: "🛡️",
+          title: "Zero Cloud Upload",
+          description: "All processing takes place in your local browser sandbox."
+        }
+      ]}
+    />
+  );
+}

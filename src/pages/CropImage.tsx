@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import ToolExtras from "@/components/ToolExtras";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Download, Upload, RefreshCw } from "lucide-react";
 
 const CropImage = () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
   const [cropped, setCropped] = useState<string>("");
@@ -211,6 +213,7 @@ const CropImage = () => {
                   </div>
                   <input
                     id="file-input-crop"
+                ref={fileInputRef}
                     type="file"
                     accept="image/*"
                     onChange={handleFileSelect}
@@ -370,6 +373,7 @@ const CropImage = () => {
             </Card>
           )}
         </div>
+      <ToolExtras />
       </main>
       <Footer />
     </>

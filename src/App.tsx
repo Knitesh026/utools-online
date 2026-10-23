@@ -28,6 +28,7 @@ import GSTCalculator from "./pages/GSTCalculator";
 import NameGenerator from "./pages/NameGenerator";
 import ImageToPDF from "./pages/ImageToPDF";
 import NotFound from "./pages/NotFound";
+import SitemapPage from "./pages/SitemapPage";
 // Image Tools
 import ImageCompressor from "./pages/ImageCompressor";
 import ImageResizer from "./pages/ImageResizer";
@@ -48,17 +49,22 @@ import MortgageCalculator from "./pages/MortgageCalculator";
 import PPPCalculator from "./pages/PPPCalculator";
 import EMICalculatorAdvanced from "./pages/EMICalculatorAdvanced";
 // New Tools
-import GIFMaker from "./pages/GIFMaker";
-import APNGMaker from "./pages/APNGMaker";
 import HistogramGenerator from "./pages/HistogramGenerator";
 import CompressPDF from "./pages/CompressPDF";
 import MergePDF from "./pages/MergePDF";
-import PDFLockUnlock from "./pages/PDFLockUnlock";
 import WordToPDF from "./pages/WordToPDF";
 import PDFToWord from "./pages/PDFToWord";
 import DocumentsConverter from "./pages/DocumentsConverter";
 import ESignPDF from "./pages/ESignPDF";
 import FaceBlur from "./pages/FaceBlur";
+import Contact from "./pages/Contact";
+import ErrorBoundary from "./components/ErrorBoundary";
+import CookiePolicy from "./pages/CookiePolicy";
+import Disclaimer from "./pages/Disclaimer";
+import AdvertisingDisclosure from "./pages/AdvertisingDisclosure";
+import Accessibility from "./pages/Accessibility";
+import Guides from "./pages/Guides";
+import GuideDetail from "./pages/GuideDetail";
 
 const queryClient = new QueryClient();
 
@@ -69,14 +75,26 @@ const App = () => {
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/tools" element={<Tools />} />
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/tools" element={<Tools />} />
+            <Route path="/category/:category" element={<Tools />} />
+            <Route path="/guides" element={<Guides />} />
+            <Route path="/guides/:slug" element={<GuideDetail />} />
+            <Route path="/sitemap" element={<SitemapPage />} />
           <Route path="/faq" element={<FAQ />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-of-service" element={<TermsOfService />} />
-          <Route path="/remove-background" element={<RemoveBackground />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/cookie-policy" element={<CookiePolicy />} />
+            <Route path="/disclaimer" element={<Disclaimer />} />
+            <Route path="/advertising-disclosure" element={<AdvertisingDisclosure />} />
+            <Route path="/accessibility" element={<Accessibility />} />
+            <Route path="/remove-background" element={<RemoveBackground />} />
           <Route path="/word-counter" element={<WordCounter />} />
           <Route path="/text-reverser" element={<TextReverser />} />
           <Route path="/age-calculator" element={<AgeCalculator />} />
@@ -100,7 +118,6 @@ const App = () => {
           <Route path="/image-compressor" element={<ImageCompressor />} />
           <Route path="/image-resizer" element={<ImageResizer />} />
           <Route path="/image-to-base64" element={<ImageToBase64 />} />
-          <Route path="/base64-to-image" element={<ImageToBase64 />} />
           <Route path="/image-pixelator" element={<ImagePixelator />} />
           <Route path="/image-sharpener" element={<ImageSharpener />} />
           <Route path="/image-converter" element={<ImageConverter />} />
@@ -123,15 +140,12 @@ const App = () => {
           <Route path="/emi-calculator-advanced" element={<EMICalculatorAdvanced />} />
           
           {/* GIF/Image Animation Tools */}
-          <Route path="/gif-maker" element={<GIFMaker />} />
-          <Route path="/apng-maker" element={<APNGMaker />} />
           <Route path="/histogram-generator" element={<HistogramGenerator />} />
           <Route path="/face-blur" element={<FaceBlur />} />
           
           {/* PDF Tools */}
           <Route path="/compress-pdf" element={<CompressPDF />} />
           <Route path="/merge-pdf" element={<MergePDF />} />
-          <Route path="/pdf-lock-unlock" element={<PDFLockUnlock />} />
           <Route path="/word-to-pdf" element={<WordToPDF />} />
           <Route path="/pdf-to-word" element={<PDFToWord />} />
           <Route path="/esign-pdf" element={<ESignPDF />} />
@@ -142,6 +156,7 @@ const App = () => {
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </ErrorBoundary>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

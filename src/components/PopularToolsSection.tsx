@@ -1,171 +1,100 @@
-import { useState } from "react";
-import { toolCategories } from "@/data/tools";
-import PopularToolCard from "@/components/PopularToolCard";
-import CategoryToolsGrid from "@/components/CategoryToolsGrid";
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import ToolCard from "@/components/ToolCard";
-import { Button } from "@/components/ui/button";
-import { 
-  FileText, 
-  Mountain, 
-  FileOutput,
-  PenTool,
-  Files,
-  Eraser,
-  QrCode,
-  Image
-} from "lucide-react";
+import CategoryToolsGrid from "@/components/CategoryToolsGrid";
+import { toolCategories } from "@/data/tools";
 
-const PopularToolsSection = () => {
-  const [activeCategory, setActiveCategory] = useState<string>("All Tools");
+/** Titles looked up in data/tools.ts so icon, description and route always match the catalog. */
+const popularTitles: Array<{ title: string; badge?: string }> = [
+  { title: "Merge PDF" },
+  { title: "Compress PDF" },
+  { title: "Background Remover" },
+  { title: "Image Compressor" },
+  { title: "QR Code Generator" },
+  { title: "EMI Calculator" },
+  { title: "Word Counter" },
+  { title: "Password Generator" },
+  { title: "PDF to Word" },
+];
 
-  const mainTools = [
-    { title: "PDF Processor", icon: FileText, to: "/tools?category=Document%20Tools", description: "Merge, split, compress and convert PDF files" },
-    { title: "Image Editor", icon: Mountain, to: "/tools?category=Image%20Tools", description: "Edit and enhance your images with powerful tools" },
-    { title: "Video Converter", icon: FileOutput, to: "/tools", description: "Convert videos between different formats" },
-    { title: "AI Content Tools", icon: PenTool, to: "/tools", description: "Generate and enhance content with AI" },
-  ];
+const POPULAR = "Featured";
 
-  const popularTools = [
-    { title: "Merge PDF", icon: Files, to: "/merge-pdf", description: "Merge 2 or more PDF files into a single PDF file" },
-    { title: "MP4 to MP3", icon: Mountain, to: "/mp4-to-mp3", description: "Extract audio from MP4 videos" },
-    { title: "Remove Background", icon: Eraser, to: "/remove-background", description: "Remove background from images automatically" },
-    { title: "QR Code Maker", icon: QrCode, to: "/qr-code", description: "Generate QR codes for URLs" },
-    { title: "Image Converter", icon: Image, to: "/image-converter", description: "Convert between image formats" },
-    { title: "PDF to Word", icon: FileText, to: "/pdf-to-word", description: "Convert a PDF to Word Document" },
-  ];
+export function PopularToolsSection() {
+  const [active, setActive] = useState<string>(POPULAR);
 
-  // Get all unique categories
-  const categories = [
-    "All Tools",
-    ...toolCategories.map((cat) => cat.name),
-  ];
+  const popular = useMemo(
+    () =>
+      popularTitles
+        .map(({ title, badge }) => {
+          for (const cat of toolCategories) {
+            const tool = cat.tools.find((t) => t.title === title);
+            if (tool) return { ...tool, category: cat.name, badge };
+          }
+          return null;
+        })
+        .filter((t): t is NonNullable<typeof t> => t !== null),
+    []
+  );
 
-  // Filter tools based on selected category
-  const filteredTools =
-    activeCategory === "All Tools"
-      ? toolCategories.flatMap((cat) => cat.tools).slice(0, 12)
-      : toolCategories
-          .find((cat) => cat.name === activeCategory)
-          ?.tools.slice(0, 12) || [];
+  const activeCategory = toolCategories.find((c) => c.name === active);
+  const tabs = [POPULAR, ...toolCategories.map((c) => c.name)];
 
   return (
-    <section className="relative py-12 sm:py-16 bg-gradient-to-br from-blue-50 via-white to-blue-50 overflow-hidden">
-      {/* Animated gradient blobs */}
-      <div className="absolute top-[-100px] right-[-100px] w-[350px] h-[350px] bg-blue-600/5 rounded-full z-0"></div>
-      <div className="absolute bottom-[-100px] left-[-100px] w-[400px] h-[400px] bg-cyan-500/5 rounded-full z-0"></div>
-      
-      <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        {/* Header */}
-        <div className="text-center mb-6 sm:mb-8">
-          <h2 className="text-xl sm:text-4xl font-bold text-foreground mb-1 sm:mb-3">
-            Our Most Popular Tools
-          </h2>
-          <p className="text-xs sm:text-base text-muted-foreground">
-            We present the best of the best. All free, no catch
-          </p>
+    <section className="py-10 sm:py-14">
+      <div className="container mx-auto px-4 sm:px-6">
+        <h2 className="font-display font-extrabold text-3xl sm:text-5xl tracking-tighter leading-none mb-6">
+          Start with these
+        </h2>
+
+        <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-5 no-scrollbar" role="tablist" aria-label="Tool categories">
+          {tabs.map((name) => {
+            const isActive = active === name;
+            return (
+              <button
+                key={name}
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setActive(name)}
+                className={`px-4 py-2 rounded-full border-2 border-border font-sans font-extrabold text-sm whitespace-nowrap transition-colors ${
+                  isActive ? "bg-foreground text-background" : "bg-white hover:bg-yellow"
+                }`}
+              >
+                {name.replace(" Tools", "")}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Filter Tabs and Tools Container */}
-        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-8">
-          {/* Category Tabs - Horizontal on mobile, Vertical on desktop */}
-          <div className="w-full sm:w-32 lg:w-40 flex-shrink-0">
-            <div className="flex flex-row sm:flex-col gap-1.5 sm:gap-2 overflow-x-auto pb-2 sm:pb-0 sticky top-24">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setActiveCategory(category)}
-                  className={`px-2 sm:px-4 py-1.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all text-center sm:text-left whitespace-nowrap sm:whitespace-normal flex-shrink-0 sm:flex-shrink-1 ${
-                    activeCategory === category
-                      ? "bg-primary text-white shadow-md"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
-                >
-                  {category === "All Tools" ? "All Tools" : category.replace(" Tools", "")}
-                </button>
-              ))}
-            </div>
+        {active === POPULAR ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            {popular.map((tool) => (
+              <ToolCard
+                key={tool.title}
+                title={tool.title}
+                description={tool.description}
+                icon={tool.icon}
+                to={tool.to}
+                category={tool.category}
+                badge={tool.badge}
+              />
+            ))}
           </div>
+        ) : (
+          activeCategory && (
+            <CategoryToolsGrid categoryName={activeCategory.name} tools={activeCategory.tools} />
+          )
+        )}
 
-          {/* Tools Grid - Right Side */}
-          <div className="flex-1">
-            {/* Category-Specific Section */}
-            {activeCategory !== "All Tools" && (
-              <div className="mb-12 sm:mb-16">
-                {toolCategories.map((category) =>
-                  category.name === activeCategory ? (
-                    <CategoryToolsGrid
-                      key={category.name}
-                      categoryName={category.name}
-                      categoryDescription={category.description}
-                      tools={category.tools}
-                      colorTheme={category.colorTheme}
-                    />
-                  ) : null
-                )}
-              </div>
-            )}
-
-            {/* Popular Tools Grid - Show when "All Tools" is selected */}
-            {activeCategory === "All Tools" && (
-              <div className="space-y-4 sm:space-y-6">
-                {/* Featured Tools Section */}
-                <div className="rounded-lg sm:rounded-[0.5rem] p-3 sm:p-4 bg-card" style={{ backgroundColor: '#f6fff8' }}>
-                  <section className="mb-0">
-                    <div className="mb-3 sm:mb-2 pb-0 border-b-0">
-                      <h2 className="text-sm sm:text-lg lg:text-xl font-bold text-foreground mb-1 sm:mb-1 leading-tight">
-                        Featured Tools
-                      </h2>
-                      <p className="text-xs sm:text-xs text-muted-foreground max-w-2xl">
-                        Quick access to our most powerful tools
-                      </p>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3 max-w-6xl">
-                      {mainTools.map((tool, index) => (
-                        <ToolCard
-                          key={tool.title}
-                          title={tool.title}
-                          description={tool.description}
-                          icon={tool.icon}
-                          number={index + 1}
-                          to={tool.to}
-                        />
-                      ))}
-                    </div>
-                  </section>
-                </div>
-
-                {/* Popular Tools Section */}
-                <div className="rounded-lg sm:rounded-[0.5rem] p-3 sm:p-4 bg-card" style={{ backgroundColor: '#edf2fb' }}>
-                  <section className="mb-0">
-                    <div className="mb-3 sm:mb-2 pb-0 border-b-0">
-                      <h2 className="text-sm sm:text-lg lg:text-xl font-bold text-foreground mb-1 sm:mb-1 leading-tight">
-                        Popular Tools
-                      </h2>
-                      <p className="text-xs sm:text-xs text-muted-foreground max-w-2xl">
-                        Most used tools by our community
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-3">
-                      {popularTools.map((tool) => (
-                        <div key={tool.title} className="w-full sm:w-[calc(50%-0.25rem)] lg:w-[calc(33.333%-0.75rem)] xl:w-[calc(25%-0.75rem)]">
-                          <PopularToolCard
-                            title={tool.title}
-                            icon={tool.icon}
-                            to={tool.to}
-                            description={tool.description}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                </div>
-              </div>
-            )}
-          </div>
+        <div className="flex justify-center mt-10">
+          <Link to="/tools" className="btn-blue text-base px-8 py-3.5">
+            <span>View all free tools</span>
+            <ArrowRight className="w-5 h-5 ml-2" />
+          </Link>
         </div>
       </div>
     </section>
   );
-};
+}
 
 export default PopularToolsSection;
