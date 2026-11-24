@@ -355,50 +355,6 @@ export const imageContent: Record<string, ToolContent> = {
       { question: "Is my file uploaded?", answer: "No. Decoding, drawing and encoding all happen in your browser. The result is created as a local object and downloaded from memory." },
     ],
   },
-  "/color-picker": {
-    route: "/color-picker",
-    name: "HTML Color Codes",
-    intro: [
-      "This page is a reference palette for web colours. It lists 30 named colours such as Coral, Teal and Lavender, lets you filter them by typing part of a name, and shows the selected colour as a large swatch together with its HEX code and its RGB value. Each code has a copy button so it can go straight into your stylesheet.",
-      "Below the swatch you get a row of six shades that blend the colour toward white, which is handy for hover states, backgrounds and borders that should match a base colour. It is aimed at web developers, designers and students who want a quick, readable answer to the question of which code produces which colour.",
-    ],
-    howItWorks: [
-      "Screens mix light from three sources: red, green and blue. A colour is described by how bright each source is on a scale from 0 to 255. A HEX code writes those three numbers in base 16, two digits each, after a hash sign, so #FF7F50 means red 255 (FF), green 127 (7F) and blue 80 (50). The RGB form writes the same three numbers in decimal as rgb(255, 127, 80). Both describe exactly the same colour, and the page converts between them with a simple text pattern match and base conversion.",
-      "The shade row works by mixing. For each step of 0, 20, 40, 60, 80 and 100 percent, every channel becomes channel x (1 - f) + 255 x f, where f is the step. This moves the colour in a straight line toward white, giving lighter tints; the first swatch is the colour itself and the last is white. Clicking a shade selects it and copies its HEX code. The list and the maths are stored in the page, so nothing is requested from a server.",
-    ],
-    steps: [
-      "Scroll the colour list in the Color Picker panel, or type part of a name into Search Colors, for example 'tur' to find Turquoise.",
-      "Click a colour entry. The large swatch on the right updates, and the HEX and RGB boxes show its codes.",
-      "Press the small copy icon beside HEX Code or RGB Code. A 'Copied!' note appears briefly to confirm.",
-      "Look at the Color Shades row. Click any swatch to make it the selected colour; its HEX code is copied at the same time.",
-      "Use the Copy Color button for the current HEX code, or Reset to return to the default blue (#3B82F6) and clear the search.",
-    ],
-    example: {
-      title: "Illustrative example: building tints of Coral",
-      text: "Coral is #FF7F50, which is rgb(255, 127, 80). At the 40 percent step the red stays 255, green becomes 127 x 0.6 + 255 x 0.4 = 178, and blue becomes 80 x 0.6 + 255 x 0.4 = 150. The tint is rgb(255, 178, 150), written #FFB296. The 20 percent tint is about #FF9973 and the 60 percent tint is about #FFCCB9. These are calculated values that you can check by hand.",
-    },
-    useCases: [
-      { title: "Writing CSS quickly", text: "Instead of guessing a code, search for a colour name, copy the HEX value and paste it into a background-color or color declaration." },
-      { title: "Making hover and disabled states", text: "A lighter tint of the brand colour usually works well for hover backgrounds, subtle borders and disabled buttons, and the shade row gives you several options." },
-      { title: "Teaching colour codes", text: "Students can see directly how changing the three channel values in the HEX and RGB forms relates to the visible swatch." },
-      { title: "Choosing between similar names", text: "Seeing Salmon, Coral and Pink side by side helps you decide which named colour is closest to what a client described." },
-    ],
-    tips: [
-      "Check contrast before using a light tint behind text. Pale shades near white fail accessibility guidelines for body text, so pair them with a dark text colour.",
-      "Green here is #008000, the CSS keyword colour, which is much darker than Lime (#00FF00). Pick Lime when you want the bright pure green.",
-      "Use HEX for brevity in stylesheets and rgb() when you plan to add transparency later with rgba or the slash syntax.",
-      "Write codes in a consistent case. HEX is case-insensitive, but a team style of all upper or all lower case makes searching a codebase easier.",
-      "Select the closest named colour first, then use the shades for variations, so the family stays visually related.",
-    ],
-    limitations: "This is a fixed list of 30 named colours, not a full CSS palette and not a free colour picker. There is no eyedropper, no on-screen colour wheel, no HSL, CMYK or alpha output, and you cannot type your own HEX code to see its RGB value. Shades only blend toward white; darker shades and complementary colours are not generated.",
-    faqs: [
-      { question: "What does a HEX colour code mean?", answer: "It is a hash sign followed by six hexadecimal digits. The first two give the red level, the next two green and the last two blue, each from 00 (none) to FF (full). For example #00FF00 has no red, full green and no blue, which looks bright green." },
-      { question: "What is the difference between HEX and RGB?", answer: "They are two notations for the same colour. HEX uses base 16 digits, RGB uses decimal numbers from 0 to 255. #3B82F6 and rgb(59, 130, 246) are identical on screen. CSS accepts either, so pick whichever is easier to read and edit." },
-      { question: "Why is Green darker than Lime?", answer: "In CSS the keyword green is #008000, a mid-dark green, while lime is the full-intensity #00FF00. This page follows the same naming, so Green and Lime are two separate entries with different codes." },
-      { question: "How are the shades calculated?", answer: "Each channel is mixed linearly with white at 0, 20, 40, 60, 80 and 100 percent. This gives a lighter tint of the same hue family, ending at pure white. It does not create darker versions of the colour." },
-      { question: "Can I enter my own colour code?", answer: "Not on this page. You can search by name and choose from the 30 listed colours, then click a shade to refine it. If you need to convert an arbitrary code, a dedicated converter is a better fit." },
-    ],
-  },
   "/image-to-base64": {
     route: "/image-to-base64",
     name: "Image to Base64",

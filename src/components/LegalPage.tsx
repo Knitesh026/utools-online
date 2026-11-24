@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOPage from "@/components/SEOPage";
+import { ShieldCheck, Calendar, ChevronRight } from "lucide-react";
 
 export interface LegalSection {
   heading: string;
@@ -34,34 +35,79 @@ export const LegalPage = ({ title, description, path, updated, intro, sections }
   >
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Header />
-      <section className="pt-28 pb-6 sm:pt-32 px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto space-y-3">
-          <h1 className="font-display font-extrabold text-4xl sm:text-5xl tracking-tighter">{title}</h1>
-          <p className="font-sans font-bold text-sm text-muted-foreground">Last updated: {updated}</p>
-          <p className="font-sans font-semibold text-lg leading-relaxed text-foreground/85">{intro}</p>
+
+      <section className="relative pt-24 pb-8 sm:pt-28 sm:pb-10 px-4 sm:px-6 border-b border-slate-200/70 bg-white/60 overflow-hidden">
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-studio-grid [mask-image:radial-gradient(ellipse_80%_80%_at_50%_0%,#000_40%,transparent_100%)] pointer-events-none"
+        />
+        <div className="max-w-3xl mx-auto relative z-10 space-y-3">
+          <nav
+            aria-label="Breadcrumb"
+            className="flex items-center gap-1.5 font-sans font-semibold text-xs text-slate-500"
+          >
+            <Link to="/" className="hover:text-slate-900">
+              Home
+            </Link>
+            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+            <span className="text-slate-900 font-bold">{title}</span>
+          </nav>
+
+          <h1 className="font-display font-extrabold text-3xl sm:text-5xl tracking-tight text-slate-950">
+            {title}
+          </h1>
+
+          <div className="flex flex-wrap items-center gap-3 pt-1">
+            <span className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-slate-600 bg-slate-100 border border-slate-200/80 px-3 py-1 rounded-full">
+              <Calendar className="w-3.5 h-3.5 text-primary" />
+              Last updated: {updated}
+            </span>
+            <span className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-full">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Transparent Platform Policy
+            </span>
+          </div>
+
+          <p className="font-sans font-medium text-base sm:text-lg leading-relaxed text-slate-600 pt-2">
+            {intro}
+          </p>
         </div>
       </section>
 
-      <main className="flex-1 px-4 sm:px-6 pb-14">
-        <div className="max-w-3xl mx-auto space-y-8">
+      <main className="flex-1 px-4 sm:px-6 py-10 sm:py-12">
+        <div className="max-w-3xl mx-auto space-y-6">
           {sections.map((s) => (
-            <section key={s.heading} className="space-y-3">
-              <h2 className="font-display font-extrabold text-2xl tracking-tight">{s.heading}</h2>
+            <section
+              key={s.heading}
+              className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-7 shadow-studio space-y-3"
+            >
+              <h2 className="font-display font-bold text-xl sm:text-2xl tracking-tight text-slate-950">
+                {s.heading}
+              </h2>
               {s.paragraphs?.map((p, i) => (
-                <p key={i} className="font-sans font-semibold text-base leading-relaxed text-foreground/85">{p}</p>
+                <p key={i} className="font-sans font-medium text-sm sm:text-base leading-relaxed text-slate-600">
+                  {p}
+                </p>
               ))}
               {s.bullets && (
-                <ul className="list-disc pl-5 space-y-1.5 marker:text-primary">
+                <ul className="list-disc pl-5 space-y-2 marker:text-primary">
                   {s.bullets.map((b, i) => (
-                    <li key={i} className="font-sans font-semibold text-base leading-relaxed text-foreground/85">{b}</li>
+                    <li key={i} className="font-sans font-medium text-sm sm:text-base leading-relaxed text-slate-600">
+                      {b}
+                    </li>
                   ))}
                 </ul>
               )}
               {s.links && (
-                <ul className="space-y-1">
+                <ul className="space-y-1.5 pt-1">
                   {s.links.map((l) => (
                     <li key={l.href}>
-                      <a href={l.href} target="_blank" rel="noopener noreferrer" className="font-sans font-bold text-base text-secondary underline break-words">
+                      <a
+                        href={l.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-sans font-semibold text-sm sm:text-base text-secondary underline underline-offset-2 break-words"
+                      >
                         {l.label}
                       </a>
                     </li>
@@ -70,11 +116,25 @@ export const LegalPage = ({ title, description, path, updated, intro, sections }
               )}
             </section>
           ))}
-          <p className="font-sans font-bold text-sm text-muted-foreground border-t-2 border-border/20 pt-4">
-            Questions about this page? <Link to="/contact" className="underline text-secondary">Contact us</Link> or see our{" "}
-            <Link to="/privacy-policy" className="underline text-secondary">Privacy Policy</Link>,{" "}
-            <Link to="/cookie-policy" className="underline text-secondary">Cookie Policy</Link> and{" "}
-            <Link to="/advertising-disclosure" className="underline text-secondary">Advertising Disclosure</Link>.
+
+          <p className="font-sans font-medium text-sm text-slate-500 bg-slate-100/80 border border-slate-200/80 rounded-2xl p-5">
+            Questions about this page?{" "}
+            <Link to="/contact" className="underline font-semibold text-secondary">
+              Contact us
+            </Link>{" "}
+            or see our{" "}
+            <Link to="/privacy-policy" className="underline font-semibold text-secondary">
+              Privacy Policy
+            </Link>
+            ,{" "}
+            <Link to="/cookie-policy" className="underline font-semibold text-secondary">
+              Cookie Policy
+            </Link>{" "}
+            and{" "}
+            <Link to="/advertising-disclosure" className="underline font-semibold text-secondary">
+              Advertising Disclosure
+            </Link>
+            .
           </p>
         </div>
       </main>

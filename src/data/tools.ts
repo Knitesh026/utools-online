@@ -50,7 +50,6 @@ export const toolCategories: ToolCategory[] = [
       { title: "Crop Image", icon: Crop, to: "/crop-image", description: "Crop images to any size" },
       { title: "Image Resizer", icon: Maximize2, to: "/image-resizer", description: "Resize images easily" },
       { title: "Image Converter", icon: Layers, to: "/image-converter", description: "Convert image formats" },
-      { title: "Image Color Picker", icon: Palette, to: "/color-picker", description: "Pick colors from images" },
       { title: "Image to Base64", icon: Copy, to: "/image-to-base64", description: "Convert image to Base64" },
       { title: "Image Pixelator", icon: Image, to: "/image-pixelator", description: "Pixelate images" },
       { title: "Image Histogram Generator", icon: TrendingUp, to: "/histogram-generator", description: "Generate image histogram" },
@@ -101,7 +100,6 @@ export const toolCategories: ToolCategory[] = [
     name: "Color Tools",
     description: "Browse our top collection of free online Color tools",
     tools: [
-      { title: "Image Color Picker", icon: Palette, to: "/color-picker", description: "Pick colors from images" },
       { title: "HTML Color Codes", icon: Palette, to: "/html-color-codes", description: "Browse HTML color codes" },
       { title: "HEX to RGB Converter", icon: Palette, to: "/hex-to-rgb", description: "Convert HEX to RGB" },
       { title: "Gradient Generator", icon: Palette, to: "/gradient-generator", description: "Create color gradients" },

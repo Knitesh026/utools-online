@@ -8,7 +8,7 @@ import { ReviewsAndWhySection } from "@/components/ReviewsAndWhySection";
 import AdUnit from "@/components/AdUnit";
 import SEOPage from "@/components/SEOPage";
 import { websiteSchema } from "@/lib/seoHelpers";
-import { ArrowRight, Clock } from "lucide-react";
+import { ArrowRight, Clock, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
 import { allGuides as guidesData } from "@/data/allGuides";
 import {
@@ -37,7 +37,11 @@ const faqs = [
   },
 ];
 
-const guideTints = ["bg-yellow", "bg-pink", "bg-lime"];
+const guideBadges = [
+  "bg-rose-50 text-rose-700 border-rose-200/80",
+  "bg-indigo-50 text-indigo-700 border-indigo-200/80",
+  "bg-emerald-50 text-emerald-700 border-emerald-200/80",
+];
 
 const Index = () => {
   return (
@@ -54,7 +58,6 @@ const Index = () => {
         <main className="flex-1">
           <Hero />
 
-
           <BrowseCategories />
 
           {/* In-content ad */}
@@ -66,49 +69,58 @@ const Index = () => {
           <MetricsBar />
           <ReviewsAndWhySection />
 
-          {/* Guides */}
-          <section className="py-10 sm:py-14">
+          {/* Guides Section */}
+          <section className="py-12 sm:py-16 border-t border-slate-200/70 bg-white/50">
             <div className="container mx-auto px-4 sm:px-6">
-              <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
+              <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
                 <div>
-                  <h2 className="font-display font-extrabold text-3xl sm:text-5xl tracking-tighter leading-none">
+                  <span className="font-mono text-xs font-semibold uppercase tracking-widest text-primary block mb-1.5">
+                    Deep-Dive Documentation
+                  </span>
+                  <h2 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl tracking-tight text-slate-950 leading-none">
                     Guides and how-tos
                   </h2>
-                  <p className="font-sans font-bold text-sm sm:text-base text-muted-foreground mt-2 max-w-xl">
+                  <p className="font-sans font-medium text-sm sm:text-base text-slate-600 mt-2 max-w-xl">
                     Step-by-step explanations, compression benchmarks, and utility workflows.
                   </p>
                 </div>
-                <Link to="/guides" className="btn-white text-sm px-5 py-2">
-                  All guides <ArrowRight className="w-4 h-4 ml-1.5" />
+                <Link to="/guides" className="btn-white text-xs sm:text-sm px-5 py-2.5">
+                  <BookOpen className="w-4 h-4 mr-1.5 text-primary" />
+                  <span>All guides</span>
+                  <ArrowRight className="w-4 h-4 ml-1.5" />
                 </Link>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
                 {guidesData.slice(0, 3).map((guide, i) => (
                   <Link
                     key={guide.slug}
                     to={`/guides/${guide.slug}`}
-                    className={`card-ink ${guideTints[i % guideTints.length]} p-5 sm:p-6 flex flex-col justify-between gap-6 group`}
+                    className="card-ink spotlight-card bg-white p-6 flex flex-col justify-between gap-6 group"
                   >
-                    <div className="space-y-3">
+                    <div className="space-y-3.5 relative z-10">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="font-display font-extrabold text-xs uppercase tracking-wide px-3 py-1 rounded-full bg-foreground text-background">
+                        <span
+                          className={`font-mono font-semibold text-[11px] uppercase tracking-wider px-2.5 py-1 rounded-full border ${
+                            guideBadges[i % guideBadges.length]
+                          }`}
+                        >
                           {guide.category}
                         </span>
-                        <span className="flex items-center gap-1 font-sans font-extrabold text-xs">
+                        <span className="flex items-center gap-1 font-mono font-medium text-xs text-slate-500">
                           <Clock className="w-3.5 h-3.5" />
                           {guide.readTime}
                         </span>
                       </div>
-                      <h3 className="font-display font-extrabold text-xl leading-tight line-clamp-3">
+                      <h3 className="font-display font-bold text-lg sm:text-xl leading-snug text-slate-950 group-hover:text-primary transition-colors line-clamp-2">
                         {guide.title}
                       </h3>
-                      <p className="font-sans font-bold text-sm leading-relaxed line-clamp-3">
+                      <p className="font-sans font-medium text-xs sm:text-sm text-slate-600 leading-relaxed line-clamp-3">
                         {guide.excerpt}
                       </p>
                     </div>
-                    <span className="flex items-center gap-2 font-display font-extrabold text-sm">
-                      Read guide
+                    <span className="relative z-10 flex items-center gap-1.5 font-display font-bold text-xs sm:text-sm text-slate-900 group-hover:text-primary transition-colors pt-2 border-t border-slate-100">
+                      <span>Read guide</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </span>
                   </Link>
@@ -117,23 +129,28 @@ const Index = () => {
             </div>
           </section>
 
-          {/* FAQ */}
-          <section className="py-10 sm:py-14">
+          {/* FAQ Section */}
+          <section className="py-12 sm:py-16">
             <div className="container mx-auto px-4 sm:px-6 max-w-3xl">
-              <h2 className="font-display font-extrabold text-3xl sm:text-5xl tracking-tighter leading-none text-center mb-8">
-                Quick answers
-              </h2>
+              <div className="text-center mb-8">
+                <span className="font-mono text-xs font-semibold uppercase tracking-widest text-primary block mb-1.5">
+                  Platform FAQ
+                </span>
+                <h2 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl tracking-tight text-slate-950 leading-none">
+                  Quick answers
+                </h2>
+              </div>
               <Accordion type="single" collapsible className="w-full space-y-3">
                 {faqs.map((f, i) => (
                   <AccordionItem
                     key={f.q}
                     value={`item-${i}`}
-                    className="bg-white border-2 border-border rounded-3xl px-5 data-[state=open]:bg-accent"
+                    className="bg-white border border-slate-200/90 rounded-2xl px-5 shadow-hard-sm data-[state=open]:border-primary/30 data-[state=open]:shadow-studio transition-all"
                   >
-                    <AccordionTrigger className="font-display font-extrabold text-base sm:text-lg text-left hover:no-underline">
+                    <AccordionTrigger className="font-display font-bold text-base sm:text-lg text-slate-900 text-left hover:no-underline py-4">
                       {f.q}
                     </AccordionTrigger>
-                    <AccordionContent className="font-sans font-bold text-sm sm:text-base text-muted-foreground leading-relaxed">
+                    <AccordionContent className="font-sans font-medium text-sm sm:text-base text-slate-600 leading-relaxed pb-4">
                       {f.a}
                     </AccordionContent>
                   </AccordionItem>

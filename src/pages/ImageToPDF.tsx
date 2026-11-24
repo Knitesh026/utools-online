@@ -1,16 +1,14 @@
-import { useState } from 'react';
-import { Upload, Download, AlertCircle, FileText } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import ToolExtras from '@/components/ToolExtras';
+import { useState } from "react";
+import { Upload, AlertCircle, FileText, Image as ImageIcon, Shield, Zap } from "lucide-react";
+import ProfessionalToolLayout from "@/components/ProfessionalToolLayout";
+import { Button } from "@/components/ui/button";
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function ImageToPDF() {
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -18,7 +16,7 @@ export default function ImageToPDF() {
       const reader = new FileReader();
       reader.onload = (event) => {
         setImages((prev) => [...prev, event.target?.result as string]);
-        setError('');
+        setError("");
       };
       reader.readAsDataURL(file);
     });
@@ -26,22 +24,20 @@ export default function ImageToPDF() {
 
   const generatePDF = async () => {
     if (images.length === 0) {
-      setError('Please upload at least one image');
+      setError("Please upload at least one image");
       return;
     }
 
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
-      // Dynamically load jsPDF and html2canvas
-      const { jsPDF } = await import('jspdf');
-      const html2canvas = (await import('html2canvas')).default;
+      const { jsPDF } = await import("jspdf");
 
       const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
       });
 
       const pageWidth = pdf.internal.pageSize.getWidth();
@@ -59,18 +55,18 @@ export default function ImageToPDF() {
           img.onload = () => {
             const imgWidth = pageWidth - 20;
             const imgHeight = (img.height * imgWidth) / img.width;
-            const yPos = (pageHeight - imgHeight) / 2;
+            const yPos = Math.max(10, (pageHeight - imgHeight) / 2);
 
-            pdf.addImage(images[i], 'JPEG', 10, yPos, imgWidth, imgHeight);
+            pdf.addImage(images[i], "JPEG", 10, yPos, imgWidth, imgHeight);
             resolve(null);
           };
         });
       }
 
-      pdf.save('images-to-pdf.pdf');
+      pdf.save("images-to-pdf.pdf");
       setLoading(false);
     } catch (err) {
-      setError('Failed to generate PDF. Make sure jsPDF is installed.');
+      setError("Failed to generate PDF.");
       setLoading(false);
     }
   };
@@ -81,58 +77,31 @@ export default function ImageToPDF() {
 
   const clearAll = () => {
     setImages([]);
-    setError('');
+    setError("");
   };
 
-  return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <Header />
-      <div className="flex-1 max-w-4xl w-full mx-auto space-y-6 px-4 md:px-8 pt-28 sm:pt-32 pb-10">
-        <div className="text-center space-y-2">
-          <h1 className="font-display font-extrabold text-4xl sm:text-5xl tracking-tighter">Image to PDF</h1>
-          <p className="font-sans font-bold text-muted-foreground">Convert multiple images into a single PDF file</p>
+  const inputSection = (
+    <div>
+      <CardHeader>
+        <CardTitle>Upload Images</CardTitle>
+        <CardDescription>Select one or more images to compile into an A4 PDF document</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center hover:border-primary/50 hover:bg-slate-50 transition">
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="hidden"
+            id="image-upload"
+          />
+          <label htmlFor="image-upload" className="cursor-pointer block">
+            <Upload className="mx-auto h-10 w-10 text-slate-400 mb-2" />
+            <p className="text-sm font-semibold text-slate-700">Click to upload images</p>
+            <p className="text-xs text-slate-500 mt-1">PNG, JPG, WebP up to 50MB each</p>
+          </label>
         </div>
-
-        {/* Upload Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Upload Images</CardTitle>
-            <CardDescription>Select one or more images to convert</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="border-2 border-dashed border-red-300 rounded-lg p-8 text-center hover:border-red-500 transition">
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-                id="image-upload"
-              />
-              <label htmlFor="image-upload" className="cursor-pointer block">
-                <Upload className="mx-auto h-12 w-12 text-red-500 mb-2" />
-                <p className="text-sm text-gray-600">Click to upload images</p>
-                <p className="text-xs text-gray-400">PNG, JPG, GIF up to 50MB each</p>
-              </label>
-            </div>
-
-            {images.length > 0 && (
-              <div className="flex gap-2 justify-center">
-                <Button
-                  onClick={generatePDF}
-                  disabled={loading}
-                  className="bg-red-500 hover:bg-red-600 gap-2 flex-1"
-                >
-                  <FileText className="h-4 w-4" />
-                  {loading ? 'Generating PDF...' : 'Generate PDF'}
-                </Button>
-                <Button onClick={clearAll} variant="outline" className="flex-1">
-                  Clear All
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
 
         {error && (
           <Alert variant="destructive">
@@ -141,44 +110,83 @@ export default function ImageToPDF() {
           </Alert>
         )}
 
-        {/* Image Preview */}
         {images.length > 0 && (
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Selected Images</CardTitle>
-                <CardDescription>{images.length} image(s) selected</CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {images.map((image, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
-                    <div className="flex items-center gap-3 flex-1">
-                      <div className="w-16 h-16 rounded border border-gray-300 overflow-hidden">
-                        <img src={image} alt={`Image ${index + 1}`} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900">Image {index + 1}</p>
-                        <p className="text-xs text-gray-600">Click to view full size</p>
-                      </div>
-                    </div>
-                    <Button
-                      onClick={() => removeImage(index)}
-                      variant="destructive"
-                      size="sm"
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="flex gap-2">
+            <Button onClick={generatePDF} disabled={loading} className="gap-2 flex-1">
+              <FileText className="h-4 w-4" />
+              {loading ? "Generating PDF..." : `Generate PDF (${images.length})`}
+            </Button>
+            <Button onClick={clearAll} variant="outline">
+              Clear All
+            </Button>
+          </div>
         )}
-        <ToolExtras />
-      </div>
-      <Footer />
+      </CardContent>
     </div>
+  );
+
+  const outputSection =
+    images.length > 0 ? (
+      <div>
+        <CardHeader>
+          <CardTitle>Selected Images</CardTitle>
+          <CardDescription>{images.length} image(s) queued for PDF pages</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2.5 max-h-96 overflow-y-auto pr-1">
+            {images.map((image, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200/80"
+              >
+                <div className="flex items-center gap-3 flex-1">
+                  <div className="w-14 h-14 rounded-lg border border-slate-200 overflow-hidden bg-white">
+                    <img
+                      src={image}
+                      alt={`Selected page ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-slate-900">Page {index + 1}</p>
+                    <p className="text-xs text-slate-500">Centered on A4 portrait page</p>
+                  </div>
+                </div>
+                <Button onClick={() => removeImage(index)} variant="destructive" size="sm">
+                  Remove
+                </Button>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </div>
+    ) : undefined;
+
+  return (
+    <ProfessionalToolLayout
+      title="Image to PDF"
+      description="Convert multiple images into a single clean A4 PDF file in your browser"
+      icon={FileText}
+      category="PDF"
+      inputSection={inputSection}
+      outputSection={outputSection}
+      features={[
+        {
+          icon: ImageIcon,
+          title: "Multi-Image Support",
+          description: "Combine JPG, PNG, and WebP photos into sequential PDF pages.",
+        },
+        {
+          icon: Shield,
+          title: "Private Processing",
+          description: "Your photos stay in browser memory and are never uploaded.",
+        },
+        {
+          icon: Zap,
+          title: "Instant A4 Layout",
+          description: "Automatically scales and centers each image onto standard A4 pages.",
+        },
+      ]}
+    />
   );
 }

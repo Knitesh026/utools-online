@@ -4,88 +4,93 @@
 
 @layer base {
   :root {
-    /* uTools "Sticker Pro" — warm paper canvas, black outlines, flat colour planes, logo red (#ec313c) */
-    --background: 43 30% 95%;        /* warm paper #f6f4ef */
-    --foreground: 0 0% 7%;           /* ink #111111 */
+    /* uTools Precision Studio — Alabaster canvas, Obsidian ink, Crimson-Vermilion & Cobalt accents */
+    --background: 210 40% 98%;       /* #F8FAFC crisp studio canvas */
+    --foreground: 222 47% 7%;        /* #0A0F1D deep obsidian ink */
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 7%;
+    --card: 0 0% 100%;               /* #FFFFFF elevated surface */
+    --card-foreground: 222 47% 7%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 7%;
+    --popover-foreground: 222 47% 7%;
 
-    /* Primary - exact uTools logo red */
-    --primary: 356 83% 56%;          /* #ec313c */
+    /* Primary — uTools Signature Crimson-Vermilion */
+    --primary: 354 84% 55%;          /* #ED2B3E */
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - cobalt (text links, secondary buttons) */
-    --secondary: 226 80% 52%;        /* #2352eb */
+    /* Secondary — Interactive Studio Cobalt */
+    --secondary: 221 83% 53%;        /* #2563EB */
     --secondary-foreground: 0 0% 100%;
 
-    /* Sticker planes. Used for category tiles, icon coins and badges only. */
-    --blue: 226 80% 52%;             /* cobalt #2352eb */
-    --pink: 312 100% 78%;            /* #ff90e8 */
-    --yellow: 46 100% 62%;           /* #ffd23f */
-    --lime: 132 53% 74%;             /* #9be5a8 */
-    --sky: 223 100% 74%;             /* #7aa2ff */
-    --peach: 18 100% 77%;            /* #ffb08a */
-    --lilac: 258 100% 89%;           /* #d9c8ff */
+    /* Refined Studio Category Tints (Soft architectural surfaces) */
+    --blue: 221 83% 53%;             /* #2563EB */
+    --pink: 346 100% 95%;            /* Soft rose studio tint */
+    --yellow: 43 96% 92%;            /* Warm amber studio tint */
+    --lime: 152 76% 93%;             /* Mint emerald studio tint */
+    --sky: 204 94% 94%;              /* Crisp sky studio tint */
+    --peach: 24 95% 93%;             /* Warm coral studio tint */
+    --lilac: 250 95% 95%;            /* Soft indigo studio tint */
 
-    --muted: 43 20% 90%;
-    --muted-foreground: 43 6% 32%;   /* #55524b */
+    --muted: 210 32% 95%;            /* #EEF2F6 */
+    --muted-foreground: 215 19% 35%; /* #48566A accessible slate */
 
-    --accent: 46 100% 90%;           /* soft yellow tint */
-    --accent-foreground: 0 0% 7%;
+    --accent: 210 40% 96%;           /* #F1F5F9 subtle interactive hover */
+    --accent-foreground: 222 47% 7%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Ink outlines - 2px solid */
-    --border: 0 0% 7%;
-    --input: 0 0% 7%;
-    --ring: 356 83% 56%;
+    /* Precision 1px structural borders */
+    --border: 214 32% 89%;           /* #DCE3EC */
+    --input: 214 32% 86%;
+    --ring: 354 84% 55%;
 
-    --radius: 1.25rem;
+    --radius: 1rem;
 
-    /* Flat design: no offset shadows. Depth comes from outlines and colour planes. */
-    --shadow-card: none;
-    --shadow-card-hover: none;
-    --shadow-button: none;
+    /* Multi-layered physical elevation */
+    --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.03), 0 8px 24px -4px rgba(15, 23, 42, 0.05);
+    --shadow-card-hover: 0 4px 12px -2px rgba(15, 23, 42, 0.06), 0 20px 40px -8px rgba(15, 23, 42, 0.1);
+    --shadow-button: 0 1px 2px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+
+    /* Custom easing curves (Emil Kowalski / Apple Fluid Interfaces) */
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+    --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .dark {
-    --background: 0 0% 7%;
-    --foreground: 43 30% 95%;
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 11%;
-    --card-foreground: 43 30% 95%;
+    --card: 222 42% 9%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 11%;
-    --popover-foreground: 43 30% 95%;
+    --popover: 222 42% 9%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 356 83% 56%;
+    --primary: 354 84% 58%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 226 80% 58%;
+    --secondary: 217 91% 60%;
     --secondary-foreground: 0 0% 100%;
 
-    --blue: 226 80% 58%;
-    --pink: 312 100% 78%;
-    --yellow: 46 100% 62%;
-    --lime: 132 53% 74%;
-    --sky: 223 100% 74%;
-    --peach: 18 100% 77%;
-    --lilac: 258 100% 89%;
+    --blue: 217 91% 60%;
+    --pink: 346 45% 18%;
+    --yellow: 43 50% 18%;
+    --lime: 152 45% 16%;
+    --sky: 204 50% 18%;
+    --peach: 24 50% 18%;
+    --lilac: 250 45% 20%;
 
-    --muted: 0 0% 16%;
-    --muted-foreground: 43 10% 72%;
+    --muted: 217 32% 14%;
+    --muted-foreground: 215 20% 70%;
 
-    --accent: 356 83% 20%;
-    --accent-foreground: 356 83% 75%;
+    --accent: 217 32% 15%;
+    --accent-foreground: 210 40% 98%;
 
-    --border: 43 30% 90%;
-    --input: 43 30% 90%;
-    --ring: 356 83% 56%;
+    --border: 217 28% 18%;
+    --input: 217 28% 20%;
+    --ring: 354 84% 58%;
   }
 }
 
@@ -95,26 +100,28 @@
   }
 
   html {
-    font-family: 'Nunito', sans-serif;
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
     scroll-behavior: smooth;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Nunito', sans-serif;
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Bricolage Grotesque', sans-serif;
-    letter-spacing: -0.035em;
+    font-family: "Bricolage Grotesque", "Plus Jakarta Sans", system-ui, sans-serif;
+    letter-spacing: -0.03em;
     text-wrap: balance;
   }
 
   :focus-visible {
-    outline: 3px solid hsl(var(--primary));
+    outline: 2px solid hsl(var(--primary));
     outline-offset: 2px;
   }
 
@@ -128,90 +135,180 @@
 }
 
 @layer components {
-  /* Outlined card. Lifts on hover, no shadow. */
-  .card-ink {
-    @apply bg-white dark:bg-card border-2 border-border rounded-3xl transition-transform duration-150;
+  /* Architectural background patterns */
+  .bg-studio-grid {
+    background-size: 32px 32px;
+    background-image: 
+      linear-gradient(to right, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
   }
 
-  /* Only clickable cards lift */
-  a.card-ink:hover,
-  a:hover > .card-ink,
-  button.card-ink:hover {
-    transform: translateY(-3px);
+  .bg-studio-dots {
+    background-image: radial-gradient(rgba(15, 23, 42, 0.09) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* Translucent Apple-grade glass surface */
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 4px 24px -4px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+
+  /* Studio elevated card — replaces comic card-ink */
+  .card-ink {
+    @apply bg-white dark:bg-card border border-slate-200/90 dark:border-border rounded-2xl;
+    box-shadow: var(--shadow-card);
+    transition: transform 220ms var(--ease-out), box-shadow 220ms var(--ease-out), border-color 220ms var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    a.card-ink:hover,
+    a:hover > .card-ink,
+    button.card-ink:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-card-hover);
+      border-color: rgba(237, 43, 62, 0.28);
+    }
+  }
+
+  a.card-ink:active,
+  button.card-ink:active {
+    transform: translateY(0px) scale(0.985);
+    transition-duration: 100ms;
   }
 
   .card-tool {
-    @apply bg-white dark:bg-card border-2 border-border rounded-3xl p-5 transition-transform duration-150;
+    @apply bg-white dark:bg-card border border-slate-200/90 dark:border-border rounded-2xl p-5;
+    box-shadow: var(--shadow-card);
+    transition: transform 220ms var(--ease-out), box-shadow 220ms var(--ease-out), border-color 220ms var(--ease-out);
   }
 
-  a.card-tool:hover,
-  a:hover > .card-tool {
-    transform: translateY(-3px);
+  @media (hover: hover) and (pointer: fine) {
+    a.card-tool:hover,
+    a:hover > .card-tool {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-card-hover);
+      border-color: rgba(237, 43, 62, 0.28);
+    }
   }
 
-  /* Pill buttons */
+  /* Tactile Pressable Buttons (Emil Kowalski 160ms ease-out + scale(0.97) on active) */
   .btn-pressable {
-    @apply inline-flex items-center justify-center font-display font-extrabold rounded-full border-2 border-border transition-all duration-150 cursor-pointer;
+    @apply inline-flex items-center justify-center font-display font-bold rounded-xl border border-transparent cursor-pointer select-none;
+    transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out), background-color 160ms var(--ease-out), border-color 160ms var(--ease-out), color 160ms var(--ease-out);
   }
 
-  .btn-pressable:hover {
-    transform: translateY(-2px);
+  @media (hover: hover) and (pointer: fine) {
+    .btn-pressable:hover {
+      transform: translateY(-1px);
+    }
   }
 
   .btn-pressable:active {
-    transform: translateY(1px) scale(0.98);
+    transform: scale(0.97);
+    transition-duration: 100ms;
   }
 
   .btn-primary {
-    @apply btn-pressable bg-primary text-primary-foreground px-6 py-2.5 font-bold;
+    @apply btn-pressable bg-primary text-primary-foreground px-6 py-2.5 font-semibold;
+    box-shadow: 0 1px 2px rgba(237, 43, 62, 0.2), 0 6px 16px -3px rgba(237, 43, 62, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+
+  .btn-primary:hover {
+    background-color: hsl(354 84% 50%);
+    box-shadow: 0 2px 4px rgba(237, 43, 62, 0.25), 0 10px 24px -4px rgba(237, 43, 62, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.28);
   }
 
   .btn-blue {
-    @apply btn-pressable bg-foreground text-background px-6 py-2.5 font-bold;
+    @apply btn-pressable bg-foreground text-background px-6 py-2.5 font-semibold;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.15), 0 8px 20px -4px rgba(15, 23, 42, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  .btn-blue:hover {
+    background-color: hsl(222 47% 13%);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2), 0 12px 28px -6px rgba(15, 23, 42, 0.32);
   }
 
   .btn-pink {
-    @apply btn-pressable bg-pink text-foreground px-6 py-2.5 font-bold;
+    @apply btn-pressable bg-pink text-foreground border-rose-200 px-6 py-2.5 font-semibold;
   }
 
   .btn-white {
-    @apply btn-pressable bg-white text-foreground px-6 py-2.5 font-bold;
+    @apply btn-pressable bg-white text-foreground border-slate-200/90 px-5 py-2.5 font-semibold;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+
+  .btn-white:hover {
+    @apply bg-slate-50 border-slate-300;
+    box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
   }
 
   .btn-accent {
-    @apply btn-pressable bg-yellow text-foreground px-6 py-2 font-bold;
+    @apply btn-pressable bg-amber-50 text-amber-950 border-amber-200/80 px-5 py-2 font-semibold;
   }
 
-  /* Sticker badges */
+  /* Studio Pill Badges */
   .sticker-badge {
-    @apply inline-flex items-center gap-1.5 px-3 py-1 font-display font-extrabold text-xs uppercase tracking-wider rounded-full border-2 border-border select-none;
-    transition: transform 0.2s ease;
-  }
-
-  .sticker-badge:hover {
-    animation: wobble 0.5s ease-in-out;
+    @apply inline-flex items-center gap-1.5 px-3 py-1 font-sans font-semibold text-xs tracking-wide rounded-full border border-slate-200/90 bg-white/90 backdrop-blur-sm select-none;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    transition: transform 180ms var(--ease-out), border-color 180ms var(--ease-out);
   }
 
   .icon-wrapper {
-    @apply w-12 h-12 rounded-full flex items-center justify-center border-2 border-border;
+    @apply w-11 h-11 rounded-xl flex items-center justify-center border border-slate-200/80 bg-white shadow-sm;
   }
 
   .search-input {
-    @apply bg-white border-2 border-border rounded-full px-5 py-3 text-base font-semibold focus:outline-none focus:ring-0;
+    @apply bg-white border border-slate-200 rounded-xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all;
   }
 
   .drop-zone {
-    @apply border-2 border-dashed border-border rounded-3xl p-8 transition-colors duration-200;
-    background: hsl(var(--accent));
+    @apply border-2 border-dashed border-slate-300 hover:border-primary/60 rounded-2xl p-8 transition-all duration-200 bg-slate-50/70 hover:bg-rose-50/30;
   }
 
-  .drop-zone:hover {
-    background: hsl(var(--yellow) / 0.45);
-  }
-
-  /* Round icon "coin" used for category and tool icons */
+  /* Precision Icon Container ("coin") */
   .coin {
-    @apply inline-flex items-center justify-center rounded-full border-2 border-border shrink-0;
+    @apply inline-flex items-center justify-center rounded-xl border border-slate-200/80 shrink-0 shadow-sm;
+    transition: transform 200ms var(--ease-out), background-color 200ms var(--ease-out), color 200ms var(--ease-out), border-color 200ms var(--ease-out);
+  }
+
+  /* Tool Workbench Panel Normalization:
+     Prevents double borders & padding when individual tool pages render <Card> or <CardHeader> inside ProfessionalToolLayout */
+  .studio-workbench-panel > .rounded-lg.border,
+  .studio-workbench-panel > .rounded-2xl.border {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  /* Interactive Spotlight Card Effect */
+  .spotlight-card {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .spotlight-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      480px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(237, 43, 62, 0.055),
+      transparent 40%
+    );
+    opacity: 0;
+    transition: opacity 250ms var(--ease-out);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .spotlight-card:hover::before {
+      opacity: 1;
+    }
   }
 }
 

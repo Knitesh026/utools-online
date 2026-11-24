@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 const About = lazy(() => import("./pages/About"));
 const Tools = lazy(() => import("./pages/Tools"));
@@ -123,7 +123,7 @@ const App = () => {
           <Route path="/image-pixelator" element={<ImagePixelator />} />
           <Route path="/image-sharpener" element={<ImageSharpener />} />
           <Route path="/image-converter" element={<ImageConverter />} />
-          <Route path="/color-picker" element={<HTMLColorCodes />} />
+          <Route path="/color-picker" element={<Navigate to="/html-color-codes" replace />} />
           
           {/* Color Tools */}
           <Route path="/html-color-codes" element={<HTMLColorCodes />} />

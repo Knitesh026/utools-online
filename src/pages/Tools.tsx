@@ -1,17 +1,27 @@
 import { useState, useMemo, useEffect } from "react";
-import { Search, X, Sparkles, Mountain, FileText, Type, Palette, Calculator, Wrench } from "lucide-react";
+import {
+  Search,
+  X,
+  Sparkles,
+  Image as ImageIcon,
+  FileText,
+  Type,
+  Palette,
+  Calculator,
+  Wrench,
+} from "lucide-react";
 import { toolCategories } from "@/data/tools";
 import ToolCard from "@/components/ToolCard";
 import AdUnit from "@/components/AdUnit";
-import { useSearchParams, useParams, Link } from "react-router-dom";
+import { useSearchParams, useParams } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOPage from "@/components/SEOPage";
 import StickerBadge from "@/components/StickerBadge";
 
 const categoryIcons: Record<string, any> = {
-  "All": Sparkles,
-  "Image Tools": Mountain,
+  All: Sparkles,
+  "Image Tools": ImageIcon,
   "Document Tools": FileText,
   "Text Tools": Type,
   "Color Tools": Palette,
@@ -19,24 +29,32 @@ const categoryIcons: Record<string, any> = {
   "Utility Tools": Wrench,
 };
 
+const categoryAccents: Record<string, string> = {
+  "Image Tools": "bg-indigo-50 text-indigo-600 border-indigo-200/80",
+  "Document Tools": "bg-rose-50 text-rose-600 border-rose-200/80",
+  "Text Tools": "bg-emerald-50 text-emerald-600 border-emerald-200/80",
+  "Color Tools": "bg-sky-50 text-sky-600 border-sky-200/80",
+  "Calculator Tools": "bg-amber-50 text-amber-600 border-amber-200/80",
+  "Utility Tools": "bg-blue-50 text-blue-600 border-blue-200/80",
+};
+
 const Tools = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const routeParams = useParams<{ category?: string }>();
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") ?? "");
 
-  // Header and hero search send visitors here with ?search=term
   const urlSearch = searchParams.get("search");
   useEffect(() => {
     if (urlSearch !== null) setSearchQuery(urlSearch);
   }, [urlSearch]);
-  
-  // Resolve category from either URL route param or query param
+
   const selectedCategory = useMemo(() => {
     if (routeParams.category) {
       const decoded = decodeURIComponent(routeParams.category).toLowerCase().replace(/-/g, " ");
-      const found = toolCategories.find((c) => 
-        c.name.toLowerCase() === decoded || 
-        c.name.toLowerCase().replace(" tools", "") === decoded
+      const found = toolCategories.find(
+        (c) =>
+          c.name.toLowerCase() === decoded ||
+          c.name.toLowerCase().replace(" tools", "") === decoded,
       );
       if (found) return found.name;
     }
@@ -56,7 +74,6 @@ const Tools = () => {
     }
   };
 
-  // Filter tools based on search query & selected category
   const filteredCategories = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
 
@@ -67,7 +84,7 @@ const Tools = () => {
         tools: cat.tools.filter(
           (t) =>
             t.title.toLowerCase().includes(q) ||
-            (t.description && t.description.toLowerCase().includes(q))
+            (t.description && t.description.toLowerCase().includes(q)),
         ),
       }))
       .filter((cat) => cat.tools.length > 0);
@@ -88,39 +105,44 @@ const Tools = () => {
         <Header />
 
         {/* Directory Hero Header */}
-        <section className="relative pt-32 pb-12 sm:pt-40 sm:pb-16 px-4 sm:px-6">
-          <div className="max-w-4xl mx-auto text-center space-y-4">
+        <section className="relative pt-28 pb-10 sm:pt-36 sm:pb-14 px-4 sm:px-6 border-b border-slate-200/70 bg-white/60 overflow-hidden">
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-studio-grid [mask-image:radial-gradient(ellipse_80%_75%_at_50%_10%,#000_45%,transparent_100%)] pointer-events-none"
+          />
+
+          <div className="max-w-4xl mx-auto text-center space-y-4 relative z-10">
             <div className="flex items-center justify-center gap-2">
-              <StickerBadge color="white" rotation={-4}>
-                Full Directory · {totalToolCount} Utilities
+              <StickerBadge color="red" icon={<Sparkles className="w-3.5 h-3.5" />}>
+                Full Directory · {totalToolCount} Browser Utilities
               </StickerBadge>
             </div>
-            
-            <h1 className="font-display font-extrabold text-4xl sm:text-6xl text-foreground tracking-tight leading-tight">
+
+            <h1 className="font-display font-extrabold text-4xl sm:text-6xl text-slate-950 tracking-tight leading-[1.03]">
               All Tools & Utilities
             </h1>
-            
-            <p className="font-sans font-bold text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+
+            <p className="font-sans font-medium text-sm sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
               Explore our complete suite of free browser-based tools. No account required, zero remote uploads, and instant processing on your device.
             </p>
 
             {/* Search Input Bar */}
-            <div className="relative max-w-2xl mx-auto mt-6">
-              <div className="relative flex items-center bg-white rounded-full border-2 border-border">
-                <div className="pl-4 sm:pl-5 text-muted-foreground">
-                  <Search className="w-5 h-5 text-foreground" />
+            <div className="relative max-w-2xl mx-auto pt-3">
+              <div className="relative flex items-center bg-white rounded-2xl border border-slate-200/95 shadow-studio focus-within:border-primary/50 focus-within:shadow-[0_0_0_4px_rgba(237,43,62,0.08)] transition-all">
+                <div className="pl-4 sm:pl-5 text-slate-400">
+                  <Search className="w-5 h-5" />
                 </div>
                 <input
                   type="text"
-                  placeholder="Search tools by name or description (e.g. compress pdf, ocr, crop)..."
+                  placeholder="Search tools by name or description (e.g. compress pdf, crop, emi)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full py-4 px-4 text-base font-sans font-bold bg-transparent border-0 focus:outline-none text-foreground placeholder:text-muted-foreground"
+                  className="w-full py-3.5 px-3.5 text-sm sm:text-base font-sans font-medium bg-transparent border-0 focus:outline-none text-slate-900 placeholder:text-slate-400"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="p-2 mr-3 text-foreground hover:bg-background rounded-lg border border-border"
+                    className="p-2 mr-2.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors"
                     aria-label="Clear search"
                   >
                     <X className="w-4 h-4" />
@@ -131,22 +153,27 @@ const Tools = () => {
           </div>
         </section>
 
-
         {/* Main Content Area */}
         <main className="container mx-auto px-4 sm:px-6 py-10 sm:py-14 flex-1">
           {/* Category Filter Pills Toolbar */}
-          <div className="flex items-center gap-2.5 overflow-x-auto pb-4 mb-10 no-scrollbar">
+          <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-8 no-scrollbar">
             <button
               onClick={() => handleCategorySelect("All")}
-              className={`btn-pressable px-4 py-2 text-xs sm:text-sm font-sans font-extrabold whitespace-nowrap gap-2 ${
+              className={`btn-pressable px-4 py-2 text-xs sm:text-sm font-sans font-semibold whitespace-nowrap gap-2 rounded-xl border ${
                 selectedCategory === "All"
-                  ? "bg-primary text-white shadow-hard-lg"
-                  : "bg-white text-foreground hover:bg-white/80 shadow-hard-sm"
+                  ? "bg-slate-900 text-white border-slate-900 shadow-sm"
+                  : "bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50"
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <Sparkles className="w-3.5 h-3.5 text-primary" />
               <span>All Tools</span>
-              <span className={`text-[11px] px-2 py-0.5 rounded-full border border-border ${selectedCategory === "All" ? "bg-white text-foreground" : "bg-background text-foreground"}`}>
+              <span
+                className={`font-mono text-[11px] px-2 py-0.5 rounded-md ${
+                  selectedCategory === "All"
+                    ? "bg-white/15 text-white"
+                    : "bg-slate-100 text-slate-600"
+                }`}
+              >
                 {totalToolCount}
               </span>
             </button>
@@ -159,15 +186,21 @@ const Tools = () => {
                 <button
                   key={cat.name}
                   onClick={() => handleCategorySelect(cat.name)}
-                  className={`btn-pressable px-4 py-2 text-xs sm:text-sm font-sans font-extrabold whitespace-nowrap gap-2 ${
+                  className={`btn-pressable px-4 py-2 text-xs sm:text-sm font-sans font-semibold whitespace-nowrap gap-2 rounded-xl border ${
                     isSelected
-                      ? "bg-primary text-white shadow-hard-lg"
-                      : "bg-white text-foreground hover:bg-white/80 shadow-hard-sm"
+                      ? "bg-slate-900 text-white border-slate-900 shadow-sm"
+                      : "bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50"
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5" />
                   <span>{cat.name.replace(" Tools", "")}</span>
-                  <span className={`text-[11px] px-2 py-0.5 rounded-full border border-border ${isSelected ? "bg-white text-foreground" : "bg-background text-foreground"}`}>
+                  <span
+                    className={`font-mono text-[11px] px-2 py-0.5 rounded-md ${
+                      isSelected
+                        ? "bg-white/15 text-white"
+                        : "bg-slate-100 text-slate-600"
+                    }`}
+                  >
                     {cat.tools.length}
                   </span>
                 </button>
@@ -177,13 +210,14 @@ const Tools = () => {
 
           {/* Search Result Counter */}
           {searchQuery && (
-            <div className="card-ink mb-8 flex items-center justify-between text-xs sm:text-sm text-foreground bg-white px-5 py-3 rounded-2xl">
+            <div className="mb-8 flex items-center justify-between text-xs sm:text-sm text-slate-700 bg-white border border-slate-200/90 shadow-hard-sm px-5 py-3.5 rounded-2xl">
               <span>
-                Found <strong className="text-blue font-black">{totalMatchingTools}</strong> tools matching "<strong>{searchQuery}</strong>"
+                Found <strong className="text-primary font-bold">{totalMatchingTools}</strong> tools matching "
+                <strong>{searchQuery}</strong>"
               </span>
               <button
                 onClick={() => setSearchQuery("")}
-                className="text-blue hover:underline font-extrabold"
+                className="text-secondary hover:underline font-bold"
               >
                 Clear search
               </button>
@@ -192,12 +226,14 @@ const Tools = () => {
 
           {/* Tools Grid or Empty State */}
           {filteredCategories.length === 0 ? (
-            <div className="card-ink text-center py-16 bg-white rounded-3xl p-8 max-w-lg mx-auto">
-              <div className="w-14 h-14 rounded-2xl bg-primary border-2 border-border text-foreground flex items-center justify-center mx-auto mb-4 shadow-hard-sm">
-                <Search className="w-7 h-7" />
+            <div className="card-ink text-center py-16 bg-white rounded-2xl p-8 max-w-lg mx-auto">
+              <div className="w-14 h-14 rounded-2xl bg-rose-50 border border-rose-200 text-primary flex items-center justify-center mx-auto mb-4">
+                <Search className="w-6 h-6" />
               </div>
-              <h2 className="font-display font-extrabold text-2xl text-foreground mb-2">No matching tools found</h2>
-              <p className="font-sans font-semibold text-xs sm:text-sm text-muted-foreground mb-6">
+              <h2 className="font-display font-bold text-2xl text-slate-950 mb-2">
+                No matching tools found
+              </h2>
+              <p className="font-sans font-medium text-xs sm:text-sm text-slate-500 mb-6">
                 We couldn't find any tools matching your criteria. Try adjusting your search query or clear the filter.
               </p>
               <button
@@ -214,31 +250,35 @@ const Tools = () => {
             <div className="space-y-12">
               {filteredCategories.map((category) => {
                 const Icon = categoryIcons[category.name] || Sparkles;
+                const accent =
+                  categoryAccents[category.name] || "bg-slate-100 text-slate-700 border-slate-200";
 
                 return (
-                  <section key={category.name} className="space-y-6">
+                  <section key={category.name} className="space-y-5">
                     {/* Category Section Header */}
-                    <div className="flex items-center justify-between pb-3 border-b-2 border-border/20">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-primary border-2 border-border flex items-center justify-center shadow-hard-sm">
-                          <Icon className="w-5 h-5 text-foreground" />
+                    <div className="flex items-center justify-between pb-3.5 border-b border-slate-200/80">
+                      <div className="flex items-center gap-3.5">
+                        <div
+                          className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${accent}`}
+                        >
+                          <Icon className="w-5 h-5" />
                         </div>
                         <div>
-                          <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-foreground tracking-tight">
+                          <h2 className="font-display font-bold text-xl sm:text-2xl text-slate-950 tracking-tight">
                             {category.name}
                           </h2>
-                          <p className="font-sans font-bold text-xs text-muted-foreground">
+                          <p className="font-sans font-medium text-xs text-slate-500">
                             {category.description}
                           </p>
                         </div>
                       </div>
-                      <span className="font-display font-extrabold text-xs uppercase px-3 py-1 bg-white border-2 border-border rounded-full shadow-hard-sm">
+                      <span className="font-mono font-semibold text-xs px-3 py-1 bg-white border border-slate-200/90 rounded-full text-slate-600 shadow-2xs">
                         {category.tools.length} Tools
                       </span>
                     </div>
 
                     {/* Category Tools Responsive Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {category.tools.map((tool) => (
                         <ToolCard
                           key={tool.title}
@@ -262,8 +302,8 @@ const Tools = () => {
           </div>
 
           {/* Quick Category Directory Links */}
-          <div className="card-ink mt-12 bg-white rounded-3xl p-8">
-            <h3 className="font-display font-extrabold text-xl text-foreground mb-4">
+          <div className="card-ink mt-8 bg-white rounded-2xl p-6 sm:p-8">
+            <h3 className="font-display font-bold text-lg sm:text-xl text-slate-950 mb-4">
               Explore by Utility Category
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
@@ -271,12 +311,12 @@ const Tools = () => {
                 <button
                   key={cat.name}
                   onClick={() => handleCategorySelect(cat.name)}
-                  className="btn-pressable p-3 rounded-xl bg-background border-2 border-border text-left group flex flex-col justify-between"
+                  className="btn-pressable p-3.5 rounded-xl bg-slate-50/80 hover:bg-white border border-slate-200/80 hover:border-primary/40 text-left group flex flex-col justify-between transition-all"
                 >
-                  <span className="font-display font-extrabold text-xs text-foreground group-hover:text-blue transition-colors">
+                  <span className="font-display font-bold text-xs sm:text-sm text-slate-900 group-hover:text-primary transition-colors">
                     {cat.name.replace(" Tools", "")}
                   </span>
-                  <span className="font-sans font-bold text-[10px] text-muted-foreground mt-1">
+                  <span className="font-mono font-medium text-[11px] text-slate-500 mt-1">
                     {cat.tools.length} utilities
                   </span>
                 </button>

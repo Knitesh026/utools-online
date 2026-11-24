@@ -1,11 +1,9 @@
 import { useState, useRef } from "react";
-import ToolExtras from "@/components/ToolExtras";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import ProfessionalToolLayout from "@/components/ProfessionalToolLayout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
-import { Download, Upload, RefreshCw } from "lucide-react";
+import { Download, Upload, RefreshCw, Grid, Sliders, Zap } from "lucide-react";
 
 const ImagePixelator = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -58,7 +56,6 @@ const ImagePixelator = () => {
         canvas.height = h;
         const ctx = canvas.getContext("2d");
 
-        // Draw original image smaller
         const smallCanvas = document.createElement("canvas");
         smallCanvas.width = Math.ceil(w / size);
         smallCanvas.height = Math.ceil(h / size);
@@ -66,7 +63,6 @@ const ImagePixelator = () => {
 
         smallCtx?.drawImage(img, 0, 0, smallCanvas.width, smallCanvas.height);
 
-        // Scale back up (pixelated effect)
         if (ctx) ctx.imageSmoothingEnabled = false;
         ctx?.drawImage(smallCanvas, 0, 0, smallCanvas.width, smallCanvas.height, 0, 0, w, h);
 
@@ -112,155 +108,123 @@ const ImagePixelator = () => {
     }
   };
 
-  return (
-    <>
-      <Header />
-      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8 md:py-12 px-4">
-        <div className="max-w-4xl mx-auto space-y-8">
-          {/* Header */}
-          <div className="text-center space-y-2">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900">Image Pixelator</h1>
-            <p className="text-gray-600">Create pixelated or mosaic effects on images</p>
+  const inputSection = (
+    <div>
+      <CardHeader>
+        <CardTitle>Upload Image</CardTitle>
+        <CardDescription>Select an image to apply a blocky mosaic or pixel-art effect</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <label htmlFor="file-input-pixelator" className="cursor-pointer block">
+          <div className="border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center cursor-pointer hover:border-primary/50 hover:bg-slate-50 transition">
+            <Upload className="w-8 h-8 mx-auto text-slate-400 mb-2" />
+            <p className="text-sm font-semibold text-slate-700">Click to upload or drag and drop</p>
+            <p className="text-xs text-slate-500 mt-1">PNG, JPG, WebP up to 50MB</p>
+          </div>
+          <input
+            id="file-input-pixelator"
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
+        </label>
+
+        {error && (
+          <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-medium text-rose-700">
+            {error}
+          </div>
+        )}
+
+        {preview && (
+          <div className="space-y-4">
+            <div>
+              <label className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-slate-700">Pixel Block Size</span>
+                <span className="text-sm font-mono font-bold text-primary">{pixelSize}px</span>
+              </label>
+              <Slider
+                value={[pixelSize]}
+                onValueChange={(val) => setPixelSize(val[0])}
+                min={2}
+                max={50}
+                step={1}
+              />
+            </div>
+
+            <div className="flex gap-2">
+              <Button onClick={pixelateImage} disabled={processing} className="flex-1">
+                {processing ? "Processing..." : "Pixelate Image"}
+              </Button>
+              <Button onClick={handleReset} variant="outline" aria-label="Reset">
+                <RefreshCw className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {!preview && (
+          <div className="text-center py-2">
+            <p className="text-xs text-slate-400">No image selected</p>
+          </div>
+        )}
+      </CardContent>
+    </div>
+  );
+
+  const outputSection =
+    preview || pixelated ? (
+      <div>
+        <CardHeader>
+          <CardTitle>Preview</CardTitle>
+          <CardDescription>Pixelated output preview</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="aspect-video bg-slate-100 rounded-xl overflow-hidden flex items-center justify-center border border-slate-200">
+            <img
+              src={pixelated || preview}
+              alt="Pixelated preview"
+              className="max-w-full max-h-full object-contain"
+            />
           </div>
 
-          {/* Features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="border-gray-200">
-              <CardContent className="pt-6">
-                <div className="text-2xl mb-2">🎨</div>
-                <h4 className="font-semibold text-gray-900 mb-1">Pixelated Effect</h4>
-                <p className="text-sm text-gray-600">Create blocky pixel art</p>
-              </CardContent>
-            </Card>
-            <Card className="border-gray-200">
-              <CardContent className="pt-6">
-                <div className="text-2xl mb-2">⚙️</div>
-                <h4 className="font-semibold text-gray-900 mb-1">Adjustable</h4>
-                <p className="text-sm text-gray-600">Control pixel size</p>
-              </CardContent>
-            </Card>
-            <Card className="border-gray-200">
-              <CardContent className="pt-6">
-                <div className="text-2xl mb-2">⚡</div>
-                <h4 className="font-semibold text-gray-900 mb-1">Instant</h4>
-                <p className="text-sm text-gray-600">Real-time preview</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Main Content */}
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Input Section */}
-            <Card className="border-gray-200 shadow-sm">
-              <CardHeader>
-                <CardTitle>Upload Image</CardTitle>
-                <CardDescription>Select an image to pixelate</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <label htmlFor="file-input-pixelator" className="cursor-pointer block">
-                  <div
-                    className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 transition"
-                  >
-                    <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
-                    <p className="text-xs text-gray-500 mt-1">PNG, JPG, WebP up to 50MB</p>
-                  </div>
-                  <input
-                    id="file-input-pixelator"
-                ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileSelect}
-                    className="hidden"
-                  />
-                </label>
-
-                {preview && (
-                  <div className="space-y-3">
-                    <div>
-                      <label className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-700">Pixel Size</span>
-                        <span className="text-sm font-bold text-blue-600">{pixelSize}px</span>
-                      </label>
-                      <Slider
-                        value={[pixelSize]}
-                        onValueChange={(val) => setPixelSize(val[0])}
-                        min={2}
-                        max={50}
-                        step={1}
-                      />
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button
-                        onClick={pixelateImage}
-                        disabled={processing}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-                      >
-                        {processing ? "Processing..." : "Pixelate Image"}
-                      </Button>
-                      <Button
-                        onClick={handleReset}
-                        variant="outline"
-                        className="flex-1"
-                      >
-                        <RefreshCw className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {!preview && (
-                  <div className="text-center py-4">
-                    <p className="text-sm text-gray-500">No image selected</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Output Section */}
-            {(preview || pixelated) && (
-              <Card className="border-gray-200 shadow-sm">
-                <CardHeader>
-                  <CardTitle>Preview</CardTitle>
-                  <CardDescription>Pixelated image preview</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
-                    <img
-                      src={pixelated || preview}
-                      alt="preview"
-                      className="max-w-full max-h-full object-contain"
-                    />
-                  </div>
-
-                  {pixelated && (
-                    <Button
-                      onClick={handleDownload}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white"
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Download Pixelated Image
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-          </div>
-
-          {/* Error Display */}
-          {error && (
-            <Card className="border-red-200 bg-red-50">
-              <CardContent className="pt-6">
-                <p className="text-sm text-red-700">{error}</p>
-              </CardContent>
-            </Card>
+          {pixelated && (
+            <Button onClick={handleDownload} className="w-full">
+              <Download className="w-4 h-4 mr-2" />
+              Download Pixelated Image
+            </Button>
           )}
-        </div>
-      <ToolExtras />
-      </main>
-      <Footer />
-    </>
+        </CardContent>
+      </div>
+    ) : undefined;
+
+  return (
+    <ProfessionalToolLayout
+      title="Image Pixelator"
+      description="Create pixelated mosaic effects or retro 8-bit pixel art from any image"
+      icon={Grid}
+      category="Image"
+      inputSection={inputSection}
+      outputSection={outputSection}
+      features={[
+        {
+          icon: Grid,
+          title: "Pixel Art & Redaction",
+          description: "Generate retro pixel art aesthetics or obfuscate sensitive image areas.",
+        },
+        {
+          icon: Sliders,
+          title: "Adjustable Block Size",
+          description: "Fine-tune pixel dimensions from 2px subtle grain up to 50px mosaic blocks.",
+        },
+        {
+          icon: Zap,
+          title: "Crisp Nearest-Neighbor",
+          description: "Uses nearest-neighbor canvas scaling to keep pixel edges razor-sharp.",
+        },
+      ]}
+    />
   );
 };
 

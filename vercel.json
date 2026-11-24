@@ -4,6 +4,10 @@
   "installCommand": "npm install",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "redirects": [
+    { "source": "/color-picker", "destination": "/html-color-codes", "permanent": true },
+    { "source": "/qr-code-generator", "destination": "/qr-code", "permanent": true }
+  ],
   "rewrites": [
     {
       "source": "/api/:match*",

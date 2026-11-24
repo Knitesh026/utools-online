@@ -1,15 +1,14 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import ToolCard from "@/components/ToolCard";
 import CategoryToolsGrid from "@/components/CategoryToolsGrid";
 import { toolCategories } from "@/data/tools";
 
-/** Titles looked up in data/tools.ts so icon, description and route always match the catalog. */
 const popularTitles: Array<{ title: string; badge?: string }> = [
-  { title: "Merge PDF" },
+  { title: "Merge PDF", badge: "Popular" },
   { title: "Compress PDF" },
-  { title: "Background Remover" },
+  { title: "Background Remover", badge: "AI / Canvas" },
   { title: "Image Compressor" },
   { title: "QR Code Generator" },
   { title: "EMI Calculator" },
@@ -34,40 +33,53 @@ export function PopularToolsSection() {
           return null;
         })
         .filter((t): t is NonNullable<typeof t> => t !== null),
-    []
+    [],
   );
 
   const activeCategory = toolCategories.find((c) => c.name === active);
   const tabs = [POPULAR, ...toolCategories.map((c) => c.name)];
 
   return (
-    <section className="py-10 sm:py-14">
+    <section className="py-12 sm:py-16">
       <div className="container mx-auto px-4 sm:px-6">
-        <h2 className="font-display font-extrabold text-3xl sm:text-5xl tracking-tighter leading-none mb-6">
-          Start with these
-        </h2>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+          <div>
+            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-primary block mb-1.5">
+              Instant Browser Execution
+            </span>
+            <h2 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl tracking-tight text-slate-950 leading-none">
+              Start with these
+            </h2>
+          </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-5 no-scrollbar" role="tablist" aria-label="Tool categories">
-          {tabs.map((name) => {
-            const isActive = active === name;
-            return (
-              <button
-                key={name}
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setActive(name)}
-                className={`px-4 py-2 rounded-full border-2 border-border font-sans font-extrabold text-sm whitespace-nowrap transition-colors ${
-                  isActive ? "bg-foreground text-background" : "bg-white hover:bg-yellow"
-                }`}
-              >
-                {name.replace(" Tools", "")}
-              </button>
-            );
-          })}
+          <div
+            className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200/80"
+            role="tablist"
+            aria-label="Tool categories"
+          >
+            {tabs.map((name) => {
+              const isActive = active === name;
+              return (
+                <button
+                  key={name}
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setActive(name)}
+                  className={`px-3.5 py-1.5 rounded-xl font-sans font-semibold text-xs sm:text-[13px] whitespace-nowrap transition-all duration-150 ease-out-quart active:scale-[0.97] ${
+                    isActive
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "text-slate-600 hover:text-slate-950 hover:bg-white/60"
+                  }`}
+                >
+                  {name.replace(" Tools", "")}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {active === POPULAR ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4 animate-fade-in">
             {popular.map((tool) => (
               <ToolCard
                 key={tool.title}
@@ -82,14 +94,19 @@ export function PopularToolsSection() {
           </div>
         ) : (
           activeCategory && (
-            <CategoryToolsGrid categoryName={activeCategory.name} tools={activeCategory.tools} />
+            <CategoryToolsGrid
+              categoryName={activeCategory.name}
+              categoryDescription={activeCategory.description}
+              tools={activeCategory.tools}
+            />
           )
         )}
 
         <div className="flex justify-center mt-10">
-          <Link to="/tools" className="btn-blue text-base px-8 py-3.5">
+          <Link to="/tools" className="btn-blue text-sm sm:text-base px-7 py-3.5">
+            <Sparkles className="w-4 h-4 mr-2 text-rose-400" />
             <span>View all free tools</span>
-            <ArrowRight className="w-5 h-5 ml-2" />
+            <ArrowRight className="w-4 h-4 ml-2" />
           </Link>
         </div>
       </div>

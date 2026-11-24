@@ -50,3 +50,12 @@ a sensible amount of original text, working internal links, and no Adsterra code
 - The live site did not yet serve prerendered HTML at that time (every URL returned the same 4 KB shell). Check the Vercel build log for a
   line starting `prerender:`. If it says skipped or failed, run `npm run build:prerender` locally and deploy `dist/`, then use
   URL Inspection > Request indexing again on the same pages (the daily limit resets).
+
+## Review of 24 Nov 2026 ("Low value content")
+- Live site still served the same ~4 KB empty shell for every URL (no prerender reached production), so the AdSense crawler saw no content.
+- The uncommitted redesign crashed 8 tool pages (React error #31: lucide icon components rendered as children). Prerendering would have
+  saved the "Something went wrong" page for them. Fixed in `ProfessionalToolLayout` (accepts icon components) and its prop types.
+- `/color-picker` duplicated `/html-color-codes` and was described as an image colour picker, which it is not. Now a 301 redirect, removed from the sitemap and tool lists.
+- 404 page now sets `noindex` (unknown URLs return HTTP 200 on a SPA host).
+- Verified: `tsc` clean, build + prerender 69/69 pages, `npm run audit` reports no issues, pairwise page similarity under 0.15 (except index pages).
+- After deploying, confirm: `curl -s https://utoolss.online/about | wc -c` should be well above 40000, not 4263.

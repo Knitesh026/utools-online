@@ -1,67 +1,54 @@
-# uTools.online - Digital Utility Hub
+# uTools.online — Precision Studio Web Utilities
 
-Your all-in-one digital utility hub for file conversion, image editing, video processing, and AI tools.
+> **Designed, Engineered & Maintained by [Prematech Digital](https://prematech.co.in/)**
 
-## How can I edit this code?
+uTools.online is a client-side utility workbench providing **53+ free browser-native tools** and **6 in-depth reference guides** across **PDF**, **Image**, **Text & Developer**, **Converter**, **Finance & Math**, and **Security** categories. Every calculation, file transformation, and format conversion runs locally inside your browser using the Web Crypto API, HTML5 Canvas, PDF.js, and pdf-lib — with **zero server uploads** and **zero accounts required**.
 
-**Use your preferred IDE**
+---
 
-Clone this repository and use your favorite code editor to make changes.
+## Key Highlights
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- **uTools Precision Studio Design System**
+  - **Typography**: `Bricolage Grotesque` (architectural display headings), `Plus Jakarta Sans` (high-legibility UI body), and `JetBrains Mono` (tabular metrics, hashes, and code telemetry).
+  - **Surface & Depth**: Warm Alabaster (`#F8FAFC`) canvas, Deep Obsidian (`#0A0F1D`) ink, Signature Crimson (`#ED2B3E`) and Electric Cobalt (`#2563EB`) accents, tactile `1px` crisp borders, and multi-layered studio elevation shadows.
+  - **Interactive Motion**: Spring/quartic easing transitions (`cubic-bezier(0.16, 1, 0.3, 1)`), tactile button press physics (`scale(0.97)`), mouse-tracking radial spotlight bento cards, interactive Hero mini-workbench previews, and full `prefers-reduced-motion` accessibility support.
+  - **Global Command Palette (`⌘K` / `Ctrl+K`)**: Instant keyboard-navigable search across all 53+ tools and 6 long-form guides from anywhere in the app.
+- **100% Client-Side Privacy**
+  - Files and text inputs never leave the user's device.
+- **Comprehensive Editorial & Reference Documentation**
+  - Every tool page includes a structured reference article (`ToolArticle`) with worked examples, step-by-step instructions, best practices, limitations, and JSON-LD FAQ schema.
 
-Follow these steps:
+---
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## Tech Stack
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- **Framework**: React 18 + TypeScript + Vite
+- **Styling**: Tailwind CSS + Radix UI / shadcn primitives
+- **Document & Media Engines**: `pdf-lib`, `pdfjs-dist`, `jspdf`, `qrcode`, HTML5 Canvas, Web Crypto API
+- **SEO & Prerendering**: Custom `SEOPage` metadata manager + Playwright static prerendering (`scripts/prerender.mjs`) and automated quality auditing (`scripts/adsense-audit.mjs`)
 
-# Step 3: Install the necessary dependencies.
-npm i
+---
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+## Development & Build
+
+```bash
+# Install dependencies
+npm install
+
+# Start local development server
 npm run dev
+
+# Build production bundle + prerender all routes
+npm run build
+
+# Run SEO, accessibility & layout audit
+npm run audit:adsense
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Attribution & Credits
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## How can I deploy this project?
-
-You can deploy this project using Vercel, Netlify, or any other hosting platform that supports Vite applications.
-
-### Deploy to Vercel
-
-1. Push your code to GitHub
-2. Visit [Vercel](https://vercel.com)
-3. Import your repository
-4. Click Deploy
-
-### Deploy to Netlify
-
-1. Build the project: `npm run build`
-2. Deploy the `dist` folder to Netlify
-
-## Technologies Used
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **Creator, Designer & Maintainer**: [Prematech Digital](https://prematech.co.in/)
+- **Website**: [https://prematech.co.in/](https://prematech.co.in/)
+- **Production URL**: [https://utoolss.online/](https://utoolss.online/)

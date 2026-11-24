@@ -4,7 +4,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 
 const SITE = "https://utoolss.online";
 const app = readFileSync("src/App.tsx", "utf8");
-const skip = new Set(["/privacy", "/terms", "/qr-code-generator", "/category/:category"]);
+const skip = new Set(["/privacy", "/terms", "/qr-code-generator", "/color-picker", "/category/:category"]);
 const routes = [...new Set([...app.matchAll(/path="(\/[^"*:]*)"/g)].map((m) => m[1]))].filter((r) => !skip.has(r));
 
 const slugs = ["src/data/guides.ts", "src/data/guidesMore.ts"].flatMap((f) =>
