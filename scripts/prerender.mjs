@@ -21,8 +21,12 @@ if (!chrome) {
   try {
     // @sparticuz/chromium only unpacks the shared libraries Chrome needs (libnss etc.) when it thinks it runs
     // on AWS Lambda. Vercel/Netlify build machines are the same Amazon Linux image but lack those libraries.
+    // Force (not default) the value: Vercel may already set AWS_EXECUTION_ENV / AWS_LAMBDA_JS_RUNTIME to a newer Node
+    // version, which makes the package unpack the older Amazon Linux 2 libraries instead of the AL2023 ones this
+    // build image needs (the cause of "libnss3.so: cannot open shared object file").
     if (isCI && process.platform === "linux") {
-      process.env.AWS_EXECUTION_ENV ||= "AWS_Lambda_nodejs22.x";
+      process.env.AWS_EXECUTION_ENV = "AWS_Lambda_nodejs22.x";
+      delete process.env.AWS_LAMBDA_JS_RUNTIME;
     }
     const { default: chromium } = await import("@sparticuz/chromium");
     chrome = await chromium.executablePath();
